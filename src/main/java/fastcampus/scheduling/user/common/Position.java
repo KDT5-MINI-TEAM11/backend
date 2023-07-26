@@ -4,10 +4,10 @@ import java.util.Objects;
 
 public enum Position {
     //임시
-    Intern,
-    Staff,
-    AssistantManager,
-    Manager;
+    INTERN,
+    STAFF,
+    ASSISTANT_MANAGER,
+    MANAGER;
 
     public static Position from(String name) {
         for (Position role : Position.values()) {
