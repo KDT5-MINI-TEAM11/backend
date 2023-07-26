@@ -20,13 +20,13 @@ public class UserApiController {
 
     private final UserService userService;
 
-//    @PostMapping("/join")
-//    public ResponseEntity<ApiResponse.Result<UserResponse.JoinDTO>> join(
-//        @RequestBody @Valid UserRequest.JoinDTO joinDTO, Errors errors) {
-//
-//        log.info("/user/join POST " + joinDTO);
-//
-//        UserResponse.JoinDTO joinResponse = userService.save(joinDTO);
-//        return ResponseEntity.ok(ApiResponse.success(joinResponse));
-//    }
+    @PostMapping("/api/join")
+    public ResponseEntity<ApiResponse.Result<UserResponse.JoinDTO>> join(
+        @RequestBody @Valid UserRequest.JoinDTO joinDTO, Errors errors) {
+
+        log.info("/user/join POST " + joinDTO);
+
+        UserResponse.JoinDTO joinResponse = userService.save(joinDTO);
+        return ResponseEntity.ok(ApiResponse.success(joinResponse));
+    }
 }

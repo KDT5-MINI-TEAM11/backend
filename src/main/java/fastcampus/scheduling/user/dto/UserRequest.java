@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserRequest {
 
@@ -34,18 +35,17 @@ public class UserRequest {
 
         private String profileThumbUrl;
 
-
-//        public User toEntityWithHashPassword(PasswordEncoder passwordEncoder) {
-//            String encodedPassword = passwordEncoder.encode(this.userPassword);
-//            return User.builder()
-//                .userEmail(userEmail)
-//                .userPassword(encodedPassword)
-//                .userName(userName)
-//                .position(position)
-//                .phoneNumber(phoneNumber)
-//                .profileThumbUrl(profileThumbUrl)
-//                .build();
-//        }
+        public User toEntityWithHashPassword(PasswordEncoder passwordEncoder) {
+            String encodedPassword = passwordEncoder.encode(this.userPassword);
+            return User.builder()
+                .userEmail(userEmail)
+                .userPassword(encodedPassword)
+                .userName(userName)
+                .position(position)
+                .phoneNumber(phoneNumber)
+                .profileThumbUrl(profileThumbUrl)
+                .build();
+        }
     }
 
     @Getter
