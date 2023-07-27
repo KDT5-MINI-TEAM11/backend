@@ -59,7 +59,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             response.setStatus(SC_UNAUTHORIZED);
             response.setContentType(APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("utf-8");
-            new ObjectMapper().writeValue(response.getOutputStream(), ApiResponse.error(JwtExceptionMessage.TOKEN_NOT_VALID.getMessage(), HttpStatus.UNAUTHORIZED));
+            new ObjectMapper().writeValue(response.getOutputStream(), ApiResponse.error(JwtExceptionMessage.TOKEN_NOT_EXISTS.getMessage(), HttpStatus.UNAUTHORIZED));
             return;
         }
 
