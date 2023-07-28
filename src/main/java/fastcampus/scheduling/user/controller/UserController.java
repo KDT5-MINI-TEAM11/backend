@@ -1,11 +1,11 @@
-package fastcampus.scheduling.user.user.controller;
+package fastcampus.scheduling.user.controller;
 
 import fastcampus.scheduling._core.util.ApiResponse;
 import fastcampus.scheduling.user.dto.UserRequest;
 import fastcampus.scheduling.user.dto.UserResponse;
 import fastcampus.scheduling.user.dto.UserResponse.GetMyPageDTO;
-import fastcampus.scheduling.user.user.model.User;
-import fastcampus.scheduling.user.user.service.UserService;
+import fastcampus.scheduling.user.model.User;
+import fastcampus.scheduling.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -53,5 +53,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(getMyPageDTO));
 
     }
+
 
 }

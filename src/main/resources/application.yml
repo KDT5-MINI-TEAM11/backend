@@ -6,6 +6,11 @@ server:
       force: true
 
 spring:
+  security:
+    user:
+      name: admin
+      password: 8a2e8626-fdb1-4f37-8fe9-1e23d3a62601
+
   datasource:
     url: jdbc:h2:mem:test;MODE=MySQL
     driver-class-name: org.h2.Driver
@@ -35,3 +40,20 @@ spring:
         format_sql: true
         show_sql: true
 #    open-in-view: true
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          debug: true
+          starttls:
+            enable: true
+
+

@@ -1,7 +1,8 @@
 package fastcampus.scheduling.user.dto;
 
 import fastcampus.scheduling.user.common.Position;
-import fastcampus.scheduling.user.user.model.User;
+
+import fastcampus.scheduling.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
 

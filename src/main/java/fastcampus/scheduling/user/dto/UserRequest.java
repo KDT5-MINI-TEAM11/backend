@@ -1,8 +1,8 @@
 package fastcampus.scheduling.user.dto;
 
 import fastcampus.scheduling.user.common.Position;
-import fastcampus.scheduling.user.dto.UserResponse.GetMyPageDTO;
-import fastcampus.scheduling.user.user.model.User;
+
+import fastcampus.scheduling.user.model.User;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
