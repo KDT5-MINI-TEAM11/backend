@@ -1,22 +1,21 @@
 package fastcampus.scheduling.jwt.service;
 
 import fastcampus.scheduling._core.util.JwtTokenProvider;
-import fastcampus.scheduling.jwt.dto.JwtTokenDto;
+import fastcampus.scheduling.jwt.dto.RefreshAccessTokenDto;
 import fastcampus.scheduling.jwt.exception.JwtExceptionMessage;
 import fastcampus.scheduling.jwt.exception.UnauthorizedException;
 import fastcampus.scheduling.jwt.model.RefreshToken;
 import fastcampus.scheduling.jwt.repository.RefreshTokenRepository;
 import fastcampus.scheduling.user.exception.UserExceptionMessage;
 import fastcampus.scheduling.user.exception.UserNotExistException;
-import fastcampus.scheduling.user.user.model.User;
-import fastcampus.scheduling.user.user.repository.UserRepository;
+import fastcampus.scheduling.user.model.User;
+import fastcampus.scheduling.user.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -38,16 +37,13 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 		User user = userRepository.findById(id)
 				.orElseThrow(() -> new UserNotExistException("User Id : " + id + " " + UserExceptionMessage.USER_NOT_FOUND_EXCEPTION));
 
-		refreshTokenRepository.save(RefreshToken.of(user.getUserEmail(), uuid));
+		refreshTokenRepository.save(RefreshToken.of(id, uuid));
 	}
 
 	@Override
-	public JwtTokenDto refreshAccessToken(String refreshToken) {
-		String userId = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-
-		revokeToken(userId, refreshToken);
-
-
+	public RefreshAccessTokenDto refreshAccessToken(String refreshToken) {
+		String userId = jwtTokenProvider.getUserId(refreshToken);
+		revokeToken(refreshToken);
 		User findUser = userRepository.findById(Long.valueOf(userId))
 				.orElseThrow(() -> new UserNotExistException(
 						"User Id : " + userId + " " + UserExceptionMessage.USER_NOT_FOUND_EXCEPTION.getMessage()));
@@ -58,17 +54,16 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
 		String newAccessToken = jwtTokenProvider.generateJwtAccessToken(userId, "/refresh-token", roles);
 
-		return JwtTokenDto.builder()
+		return RefreshAccessTokenDto.builder()
 				.accessToken(newAccessToken)
-				.accessTokenExpiredDate(jwtTokenProvider.getExpiredTime(newAccessToken))
-				.refreshToken(refreshToken)
 				.build();
 	}
 
 	@Transactional
 	@Override
-	public void revokeToken(String userId, String refreshToken) {
-		RefreshToken findRefreshToken = refreshTokenRepository.findById(userId)
+	public void revokeToken(String refreshToken) {
+		String userId = jwtTokenProvider.getUserId(refreshToken);
+		RefreshToken findRefreshToken = refreshTokenRepository.findById(Long.valueOf(userId))
 				.orElseThrow(
 						() -> new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage()));
 

@@ -41,8 +41,9 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         List<String> ignored = Arrays.asList(
-                "/api/v1/auth/signin",
-                "/api/v1/auth/signout"
+            "/h2-console/**",
+            "/api/v1/auth/signin",
+            "/api/v1/auth/refresh-token"
         );
         if (ignored.stream().anyMatch(pattern -> antPathMatcher.match(pattern, request.getRequestURI()))) {
             filterChain.doFilter(request, response);
@@ -53,9 +54,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         final String accessToken;
         final String userId;
 
+        accessToken = accessTokenService.getAccessToken(authHeader);
 
         // Header에 Token이 존재 하지 않거나 비정상 적인 type
-        if (authHeader == null || accessTokenService.getAccessToken(authHeader).equals("")) {
+        if (accessToken.isEmpty()) {
             response.setStatus(SC_UNAUTHORIZED);
             response.setContentType(APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("utf-8");
@@ -64,7 +66,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         }
 
         //Token이 존재 할 경우
-        accessToken = accessTokenService.getAccessToken(authHeader);
         userId = jwtTokenProvider.getUserId(accessToken);
         if (userId == null) {
             response.setStatus(SC_UNAUTHORIZED);
