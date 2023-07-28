@@ -36,19 +36,15 @@ public class UserController {
     public ResponseEntity<ApiResponse.Result<UserResponse.GetMyPageDTO>> updateMyPage(@RequestBody UserRequest.UpdateDTO updateDTO) {
         Long userId = 1L;
 
-        String userName = updateDTO.getUserName();
-        String userPassword = updateDTO.getUserPassword();
         String phoneNumber = updateDTO.getPhoneNumber();
         String profileThumbUrl = updateDTO.getProfileThumbUrl();
 
         User user = userService.findByUserId(userId);
 
-        user.setUserName(userName);
-        user.setUserPassword(userPassword);
         user.setPhoneNumber(phoneNumber);
         user.setProfileThumbUrl(profileThumbUrl);
 
-        User updatedUser = userService.updateUser(userId, userName, userPassword, phoneNumber, profileThumbUrl);
+        User updatedUser = userService.updateUser(userId, phoneNumber, profileThumbUrl);
 
         GetMyPageDTO getMyPageDTO = GetMyPageDTO.from(updatedUser);
 

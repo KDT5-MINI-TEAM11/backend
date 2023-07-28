@@ -71,12 +71,6 @@ public class UserRequest {
     @ToString
     public static class UpdateDTO {
 
-        @NotBlank
-        private String userName;
-
-        @NotNull
-        private String userPassword;
-
         @NotNull
         private String userEmail;
 
@@ -88,8 +82,6 @@ public class UserRequest {
 
         public static UpdateDTO from(User user) {
             return UpdateDTO.builder()
-                .userName(user.getUserName())
-                .userPassword(user.getUserPassword())
                 .userEmail(user.getUserEmail())
                 .profileThumbUrl(user.getProfileThumbUrl())
                 .phoneNumber(user.getPhoneNumber())
