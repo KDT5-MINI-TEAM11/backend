@@ -16,9 +16,13 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 	@Override
 	public String getAccessToken(String authorizationHeader) {
 
+		if (authorizationHeader == null) {
+			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED,
+					JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
+		}
 		String accessToken = authorizationHeader.replace("Bearer ", "");
 
-		if (jwtTokenProvider.validateJwtToken(accessToken)) {
+		if (!jwtTokenProvider.validateJwtToken(accessToken)) {
 			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
 		}
 		return accessToken;

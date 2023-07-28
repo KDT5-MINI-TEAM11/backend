@@ -1,11 +1,12 @@
 package fastcampus.scheduling._core.util;
 
+import fastcampus.scheduling.jwt.exception.JwtExceptionMessage;
+import fastcampus.scheduling.jwt.exception.UnauthorizedException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,8 +37,8 @@ public class JwtTokenProvider {
 		return buildToken(claims, uri, ACCESS_EXPIRED_TIME);
 	}
 
-	public String generateJwtRefreshToken() {
-		Claims claims = Jwts.claims();
+	public String generateJwtRefreshToken(String userId) {
+		Claims claims = Jwts.claims().setSubject(userId);
 		claims.put("value", UUID.randomUUID());
 
 		return buildToken(claims, "", REFRESH_EXPIRED_TIME);
@@ -69,18 +71,14 @@ public class JwtTokenProvider {
 		try {
 			Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token);
 			return true;
-		} catch (MalformedJwtException e) {
-			log.error("Invalid JWT token: {}", e.getMessage());
-			return false;
-		} catch (ExpiredJwtException e) {
-			log.error("JWT token is expired: {}", e.getMessage());
-			return false;
-		} catch (UnsupportedJwtException e) {
-			log.error("JWT token is unsupported: {}", e.getMessage());
-			return false;
+		} catch (ExpiredJwtException exception) {
+			log.error("JWT token is expired: {}", exception.getMessage());
+			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_EXPIRED.getMessage());
+		} catch (JwtException exception) {
+			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
 		} catch (IllegalArgumentException e) {
 			log.error("JWT claims string is empty: {}", e.getMessage());
-			return false;
+			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
 		}
 	}
 
