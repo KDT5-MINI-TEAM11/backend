@@ -1,10 +1,11 @@
 package fastcampus.scheduling._core.util;
 
 import fastcampus.scheduling.jwt.exception.JwtExceptionMessage;
-import io.jsonwebtoken.JwtException;
+import fastcampus.scheduling.jwt.exception.UnauthorizedException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,8 @@ public class CookieProvider {
 	public ResponseCookie generateRefreshTokenCookie(String refreshToken) {
 		return ResponseCookie.from("refresh-token", refreshToken)
 				.httpOnly(true)
-				.secure(true)
+				//.secure(true)
+				.secure(false)
 				.path("/")
 				.maxAge(Long.parseLong(refreshTokenExpiredTime))
 				.build();
@@ -34,12 +36,12 @@ public class CookieProvider {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("refresh_token")) {
+				if (cookie.getName().equals("refresh-token")) {
 					return cookie.getValue();
 				}
 			}
 		}
-		throw new JwtException(JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
+		throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
 	}
 
 	public Cookie of(ResponseCookie responseCookie) {
