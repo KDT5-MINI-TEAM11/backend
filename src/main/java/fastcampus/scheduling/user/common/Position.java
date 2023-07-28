@@ -1,14 +1,22 @@
 package fastcampus.scheduling.user.common;
 
 import java.util.Objects;
+import lombok.Getter;
 
+@Getter
 public enum Position {
-    //임시
-    LEVEL1,
-    LEVEL2,
-    LEVEL3,
-    LEVEL4,
-    MANAGER;
+
+    LEVEL1(15),
+    LEVEL2(18),
+    LEVEL3(21),
+    LEVEL4(24),
+    MANAGER(27);
+
+    private final int totalVacation;
+
+    Position(int totalVacation) {
+        this.totalVacation = totalVacation;
+    }
 
     public static Position from(String name) {
         for (Position role : Position.values()) {
@@ -18,4 +26,5 @@ public enum Position {
         throw new RuntimeException();
         //throw new Exception500("권한 매칭 오류");
     }
+
 }
