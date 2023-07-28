@@ -1,6 +1,7 @@
 package fastcampus.scheduling.user.dto;
 
 import fastcampus.scheduling.user.common.Position;
+import fastcampus.scheduling.user.dto.UserResponse.GetMyPageDTO;
 import fastcampus.scheduling.user.user.model.User;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -71,9 +72,6 @@ public class UserRequest {
     public static class UpdateDTO {
 
         @NotBlank
-        private String userId;
-
-        @NotBlank
         private String userName;
 
         @NotNull
@@ -87,5 +85,15 @@ public class UserRequest {
 
         @NotNull
         private String phoneNumber;
+
+        public static UpdateDTO from(User user) {
+            return UpdateDTO.builder()
+                .userName(user.getUserName())
+                .userPassword(user.getUserPassword())
+                .userEmail(user.getUserEmail())
+                .profileThumbUrl(user.getProfileThumbUrl())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
+        }
     }
 }
