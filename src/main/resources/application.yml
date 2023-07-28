@@ -6,11 +6,6 @@ server:
       force: true
 
 spring:
-  security:
-    user:
-      name: admin
-      password: 8a2e8626-fdb1-4f37-8fe9-1e23d3a62601
-
   datasource:
     url: jdbc:h2:mem:test;MODE=MySQL
     driver-class-name: org.h2.Driver
@@ -41,7 +36,6 @@ spring:
         show_sql: true
 #    open-in-view: true
 
-
   mail:
     host: smtp.gmail.com
     port: 587
@@ -56,4 +50,14 @@ spring:
           starttls:
             enable: true
 
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token:
+    expiration: ${JWT_ACCESS_EXPIRATION_MIN}
+  refresh-token:
+    expiration: ${JWT_REFRESH_EXPIRATION_MIN}
 
+logging:
+  level:
+    '[fastcampus.scheduling]': DEBUG
+    '[org.hibernate.type]': TRACE
