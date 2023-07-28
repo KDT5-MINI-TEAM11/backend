@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 public class RefreshToken {
 
 	@Id
-	private String userId;
+	private Long userId;
 	private String refreshTokenId;
 
-	public static RefreshToken of(String userId, String refreshTokenId) {
+	public static RefreshToken of(Long userId, String refreshTokenId) {
 		RefreshToken refreshToken = new RefreshToken();
 		refreshToken.userId = userId;
 		refreshToken.refreshTokenId = refreshTokenId;
