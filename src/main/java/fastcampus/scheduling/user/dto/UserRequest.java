@@ -1,11 +1,14 @@
 package fastcampus.scheduling.user.dto;
 
 import fastcampus.scheduling.user.common.Position;
+import fastcampus.scheduling.user.dto.UserResponse.GetMyPageDTO;
 import fastcampus.scheduling.user.user.model.User;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -59,5 +62,34 @@ public class UserRequest {
 
         @NotBlank
         private String password;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class UpdateDTO {
+
+        @NotNull
+        private String userPassword;
+
+        @NotNull
+        private String userEmail;
+
+        @NotNull
+        private String profileThumbUrl;
+
+        @NotNull
+        private String phoneNumber;
+
+        public static UpdateDTO from(User user) {
+            return UpdateDTO.builder()
+                .userPassword(user.getUserPassword())
+                .userEmail(user.getUserEmail())
+                .profileThumbUrl(user.getProfileThumbUrl())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
+        }
     }
 }
