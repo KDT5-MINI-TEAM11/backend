@@ -72,6 +72,9 @@ public class UserRequest {
     public static class UpdateDTO {
 
         @NotNull
+        private String userPassword;
+
+        @NotNull
         private String userEmail;
 
         @NotNull
@@ -82,6 +85,7 @@ public class UserRequest {
 
         public static UpdateDTO from(User user) {
             return UpdateDTO.builder()
+                .userPassword(user.getUserPassword())
                 .userEmail(user.getUserEmail())
                 .profileThumbUrl(user.getProfileThumbUrl())
                 .phoneNumber(user.getPhoneNumber())

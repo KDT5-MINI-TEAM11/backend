@@ -17,10 +17,11 @@ public class UserService {
             .orElseThrow(() -> new IllegalStateException("유저를 찾을 수 없습니다."));
     }
 
-    public User updateUser(Long id, String phoneNumber, String profileThumbUrl) {
+    public User updateUser(Long id, String userPassword,String phoneNumber, String profileThumbUrl) {
         User user = userRepository.findById(id)
             .orElseThrow(() -> new IllegalStateException("유저를 찾을 수 없습니다."));
 
+        user.setUserPassword(userPassword);
         user.setPhoneNumber(phoneNumber);
         user.setProfileThumbUrl(profileThumbUrl);
 
