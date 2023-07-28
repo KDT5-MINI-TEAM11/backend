@@ -4,9 +4,10 @@ import java.util.Objects;
 
 public enum Position {
     //임시
-    INTERN,
-    STAFF,
-    ASSISTANT_MANAGER,
+    LEVEL1,
+    LEVEL2,
+    LEVEL3,
+    LEVEL4,
     MANAGER;
 
     public static Position from(String name) {
