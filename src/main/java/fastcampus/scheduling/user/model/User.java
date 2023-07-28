@@ -1,4 +1,4 @@
-package fastcampus.scheduling.user.user.model;
+package fastcampus.scheduling.user.model;
 
 
 import fastcampus.scheduling.user.common.Position;
@@ -52,7 +52,7 @@ public class User {
     private String phoneNumber;
 
     @Column(nullable = false)
-    private Integer remainingVacation;
+    private Integer usedVacation;
 
     @CreationTimestamp
     private Timestamp createdAt;

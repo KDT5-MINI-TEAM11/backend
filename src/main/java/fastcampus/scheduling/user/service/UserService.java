@@ -1,8 +1,10 @@
-package fastcampus.scheduling.user.user.service;
+package fastcampus.scheduling.user.service;
 
 import fastcampus.scheduling._core.security.exception.AuthExceptionMessage;
-import fastcampus.scheduling.user.user.model.User;
-import fastcampus.scheduling.user.user.repository.UserRepository;
+import fastcampus.scheduling.user.exception.UserExceptionMessage;
+import fastcampus.scheduling.user.exception.UserNotExistException;
+import fastcampus.scheduling.user.model.User;
+import fastcampus.scheduling.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +28,10 @@ public class UserService implements UserDetailsService {
     authorities.add(new SimpleGrantedAuthority(user.getPosition().name()));
     //set name as userId(table pk)
     return new org.springframework.security.core.userdetails.User(user.getId().toString(), user.getUserPassword(), authorities);
+  }
+
+  public User getUserById(Long userId) {
+    return userRepository.findById(userId).orElseThrow(() -> new UserNotExistException(
+        UserExceptionMessage.USER_NOT_FOUND_EXCEPTION.getMessage()));
   }
 }
