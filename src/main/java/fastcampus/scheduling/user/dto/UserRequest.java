@@ -1,7 +1,6 @@
 package fastcampus.scheduling.user.dto;
 
 import fastcampus.scheduling.user.common.Position;
-
 import fastcampus.scheduling.user.model.User;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
