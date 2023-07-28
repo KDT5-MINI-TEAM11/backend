@@ -51,8 +51,8 @@ public class User {
     @Column(unique = true, nullable = false, length = 20)
     private String phoneNumber;
 
-    //@Column(nullable = false)
-    private Integer remainingVacation;
+    @Column(nullable = false)
+    private Integer usedVacation;
 
     @CreationTimestamp
     private Timestamp createdAt;
