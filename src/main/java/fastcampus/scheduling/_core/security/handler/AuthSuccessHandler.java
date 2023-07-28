@@ -5,14 +5,13 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fastcampus.scheduling._core.security.dto.SigninResponse;
 import fastcampus.scheduling._core.util.ApiResponse;
 import fastcampus.scheduling._core.util.CookieProvider;
 import fastcampus.scheduling._core.util.JwtTokenProvider;
 import fastcampus.scheduling.jwt.service.RefreshTokenServiceImpl;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +42,7 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
         //username is overwrites at customAuthenticationProvider
         String userId = user.getUsername();
         String accessToken = jwtTokenProvider.generateJwtAccessToken(userId, request.getRequestURI(), roles);
-        String refreshToken = jwtTokenProvider.generateJwtRefreshToken();
+        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId);
         refreshTokenService.updateRefreshToken(Long.valueOf(userId), jwtTokenProvider.getRefreshTokenId(refreshToken));
 
         ResponseCookie responseCookie = cookieProvider.generateRefreshTokenCookie(refreshToken);
@@ -52,10 +51,10 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
         response.setStatus(SC_OK);
         response.setContentType(APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("utf-8");
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("accessToken", accessToken);
 
-        new ObjectMapper().writeValue(response.getOutputStream(), ApiResponse.success(responseBody));
+        SigninResponse signinResponse = SigninResponse.builder().accessToken(accessToken).build();
+
+        new ObjectMapper().writeValue(response.getOutputStream(), ApiResponse.success(signinResponse));
     }
 
 }

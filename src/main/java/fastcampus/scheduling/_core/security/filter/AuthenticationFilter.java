@@ -36,7 +36,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
             SigninRequest signinRequest = objectMapper.readValue(request.getInputStream(), SigninRequest.class);
-            return new UsernamePasswordAuthenticationToken(signinRequest.getUserEmail(), signinRequest.getUserPassword());
+            String userEmail = signinRequest.getUserEmail();
+            String userPassword = signinRequest.getUserPassword();
+            if (userEmail == null || userPassword == null) {
+                throw new FieldMissingException(
+                    AuthExceptionMessage.INVALID_REQUEST.getMessage());
+            }
+            return new UsernamePasswordAuthenticationToken(userEmail, userPassword);
         } catch (IOException exception) {
             exception.printStackTrace();
             throw new FieldMissingException(AuthExceptionMessage.INVALID_REQUEST.getMessage());

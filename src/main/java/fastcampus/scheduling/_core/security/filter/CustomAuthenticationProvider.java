@@ -1,7 +1,7 @@
 package fastcampus.scheduling._core.security.filter;
 
 import fastcampus.scheduling._core.security.exception.AuthExceptionMessage;
-import fastcampus.scheduling.user.user.service.UserService;
+import fastcampus.scheduling.user.service.UserService;
 import javax.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
