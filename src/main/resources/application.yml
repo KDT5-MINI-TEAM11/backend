@@ -6,36 +6,6 @@ server:
       force: true
 
 spring:
-  datasource:
-    url: jdbc:h2:mem:test;MODE=MySQL
-    driver-class-name: org.h2.Driver
-    username: fc11
-    password:
-  h2:
-    console:
-      enabled: true
-  output:
-    ansi:
-      enabled: always
-
-#    datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url:
-#    username:
-#    password:
-
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create-drop
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
-#    open-in-view: true
-
   mail:
     host: smtp.gmail.com
     port: 587
@@ -50,6 +20,73 @@ spring:
           starttls:
             enable: true
 
+logging:
+  level:
+    '[fastcampus.scheduling]': DEBUG
+    '[org.hibernate.type]': TRACE
+---
+
+spring:
+  profiles:
+    default: local
+
+  datasource:
+    url: jdbc:h2:mem:test;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: fc11
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        #open-in-view: true
+
+  h2:
+    console:
+      enabled: true
+  output:
+    ansi:
+      enabled: always
+
+jwt:
+  secret-key: secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey
+  access-token:
+    expiration: 1800000 #30 min
+  refresh-token:
+    expiration: 86400000 #24 hour
+
+---
+# for dev
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: mysql_url
+    username: ${MYSQL_ID}
+    password: ${MYSQL_PASSWORD}
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        #open-in-view: true
+
 jwt:
   secret-key: ${JWT_SECRET_KEY}
   access-token:
@@ -58,6 +95,43 @@ jwt:
     expiration: ${JWT_REFRESH_EXPIRATION_MIN}
 
 logging:
-  level:
-    '[fastcampus.scheduling]': DEBUG
-    '[org.hibernate.type]': TRACE
+  file:
+    path: ./logs
+    name: app-dev
+
+---
+
+#for prod
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: mysql_url
+    username: ${MYSQL_ID}
+    password: ${MYSQL_PASSWORD}
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        #open-in-view: true
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token:
+    expiration: ${JWT_ACCESS_EXPIRATION_MIN}
+  refresh-token:
+    expiration: ${JWT_REFRESH_EXPIRATION_MIN}
+
+logging:
+  file:
+    path: ./logs
+    name: app-prod
