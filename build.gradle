@@ -39,6 +39,22 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// JJWT
+	// JJWT API
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+
+	// JJWT Implementation
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+
+	// JJWT JSON
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+}
+jar {
+	manifest {
+		attributes 'Main-Class': 'fastcampus.scheduling.SchedulingApplication'
+	}
+
 }
 
 tasks.named('test') {
