@@ -29,7 +29,7 @@ public class UserController {
 
         Long userId = Long.valueOf(
 						SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        User user = userService.getUserById(userId);
+        User user = userService.findByUserId(userId);
 
         int totalVacation = user.getPosition().getTotalVacation();
         int usedVacation = user.getUsedVacation();
