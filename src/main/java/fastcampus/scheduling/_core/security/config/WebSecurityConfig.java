@@ -54,8 +54,7 @@ public class WebSecurityConfig {
 				.authorizeRequests()
 				.antMatchers(
 						"/h2-console/**",
-						"/api/v1/auth/siginin",
-						"/api/v1/auth/refresh-token"
+						"/api/v1/auth/**"
 				)
 				.permitAll()
 				.anyRequest().authenticated()
