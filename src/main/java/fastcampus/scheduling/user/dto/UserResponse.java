@@ -1,6 +1,7 @@
 package fastcampus.scheduling.user.dto;
 
 import fastcampus.scheduling.user.common.Position;
+
 import fastcampus.scheduling.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,14 +10,12 @@ public class UserResponse {
 
     @Getter
     @Builder
-    public static class JoinDTO {
+    public static class SignUpDTO {
+        private String accessToken;
 
-        private String userEmail;
-
-
-        public static JoinDTO from(User user) {
-            return JoinDTO.builder()
-                .userEmail(user.getUserEmail())
+        public static SignUpDTO from(String accessToken) { //todo token객체로
+            return SignUpDTO.builder()
+                .accessToken(accessToken)
                 .build();
         }
     }
