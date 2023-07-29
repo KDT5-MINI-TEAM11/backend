@@ -1,7 +1,12 @@
 package fastcampus.scheduling._core.util;
 
-import fastcampus.scheduling.jwt.exception.JwtExceptionMessage;
-import fastcampus.scheduling.jwt.exception.UnauthorizedException;
+import static fastcampus.scheduling._core.errors.ErrorMessage.INNER_SERVER_ERROR;
+import static fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_EXPIRED;
+import static fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_NOT_VALID;
+import static fastcampus.scheduling._core.errors.ErrorMessage.UN_AUTHORIZED;
+
+import fastcampus.scheduling._core.errors.exception.Exception401;
+import fastcampus.scheduling._core.errors.exception.Exception500;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -10,12 +15,16 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -60,10 +69,6 @@ public class JwtTokenProvider {
 		return getClaimsFromJwtToken(token).get("value").toString();
 	}
 
-	public Date getExpiredTime(String token) {
-		return getClaimsFromJwtToken(token).getExpiration();
-	}
-
 	public List<String> getRoles(String token) {
 		return (List<String>) getClaimsFromJwtToken(token).get("roles");
 	}
@@ -73,12 +78,15 @@ public class JwtTokenProvider {
 			return true;
 		} catch (ExpiredJwtException exception) {
 			log.error("JWT token is expired: {}", exception.getMessage());
-			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_EXPIRED.getMessage());
+			throw new Exception401(TOKEN_EXPIRED);
 		} catch (JwtException exception) {
-			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
+			throw new Exception401(TOKEN_NOT_VALID);
 		} catch (IllegalArgumentException e) {
 			log.error("JWT claims string is empty: {}", e.getMessage());
-			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
+			throw new Exception401(TOKEN_NOT_VALID);
+		} catch (Exception exception) {
+			log.error("Unexpected Error at validateJwtToken");
+			throw new Exception500(INNER_SERVER_ERROR);
 		}
 	}
 
@@ -102,5 +110,22 @@ public class JwtTokenProvider {
 				.signWith(getSignInKey(), SignatureAlgorithm.HS512)
 				.setIssuer(uri)
 				.compact();
+	}
+
+	public void setSecurityAuthentication(String userId, String accessToken) {
+		if (userId == null || accessToken.isEmpty()) {
+			throw new Exception401(UN_AUTHORIZED);
+		}
+		List<String> roles = getRoles(accessToken);
+
+		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+		for (String role : roles) {
+			authorities.add(new SimpleGrantedAuthority(role));
+		}
+
+		Authentication authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+		//Set Authentication to SecurityContextHolder
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 }

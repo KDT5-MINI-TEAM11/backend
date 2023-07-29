@@ -1,81 +1,107 @@
 package fastcampus.scheduling.jwt.service;
 
+import static fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_NOT_VALID;
+import static fastcampus.scheduling._core.errors.ErrorMessage.USER_NOT_FOUND;
+
+import fastcampus.scheduling._core.errors.exception.Exception401;
 import fastcampus.scheduling._core.util.JwtTokenProvider;
 import fastcampus.scheduling.jwt.dto.RefreshAccessTokenDto;
-import fastcampus.scheduling.jwt.exception.JwtExceptionMessage;
-import fastcampus.scheduling.jwt.exception.UnauthorizedException;
 import fastcampus.scheduling.jwt.model.RefreshToken;
 import fastcampus.scheduling.jwt.repository.RefreshTokenRepository;
-import fastcampus.scheduling.user.exception.UserExceptionMessage;
-import fastcampus.scheduling.user.exception.UserNotExistException;
 import fastcampus.scheduling.user.model.User;
 import fastcampus.scheduling.user.repository.UserRepository;
+import fastcampus.scheduling.user.service.UserService;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
-	private final UserDetailsService userDetailsService;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserRepository userRepository;
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final UserService userService;
+
+	@Override
+	public void updateRefreshToken(String refreshToken) {
+		Long userId = Long.valueOf(jwtTokenProvider.getUserId(refreshToken));
+		RefreshToken findRefreshToken = findRefreshToken(userId, refreshToken);
+		findRefreshToken.updateRefreshTokenId(String.valueOf(UUID.randomUUID()));
+		refreshTokenRepository.save(findRefreshToken);
+	}
 
 	@Transactional
 	@Override
-	public void updateRefreshToken(Long id, String uuid) {
-		User user = userRepository.findById(id)
-				.orElseThrow(() -> new UserNotExistException("User Id : " + id + " " + UserExceptionMessage.USER_NOT_FOUND_EXCEPTION));
-
-		refreshTokenRepository.save(RefreshToken.of(id, uuid));
+	public void saveRefreshToken(Long id, String uuid) {
+		Optional<RefreshToken> findRefreshTokenOpt = refreshTokenRepository.findByUserId(id);
+		if (findRefreshTokenOpt.isEmpty()) {
+			refreshTokenRepository.save(RefreshToken.of(id, uuid));
+			return;
+		}
+		RefreshToken findRefreshToken = findRefreshTokenOpt.get();
+		findRefreshToken.updateRefreshTokenId(uuid);
+		refreshTokenRepository.save(findRefreshToken);
 	}
 
 	@Override
 	public RefreshAccessTokenDto refreshAccessToken(String refreshToken) {
-		String userId = jwtTokenProvider.getUserId(refreshToken);
-		revokeToken(refreshToken);
-		User findUser = userRepository.findById(Long.valueOf(userId))
-				.orElseThrow(() -> new UserNotExistException(
-						"User Id : " + userId + " " + UserExceptionMessage.USER_NOT_FOUND_EXCEPTION.getMessage()));
+		try {
+			String userId = jwtTokenProvider.getUserId(refreshToken);
 
-		Authentication authentication = getAuthentication(findUser.getUserEmail());
-		List<String> roles = authentication.getAuthorities()
-				.stream().map(GrantedAuthority::getAuthority).toList();
+			User findUser = userRepository.findById(Long.valueOf(userId))
+					.orElseThrow(() -> new Exception401(
+							"User Id : " + userId + " " + USER_NOT_FOUND));
 
-		String newAccessToken = jwtTokenProvider.generateJwtAccessToken(userId, "/refresh-token", roles);
+			jwtTokenProvider.validateJwtToken(refreshToken);
+			updateRefreshToken(refreshToken);
 
-		return RefreshAccessTokenDto.builder()
-				.accessToken(newAccessToken)
-				.build();
+			Authentication authentication = getAuthentication(findUser.getUserEmail());
+			List<String> roles = authentication.getAuthorities()
+					.stream().map(GrantedAuthority::getAuthority).toList();
+
+			String newAccessToken = jwtTokenProvider.generateJwtAccessToken(userId, "/refresh-token",
+					roles);
+
+			return RefreshAccessTokenDto.builder()
+					.accessToken(newAccessToken)
+					.build();
+		} catch (Exception exception) {
+			throw new Exception401(TOKEN_NOT_VALID);
+		}
+
 	}
 
 	@Transactional
 	@Override
 	public void revokeToken(String refreshToken) {
 		String userId = jwtTokenProvider.getUserId(refreshToken);
-		RefreshToken findRefreshToken = refreshTokenRepository.findById(Long.valueOf(userId))
-				.orElseThrow(
-						() -> new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage()));
-
-		String findRefreshTokenId = findRefreshToken.getRefreshTokenId();
-		if (!jwtTokenProvider.equalRefreshTokenId(findRefreshTokenId, refreshToken)) {
-			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
-		}
-		refreshTokenRepository.delete(findRefreshToken);
+		refreshTokenRepository.deleteByUserId(Long.valueOf(userId));
 	}
 
 	public Authentication getAuthentication(String email) {
-		UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-		return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+		UserDetails userDetails = userService.loadUserByUsername(email);
+		return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
+				userDetails.getAuthorities());
+	}
+
+	public RefreshToken findRefreshToken(Long userId, String refreshToken) {
+		RefreshToken findRefreshToken = refreshTokenRepository.findByUserId(userId)
+				.orElseThrow(
+						() -> new Exception401(TOKEN_NOT_VALID));
+
+		String findRefreshTokenId = findRefreshToken.getRefreshTokenId();
+		if (!jwtTokenProvider.equalRefreshTokenId(findRefreshTokenId, refreshToken)) {
+			throw new Exception401(TOKEN_NOT_VALID);
+		}
+		return findRefreshToken;
 	}
 }

@@ -1,10 +1,10 @@
 package fastcampus.scheduling.jwt.service;
 
+import static fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_NOT_VALID;
+
+import fastcampus.scheduling._core.errors.exception.Exception401;
 import fastcampus.scheduling._core.util.JwtTokenProvider;
-import fastcampus.scheduling.jwt.exception.JwtExceptionMessage;
-import fastcampus.scheduling.jwt.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,13 +17,12 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 	public String getAccessToken(String authorizationHeader) {
 
 		if (authorizationHeader == null) {
-			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED,
-					JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
+			throw new Exception401(TOKEN_NOT_VALID);
 		}
 		String accessToken = authorizationHeader.replace("Bearer ", "");
 
 		if (!jwtTokenProvider.validateJwtToken(accessToken)) {
-			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED, JwtExceptionMessage.TOKEN_NOT_VALID.getMessage());
+			throw new Exception401(TOKEN_NOT_VALID);
 		}
 		return accessToken;
 	}
