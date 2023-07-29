@@ -17,31 +17,26 @@ public class GlobalExceptionAdvice {
 	protected ResponseEntity<ApiResponse.Error> handleHttpRequestMethodNotSupportedException(
 			HttpRequestMethodNotSupportedException exception) {
 		log.error("HandleHttpRequestMethodNotSupportedException", exception);
+		ApiResponse.Error errorResponse = ApiResponse.error(exception.getMessage(), HttpStatus.BAD_REQUEST).getError();
 
-		return new ResponseEntity(ApiResponse.error(exception.getMessage(), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(JwtException.class)
 	protected ResponseEntity<ApiResponse.Error> jwtException(
 			JwtException exception) {
 		log.error("jwtException", exception);
+		ApiResponse.Error errorResponse = ApiResponse.error(exception.getMessage(), HttpStatus.UNAUTHORIZED).getError();
 
-		return new ResponseEntity(ApiResponse.error(exception.getMessage(), HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
-	}
-
-	@ExceptionHandler(CustomException.class)
-	protected ResponseEntity<ApiResponse.Error> customException(
-			CustomException exception) {
-		log.error("customException", exception);
-
-		return new ResponseEntity(ApiResponse.error(exception.getMessage(), exception.getStatus()), exception.getStatus());
+		return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
 	}
 
 	@ExceptionHandler(Exception.class)
 	protected ResponseEntity<ApiResponse.Error> exception(
 			Exception exception) {
 		log.error("Exception", exception);
+		ApiResponse.Error errorResponse = ApiResponse.error(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR).getError();
 
-		return new ResponseEntity(ApiResponse.error(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
