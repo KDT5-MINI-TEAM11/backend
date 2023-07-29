@@ -2,12 +2,12 @@ package fastcampus.scheduling._core.security.filter;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fastcampus.scheduling._core.security.exception.AuthExceptionMessage;
+import fastcampus.scheduling._core.errors.exception.FieldMissExceptionException;
 import fastcampus.scheduling._core.security.dto.SigninRequest;
-import fastcampus.scheduling._core.security.exception.FieldMissingException;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
+@Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     public AuthenticationFilter(AuthenticationManager authenticationManager) {
@@ -27,6 +27,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         if (!request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
+
         authenticationToken = generateAuthenticationToken(request);
         return this.getAuthenticationManager().authenticate(authenticationToken);
     }
@@ -39,13 +40,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             String userEmail = signinRequest.getUserEmail();
             String userPassword = signinRequest.getUserPassword();
             if (userEmail == null || userPassword == null) {
-                throw new FieldMissingException(
-                    AuthExceptionMessage.INVALID_REQUEST.getMessage());
+                throw new FieldMissExceptionException();
             }
             return new UsernamePasswordAuthenticationToken(userEmail, userPassword);
         } catch (IOException exception) {
-            exception.printStackTrace();
-            throw new FieldMissingException(AuthExceptionMessage.INVALID_REQUEST.getMessage());
+            log.error(exception.getMessage());
+            throw new FieldMissExceptionException();
         }
 
     }

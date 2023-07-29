@@ -39,11 +39,11 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
             .map(GrantedAuthority::getAuthority)
             .toList();
         //user.getUsername will return User's id not email
-        //username is overwrites at customAuthenticationProvider
+        //username will overwrite at customAuthenticationProvider
         String userId = user.getUsername();
         String accessToken = jwtTokenProvider.generateJwtAccessToken(userId, request.getRequestURI(), roles);
         String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId);
-        refreshTokenService.updateRefreshToken(Long.valueOf(userId), jwtTokenProvider.getRefreshTokenId(refreshToken));
+        refreshTokenService.saveRefreshToken(Long.valueOf(userId), jwtTokenProvider.getRefreshTokenId(refreshToken));
 
         ResponseCookie responseCookie = cookieProvider.generateRefreshTokenCookie(refreshToken);
         Cookie cookie = cookieProvider.of(responseCookie);

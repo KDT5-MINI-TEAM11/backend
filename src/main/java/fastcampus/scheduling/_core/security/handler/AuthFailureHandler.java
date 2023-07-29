@@ -1,7 +1,7 @@
 package fastcampus.scheduling._core.security.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fastcampus.scheduling._core.security.exception.FieldMissingException;
+import fastcampus.scheduling._core.errors.exception.InValidSigninRequestException;
 import fastcampus.scheduling._core.util.ApiResponse;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +17,7 @@ public class AuthFailureHandler implements AuthenticationFailureHandler {
                                         AuthenticationException exception) throws IOException {
         String message = exception.getMessage();
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-        if (exception instanceof FieldMissingException) {
+        if (exception instanceof InValidSigninRequestException) {
             status = HttpStatus.BAD_REQUEST;
         }
         response.setContentType("application/json");

@@ -1,11 +1,15 @@
 package fastcampus.scheduling._core.security.handler;
 
+import static fastcampus.scheduling._core.errors.ErrorMessage.INNER_SERVER_ERROR;
+import static fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_NOT_VALID;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fastcampus.scheduling._core.errors.exception.Exception401;
 import fastcampus.scheduling._core.exception.CustomException;
 import fastcampus.scheduling._core.util.ApiResponse;
+import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,17 +23,31 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class CustomExceptionHandler extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-			FilterChain filterChain) throws ServletException, IOException {
+			FilterChain filterChain) throws IOException {
 		try {
 			filterChain.doFilter(request, response);
-		} catch (CustomException exception) {
-			HttpStatus status = exception.getStatus();
-			String message = exception.getMessage();
+		} catch (Exception exception) {
+			HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+			String message = INNER_SERVER_ERROR;
+			ApiResponse.Result<Object> responseBody = ApiResponse.error(message, status);
+			if (exception instanceof CustomException) {
+				status = ((CustomException) exception).getStatus();
+				message = exception.getMessage();
+				responseBody = ApiResponse.error(message, status);
+			}
+			if (exception instanceof Exception401) {
+				responseBody =  ((Exception401) exception).body();
+			}
+			if (exception instanceof JwtException) {
+				status = HttpStatus.UNAUTHORIZED;
+				message = TOKEN_NOT_VALID;
+				responseBody = ApiResponse.error(message, status);
+			}
 
-			log.warn("CustomException occurred {}, {}", status, message);
+			log.warn("Exception occurred {}, {}", status, message);
 			response.setContentType("application/json");
 			response.setStatus(status.value());
-			new ObjectMapper().writeValue(response.getOutputStream(), ApiResponse.error(message, status));
+			new ObjectMapper().writeValue(response.getOutputStream(), responseBody);
 		}
 
 	}

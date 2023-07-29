@@ -1,6 +1,7 @@
 package fastcampus.scheduling._core.security.filter;
 
-import fastcampus.scheduling._core.security.exception.AuthExceptionMessage;
+import static fastcampus.scheduling._core.errors.ErrorMessage.MISMATCH_SIGN_IN_INFO;
+
 import fastcampus.scheduling.user.service.UserService;
 import javax.annotation.Resource;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class CustomAuthenticationProvider implements org.springframework.securit
 
         org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) userService.loadUserByUsername(userEmail);
         if (!passwordEncoder.matches(userPassword, user.getPassword())) {
-            throw new BadCredentialsException(AuthExceptionMessage.MISMATCH_SIGN_IN_INFO.getMessage());
+            throw new BadCredentialsException(MISMATCH_SIGN_IN_INFO);
         }
         // set credentials null
         // credentials will remove by spring
