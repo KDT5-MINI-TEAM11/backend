@@ -5,6 +5,7 @@ import static fastcampus.scheduling._core.errors.ErrorMessage.NOT_FOUND_USER_FOR
 import static fastcampus.scheduling._core.errors.ErrorMessage.USER_NOT_FOUND;
 
 import fastcampus.scheduling._core.errors.ErrorMessage;
+import fastcampus.scheduling._core.errors.exception.DuplicatePhoneNumberException;
 import fastcampus.scheduling._core.errors.exception.Exception400;
 import fastcampus.scheduling._core.errors.exception.Exception401;
 import fastcampus.scheduling._core.errors.exception.Exception500;
@@ -67,8 +68,9 @@ public class UserService implements UserDetailsService {
 
         return userRepository.save(user);
     }
+
     @Transactional
-    public UserResponse.SignUpDTO save(UserRequest.SignUpDTO signUpDTO){
+    public UserResponse.SignUpDTO save(@NonNull HttpServletRequest request, UserRequest.SignUpDTO signUpDTO) throws IllegalArgumentException, OptimisticLockingFailureException {
         if(signUpDTO == null) throw new Exception500(ErrorMessage.EMPTY_DATA_FOR_USER_SIGNUP);
 
         User user = signUpDTO.toEntityWithHashPassword(passwordEncoder);
@@ -76,29 +78,29 @@ public class UserService implements UserDetailsService {
 
         String accessToken = getAccessToken(signUpDTO.getUserName(), signUpDTO.getUserEmail(), request.getRequestURI()); //todo uri수정
 
-        Long id = persistencUser.getId(); //임시
-        String userName = persistencUser.getUserName();
-        String userInfo = id + userName;
+        if(accessToken == null || accessToken.isEmpty())
+            throw new Exception401(ErrorMessage.TOKEN_NOT_EXISTS);
 
-        String accessToken = id + userName;
         return UserResponse.SignUpDTO.from(accessToken);
     }
 
 
     @Transactional(readOnly = true)
     public void checkPhone(UserRequest.CheckPhoneDTO checkPhoneDTO) {
+        if(checkPhoneDTO == null) throw new Exception500(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PhoneNumber);
         validatePhone(checkPhoneDTO);
-        userRepository.findByPhoneNumber(checkPhoneDTO.getPhoneNumber());
     }
 
-    private static void validatePhone(UserRequest.CheckPhoneDTO checkPhoneDTO) {
-        //String regex = "/^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\\.[A-Za-z0-9\\-]+/";
+    @Transactional(readOnly = true)
+    public void validatePhone(UserRequest.CheckPhoneDTO checkPhoneDTO) {
         String phoneNumber = checkPhoneDTO.getPhoneNumber();
+        Optional<User> userOptional = userRepository.findByPhoneNumber(phoneNumber);
 
-        if(checkPhoneDTO == null || checkPhoneDTO.getPhoneNumber().isBlank())
+        if(phoneNumber.isBlank())
             throw new Exception400(phoneNumber, ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PhoneNumber);
-//        if (!phoneNumber.matches(regex))
-//            throw new Exception400(phoneNumber, ErrorMessage.INVALID_PhoneNumber);
+        if(userOptional.isPresent())
+            throw new DuplicatePhoneNumberException();
+    }
 
     public String getAccessToken(String userName, String userEmail, String uri){
         Authentication authentication = getAuthentication(userEmail);
