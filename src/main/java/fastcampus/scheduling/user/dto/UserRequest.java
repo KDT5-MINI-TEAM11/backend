@@ -41,6 +41,8 @@ public class UserRequest {
         private String phoneNumber;
 
         private String profileThumbUrl;
+        @NotBlank
+        private Integer usedVacation;
 
         public User toEntityWithHashPassword(PasswordEncoder passwordEncoder) {
             String encodedPassword = passwordEncoder.encode(this.userPassword);
@@ -51,6 +53,7 @@ public class UserRequest {
                 .profileThumbUrl(profileThumbUrl)
                 .position(position)
                 .phoneNumber(phoneNumber)
+                .usedVacation(usedVacation)
                 .build();
         }
     }
