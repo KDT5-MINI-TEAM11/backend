@@ -6,6 +6,7 @@ import fastcampus.scheduling.email.dto.EmailRequest;
 import fastcampus.scheduling.email.dto.EmailResponse;
 import fastcampus.scheduling.email.dto.EmailResponse.AuthEmailDTO;
 import fastcampus.scheduling.email.service.MailService;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class MailApiController {
 
     private final MailService mailService;
     @PostMapping("/api/v1/auth/checkEmail")
-    public ResponseEntity<Result<Object>> checkEmail(@RequestBody EmailRequest.CheckEmailDTO checkEmailDTO, Errors errors) {
+    public ResponseEntity<Result<Object>> checkEmail(@RequestBody @Valid EmailRequest.CheckEmailDTO checkEmailDTO, Errors errors) {
         log.info("/api/v1/auth/checkEmail POST " + checkEmailDTO);
         mailService.checkEmail(checkEmailDTO);
 
@@ -29,7 +30,7 @@ public class MailApiController {
     }
 
     @PostMapping("/api/v1/auth/sendEmail")
-    public ResponseEntity<ApiResponse.Result<EmailResponse.AuthEmailDTO>> sendEmail(@RequestBody EmailRequest.SendEmailDTO sendEmailDTO, Errors errors) {
+    public ResponseEntity<ApiResponse.Result<EmailResponse.AuthEmailDTO>> sendEmail(@RequestBody @Valid EmailRequest.SendEmailDTO sendEmailDTO, Errors errors) {
         log.info("/api/v1/auth/sendEmail POST " + sendEmailDTO);
         AuthEmailDTO authEmail = mailService.sendEmail(sendEmailDTO);
 
