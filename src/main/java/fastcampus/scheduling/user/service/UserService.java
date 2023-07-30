@@ -8,13 +8,22 @@ import fastcampus.scheduling._core.errors.ErrorMessage;
 import fastcampus.scheduling._core.errors.exception.Exception400;
 import fastcampus.scheduling._core.errors.exception.Exception401;
 import fastcampus.scheduling._core.errors.exception.Exception500;
+import fastcampus.scheduling._core.util.JwtTokenProvider;
 import fastcampus.scheduling.user.dto.UserRequest;
 import fastcampus.scheduling.user.dto.UserResponse;
 import fastcampus.scheduling.user.model.User;
 import fastcampus.scheduling.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,6 +38,7 @@ public class UserService implements UserDetailsService {
 
   private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -64,7 +74,7 @@ public class UserService implements UserDetailsService {
         User user = signUpDTO.toEntityWithHashPassword(passwordEncoder);
         User persistencUser = userRepository.save(user);
 
-        //access token을 만들어서 반환해줘야 할듯
+        String accessToken = getAccessToken(signUpDTO.getUserName(), signUpDTO.getUserEmail(), request.getRequestURI()); //todo uri수정
 
         Long id = persistencUser.getId(); //임시
         String userName = persistencUser.getUserName();
@@ -90,5 +100,16 @@ public class UserService implements UserDetailsService {
 //        if (!phoneNumber.matches(regex))
 //            throw new Exception400(phoneNumber, ErrorMessage.INVALID_PhoneNumber);
 
+    public String getAccessToken(String userName, String userEmail, String uri){
+        Authentication authentication = getAuthentication(userEmail);
+        List<String> roles = authentication.getAuthorities()
+            .stream().map(GrantedAuthority::getAuthority).toList();
+        return jwtTokenProvider.generateJwtAccessToken(userName, uri, roles);
+    }
+
+    public Authentication getAuthentication(String email) {
+        UserDetails userDetails = loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
+            userDetails.getAuthorities());
     }
 }
