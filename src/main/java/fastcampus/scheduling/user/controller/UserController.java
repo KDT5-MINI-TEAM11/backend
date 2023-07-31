@@ -44,10 +44,7 @@ public class UserController {
 						SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         User user = userService.findByUserId(userId);
 
-        int totalVacation = user.getPosition().getTotalVacation();
-        int usedVacation = user.getUsedVacation();
-
-        GetUserHeaderDTO getUserHeaderDTO = GetUserHeaderDTO.from(user, usedVacation, totalVacation);
+        GetUserHeaderDTO getUserHeaderDTO = GetUserHeaderDTO.from(user);
 
         return ResponseEntity.ok(ApiResponse.success(getUserHeaderDTO));
     }

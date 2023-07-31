@@ -46,20 +46,16 @@ public class UserResponse {
     @Builder
     public static class GetUserHeaderDTO {
         private String userName;
-        private String userEmail;
         private Position position;
         private String profileThumbNail;
         private int usedVacation;
-        private int totalVacation;
 
-        public static GetUserHeaderDTO from(User user, int usedVacation, int totalVacation) {
+        public static GetUserHeaderDTO from(User user) {
             return GetUserHeaderDTO.builder()
                 .userName(user.getUserName())
-                .userEmail(user.getUserEmail())
                 .position(user.getPosition())
                 .profileThumbNail(user.getProfileThumbUrl())
-                .usedVacation(usedVacation)
-                .totalVacation(totalVacation)
+                .usedVacation(user.getUsedVacation())
                 .build();
         }
 
