@@ -75,8 +75,8 @@ public class UserService implements UserDetailsService {
 
         User user = signUpDTO.toEntityWithHashPassword(passwordEncoder);
         User persistencUser = userRepository.save(user);
-
-        String accessToken = getAccessToken(signUpDTO.getUserName(), signUpDTO.getUserEmail(), request.getRequestURI()); //todo uri수정
+        String userId = persistencUser.getId().toString();
+        String accessToken = generateAccessToken(userId, signUpDTO.getUserEmail(), request.getRequestURI()); //todo uri수정
 
         if(accessToken == null || accessToken.isEmpty())
             throw new Exception401(ErrorMessage.TOKEN_NOT_EXISTS);
@@ -102,11 +102,11 @@ public class UserService implements UserDetailsService {
             throw new DuplicatePhoneNumberException();
     }
 
-    public String getAccessToken(String userName, String userEmail, String uri){
+    public String generateAccessToken(String userId, String userEmail, String uri){
         Authentication authentication = getAuthentication(userEmail);
         List<String> roles = authentication.getAuthorities()
             .stream().map(GrantedAuthority::getAuthority).toList();
-        return jwtTokenProvider.generateJwtAccessToken(userName, uri, roles);
+        return jwtTokenProvider.generateJwtAccessToken(userId, uri, roles);
     }
 
     public Authentication getAuthentication(String email) {
