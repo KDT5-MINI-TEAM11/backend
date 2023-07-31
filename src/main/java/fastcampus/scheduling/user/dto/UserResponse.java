@@ -13,7 +13,7 @@ public class UserResponse {
     public static class SignUpDTO {
         private String accessToken;
 
-        public static SignUpDTO from(String accessToken) { //todo token객체로
+        public static SignUpDTO from(String accessToken) {
             return SignUpDTO.builder()
                 .accessToken(accessToken)
                 .build();
