@@ -32,4 +32,18 @@ public class EmailRequest {
         private String userEmail;
 
     }
+
+    @Getter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CheckEmailAuthDTO {
+
+        @NotBlank
+        @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$") //"/^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\\.[A-Za-z0-9\\-]+/")
+        private String userEmail;
+        @NotBlank
+        private String userEmailAuth;
+
+    }
 }

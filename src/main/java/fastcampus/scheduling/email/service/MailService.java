@@ -9,8 +9,10 @@ import fastcampus.scheduling.email.dto.EmailRequest.SendEmailDTO;
 import fastcampus.scheduling.email.dto.EmailResponse.AuthEmailDTO;
 import fastcampus.scheduling.user.model.User;
 import fastcampus.scheduling.user.repository.UserRepository;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -23,13 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class MailService {
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
-
+    private static Map<String, String> emailAuth = new ConcurrentHashMap<>();
     public static String MAIL_SUBJECT = "인증메일"; //todo 옮기기
 
     public AuthEmailDTO sendEmail(SendEmailDTO sendEmailDTO) throws MailException {
-        if(sendEmailDTO == null) throw new Exception500(ErrorMessage.INVALID_SEND_EMAIL);
+        if(sendEmailDTO == null) throw new Exception500(ErrorMessage.INVALID_SEND_EMAILAUTH);
 
         String authNumber = createCode();
+        emailAuth.put(sendEmailDTO.getTo(), authNumber);
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(sendEmailDTO.getTo());
         message.setSubject(MAIL_SUBJECT);
@@ -45,6 +49,21 @@ public class MailService {
         if(checkEmailDTO == null) throw new Exception500(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAIL);
 
         validateEmail(checkEmailDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean checkEmailAuth(EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO) {
+        if(checkEmailAuthDTO == null) throw new Exception500(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH);
+        Optional<User> userOptional = userRepository.findByUserEmail(checkEmailAuthDTO.getUserEmail());
+        String email = checkEmailAuthDTO.getUserEmail();
+        String emailAuth = checkEmailAuthDTO.getUserEmailAuth();
+
+        if(this.emailAuth.get(email).equals(emailAuth)){
+            this.emailAuth.remove(email);
+            return true;
+        }
+
+        throw new Exception400(checkEmailAuthDTO.getUserEmailAuth(), ErrorMessage.INVALID_SEND_EMAILAUTH);
     }
 
     @Transactional(readOnly = true)
