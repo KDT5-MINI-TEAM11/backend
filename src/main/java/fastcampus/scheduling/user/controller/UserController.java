@@ -1,7 +1,6 @@
 package fastcampus.scheduling.user.controller;
 
 import fastcampus.scheduling._core.util.ApiResponse;
-import fastcampus.scheduling.email.service.MailService;
 import fastcampus.scheduling.user.dto.UserRequest;
 import fastcampus.scheduling.user.dto.UserResponse;
 import fastcampus.scheduling.user.dto.UserResponse.GetMyPageDTO;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
-    private final MailService mailService;
 
     @GetMapping("/api/v1/user/userHeader")
     public ResponseEntity<ApiResponse.Result<GetUserHeaderDTO>> getUserHead() {
