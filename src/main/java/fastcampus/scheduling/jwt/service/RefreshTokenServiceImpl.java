@@ -13,7 +13,6 @@ import fastcampus.scheduling.user.repository.UserRepository;
 import fastcampus.scheduling.user.service.UserService;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -31,12 +30,13 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final UserService userService;
 
+	@Transactional
 	@Override
-	public void updateRefreshToken(String refreshToken) {
-		Long userId = Long.valueOf(jwtTokenProvider.getUserId(refreshToken));
+	public void updateRefreshToken(String userId, String refreshToken, String newRefreshToken) {
 		RefreshToken findRefreshToken = findRefreshToken(userId, refreshToken);
-		findRefreshToken.updateRefreshTokenId(String.valueOf(UUID.randomUUID()));
-		refreshTokenRepository.save(findRefreshToken);
+		String newRefreshTokenId = jwtTokenProvider.getRefreshTokenId(newRefreshToken);
+		findRefreshToken.updateRefreshTokenId(newRefreshTokenId);
+		refreshTokenRepository.save(findRefreshToken).toString();
 	}
 
 	@Transactional
@@ -53,16 +53,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 	}
 
 	@Override
-	public RefreshAccessTokenDto refreshAccessToken(String refreshToken) {
+	public RefreshAccessTokenDto refreshAccessToken(String userId) {
 		try {
-			String userId = jwtTokenProvider.getUserId(refreshToken);
-
 			User findUser = userRepository.findById(Long.valueOf(userId))
 					.orElseThrow(() -> new Exception401(
 							"User Id : " + userId + " " + USER_NOT_FOUND));
-
-			jwtTokenProvider.validateJwtToken(refreshToken);
-			updateRefreshToken(refreshToken);
 
 			Authentication authentication = getAuthentication(findUser.getUserEmail());
 			List<String> roles = authentication.getAuthorities()
@@ -93,8 +88,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 				userDetails.getAuthorities());
 	}
 
-	public RefreshToken findRefreshToken(Long userId, String refreshToken) {
-		RefreshToken findRefreshToken = refreshTokenRepository.findByUserId(userId)
+	public RefreshToken findRefreshToken(String userId, String refreshToken) {
+		RefreshToken findRefreshToken = refreshTokenRepository.findByUserId(Long.valueOf(userId))
 				.orElseThrow(
 						() -> new Exception401(TOKEN_NOT_VALID));
 
