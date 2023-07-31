@@ -1,17 +1,22 @@
 package fastcampus.scheduling.user.controller;
 
 import fastcampus.scheduling._core.util.ApiResponse;
+import fastcampus.scheduling.email.service.MailService;
 import fastcampus.scheduling.user.dto.UserRequest;
 import fastcampus.scheduling.user.dto.UserResponse;
 import fastcampus.scheduling.user.dto.UserResponse.GetMyPageDTO;
 import fastcampus.scheduling.user.dto.UserResponse.GetUserHeaderDTO;
 import fastcampus.scheduling.user.model.User;
 import fastcampus.scheduling.user.service.UserService;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final MailService mailService;
 
     @GetMapping("/api/v1/user/userHeader")
     public ResponseEntity<ApiResponse.Result<GetUserHeaderDTO>> getUserHead() {
@@ -75,5 +81,20 @@ public class UserController {
 
     }
 
+    @PostMapping("/api/v1/auth/signup")
+    public ResponseEntity<ApiResponse.Result<UserResponse.SignUpDTO>> signUp(
+        HttpServletRequest request, @RequestBody @Valid UserRequest.SignUpDTO signUpDTO, Errors errors) {
+        log.info("/api/v1/auth/signup POST " + signUpDTO);
+        UserResponse.SignUpDTO signUpResponse = userService.save(request, signUpDTO); // 중복등은 서비스에서 체크
 
+        return ResponseEntity.ok(ApiResponse.success(signUpResponse));
+    }
+
+    @PostMapping("/api/v1/auth/checkPhoneNumber")
+    public ResponseEntity<ApiResponse.Result<Object>> checkPhoneNumber(@RequestBody @Valid UserRequest.CheckPhoneDTO checkPhoneDTO, Errors erros) {
+        log.info("/api/v1/auth/checkPhoneNumber POST " + checkPhoneDTO);
+        userService.checkPhone(checkPhoneDTO);
+
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
 }
