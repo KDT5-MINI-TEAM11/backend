@@ -70,22 +70,17 @@ public class UserRequest {
     @ToString
     public static class UpdateDTO {
 
-        @NotNull
+        @NotBlank
         private String userPassword;
 
-        @NotNull
-        private String userEmail;
-
-        @NotNull
         private String profileThumbUrl;
 
-        @NotNull
+        @NotBlank
         private String phoneNumber;
 
         public static UpdateDTO from(User user) {
             return UpdateDTO.builder()
                 .userPassword(user.getUserPassword())
-                .userEmail(user.getUserEmail())
                 .profileThumbUrl(user.getProfileThumbUrl())
                 .phoneNumber(user.getPhoneNumber())
                 .build();

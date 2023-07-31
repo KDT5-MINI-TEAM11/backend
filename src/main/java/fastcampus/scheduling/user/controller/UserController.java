@@ -40,7 +40,9 @@ public class UserController {
     }
     @GetMapping("/api/v1/user/info")
     public ResponseEntity<ApiResponse.Result<UserResponse.GetMyPageDTO>> getMyPage() {
-        Long userId = 1L;
+
+        Long userId = Long.valueOf(
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
         User user = userService.findByUserId(userId);
         GetMyPageDTO getMyPageDTO = GetMyPageDTO.from(user);
@@ -51,7 +53,9 @@ public class UserController {
 
     @PutMapping("/api/v1/user/info")
     public ResponseEntity<ApiResponse.Result<UserResponse.GetMyPageDTO>> updateMyPage(@RequestBody UserRequest.UpdateDTO updateDTO) {
-        Long userId = 1L;
+
+        Long userId = Long.valueOf(
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
         String userPassword = updateDTO.getUserPassword();
         String phoneNumber = updateDTO.getPhoneNumber();
