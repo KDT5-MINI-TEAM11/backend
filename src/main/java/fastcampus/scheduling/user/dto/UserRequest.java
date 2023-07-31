@@ -34,14 +34,14 @@ public class UserRequest {
         @Size(min = 2, max = 20)
         private String userName;
 
-        @NotBlank
+        @NotNull
         private Position position;
 
         @NotBlank
         private String phoneNumber;
 
         private String profileThumbUrl;
-        @NotBlank
+        @NotNull
         private Integer usedVacation;
 
         public User toEntityWithHashPassword(PasswordEncoder passwordEncoder) {
