@@ -37,4 +37,12 @@ public class MailApiController {
         return ResponseEntity.ok(ApiResponse.success(authEmail));
     }
 
+    @PostMapping("/api/v1/auth/checkEmailAuth")
+    public ResponseEntity<ApiResponse.Result<Object>> checkEmailAuth(@RequestBody @Valid EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO, Errors errors) {
+        log.info("/api/v1/auth/checkEmailAuth POST " + checkEmailAuthDTO);
+        boolean checkEmailAuth = mailService.checkEmailAuth(checkEmailAuthDTO);
+
+        return ResponseEntity.ok(ApiResponse.success(checkEmailAuth));
+    }
+
 }
