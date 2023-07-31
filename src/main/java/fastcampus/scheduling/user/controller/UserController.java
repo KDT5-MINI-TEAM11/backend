@@ -108,7 +108,7 @@ public class UserController {
         String accessToken = jwtTokenProvider.generateJwtAccessToken(userId, request.getRequestURI(), roles);
         String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId);
         refreshTokenService.saveRefreshToken(Long.valueOf(userId), jwtTokenProvider.getRefreshTokenId(refreshToken));
-        response = cookieProvider.addCookie(response, refreshToken);
+        cookieProvider.addCookie(response, refreshToken);
 
 
         return ResponseEntity.ok(ApiResponse.success(SignUpDTO.from(accessToken)));

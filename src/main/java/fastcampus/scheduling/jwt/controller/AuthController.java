@@ -6,10 +6,8 @@ import fastcampus.scheduling._core.util.JwtTokenProvider;
 import fastcampus.scheduling.jwt.dto.RefreshAccessTokenDto;
 import fastcampus.scheduling.jwt.service.RefreshTokenService;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +23,7 @@ public class AuthController {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	@GetMapping("/v1/auth/refresh-token")
-	public ResponseEntity<ApiResponse.Result<RefreshAccessTokenDto>> refreshToken(HttpServletRequest request) {
+	public ResponseEntity<ApiResponse.Result<RefreshAccessTokenDto>> refreshToken(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = cookieProvider.getRefreshToken(request);
 
 		jwtTokenProvider.validateJwtToken(refreshToken);
@@ -37,14 +35,12 @@ public class AuthController {
 		refreshTokenService.updateRefreshToken(userId, refreshToken, newRefreshToken);
 
 		//set new refresh token to cookie
-		ResponseCookie responseCookie = cookieProvider.generateRefreshTokenCookie(newRefreshToken);
+		cookieProvider.addCookie(response, newRefreshToken);
 
 		//generate new access token
 		RefreshAccessTokenDto refreshAccessTokenDto = refreshTokenService.refreshAccessToken(userId);
 
-		return ResponseEntity.status(HttpStatus.OK)
-				.header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-				.body(ApiResponse.success(refreshAccessTokenDto));
+		return ResponseEntity.ok(ApiResponse.success(refreshAccessTokenDto));
 	}
 
 }
