@@ -61,17 +61,24 @@ public class UserController {
         Long userId = Long.valueOf(
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
-        String userPassword = updateDTO.getUserPassword();
-        String phoneNumber = updateDTO.getPhoneNumber();
-        String profileThumbUrl = updateDTO.getProfileThumbUrl();
-
         User user = userService.findByUserId(userId);
 
-        user.setUserPassword(userPassword);
-        user.setPhoneNumber(phoneNumber);
-        user.setProfileThumbUrl(profileThumbUrl);
+        String userPassword = updateDTO.getUserPassword();
+        if (userPassword != null) {
+            user.setUserPassword(userPassword);
+        }
 
-        User updatedUser = userService.updateUser(userId, userPassword, phoneNumber, profileThumbUrl);
+        String phoneNumber = updateDTO.getPhoneNumber();
+        if (phoneNumber != null) {
+            user.setPhoneNumber(phoneNumber);
+        }
+
+        String profileThumbUrl = updateDTO.getProfileThumbUrl();
+        if (profileThumbUrl != null) {
+            user.setProfileThumbUrl(profileThumbUrl);
+        }
+
+        User updatedUser = userService.updateUser(userId, user.getUserPassword(), user.getPhoneNumber(), user.getProfileThumbUrl());
 
         GetMyPageDTO getMyPageDTO = GetMyPageDTO.from(updatedUser);
 
