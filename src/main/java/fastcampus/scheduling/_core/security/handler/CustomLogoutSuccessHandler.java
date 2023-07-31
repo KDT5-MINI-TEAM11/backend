@@ -4,6 +4,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fastcampus.scheduling._core.security.dto.SignOutResponse;
 import fastcampus.scheduling._core.util.ApiResponse;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +22,10 @@ public class CustomLogoutSuccessHandler implements org.springframework.security.
 		response.setStatus(SC_OK);
 		response.setContentType(APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding("utf-8");
+		SignOutResponse signOutResponse = SignOutResponse.builder()
+				.message("로그아웃이 완료 되었습니다.")
+				.build();
 
-		new ObjectMapper().writeValue(response.getOutputStream(), ApiResponse.success("로그아웃이 완료 되었습니다."));
+		new ObjectMapper().writeValue(response.getOutputStream(), ApiResponse.success(signOutResponse));
 	}
 }
