@@ -53,7 +53,7 @@ public class MailService {
         Optional<User> userOptional = userRepository.findByUserEmail(email);
 
         if(email.isBlank())
-            throw new Exception400(email, ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAIL);
+            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAIL);
         if(userOptional.isPresent())
             throw new DuplicateUserEmailException();
     }
