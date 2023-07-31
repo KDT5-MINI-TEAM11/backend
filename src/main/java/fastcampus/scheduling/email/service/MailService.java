@@ -1,7 +1,5 @@
 package fastcampus.scheduling.email.service;
 
-import static fastcampus.scheduling._core.errors.ErrorMessage.INVALID_SEND_EMAILAUTH;
-
 import fastcampus.scheduling._core.errors.ErrorMessage;
 import fastcampus.scheduling._core.errors.exception.DuplicateUserEmailException;
 import fastcampus.scheduling._core.errors.exception.Exception400;
@@ -28,11 +26,11 @@ public class MailService {
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
     private static Map<String, String> emailAuth = new ConcurrentHashMap<>();
+
     public static String MAIL_SUBJECT = "인증메일";
 
     public AuthEmailDTO sendEmail(SendEmailDTO sendEmailDTO) throws MailException {
-        if(sendEmailDTO == null) throw new Exception500(INVALID_SEND_EMAILAUTH);
-
+        if(sendEmailDTO == null) throw new Exception500(ErrorMessage.INVALID_SEND_EMAILAUTH);
         String authNumber = createCode();
         emailAuth.put(sendEmailDTO.getTo(), authNumber);
 
@@ -65,7 +63,7 @@ public class MailService {
             return true;
         }
 
-        throw new Exception400(INVALID_SEND_EMAILAUTH);
+        throw new Exception400(ErrorMessage.INVALID_SEND_EMAILAUTH);
     }
 
     @Transactional(readOnly = true)
