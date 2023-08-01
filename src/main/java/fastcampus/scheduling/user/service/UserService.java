@@ -1,5 +1,6 @@
 package fastcampus.scheduling.user.service;
 
+import static fastcampus.scheduling._core.errors.ErrorMessage.EMPTY_DATA_FOR_USER_SIGNUP;
 import static fastcampus.scheduling._core.errors.ErrorMessage.MISMATCH_SIGN_IN_INFO;
 import static fastcampus.scheduling._core.errors.ErrorMessage.NOT_FOUND_USER_FOR_UPDATE;
 import static fastcampus.scheduling._core.errors.ErrorMessage.USER_NOT_FOUND;
@@ -11,20 +12,15 @@ import fastcampus.scheduling._core.errors.exception.Exception401;
 import fastcampus.scheduling._core.errors.exception.Exception500;
 import fastcampus.scheduling._core.util.JwtTokenProvider;
 import fastcampus.scheduling.user.dto.UserRequest;
-import fastcampus.scheduling.user.dto.UserResponse;
 import fastcampus.scheduling.user.model.User;
 import fastcampus.scheduling.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -70,18 +66,12 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserResponse.SignUpDTO save(@NonNull HttpServletRequest request, UserRequest.SignUpDTO signUpDTO) throws IllegalArgumentException, OptimisticLockingFailureException {
-        if(signUpDTO == null) throw new Exception500(ErrorMessage.EMPTY_DATA_FOR_USER_SIGNUP);
+    public User save(UserRequest.SignUpDTO signUpDTO) throws IllegalArgumentException, OptimisticLockingFailureException {
+        if(signUpDTO == null) throw new Exception400(EMPTY_DATA_FOR_USER_SIGNUP);
 
         User user = signUpDTO.toEntityWithHashPassword(passwordEncoder);
-        User persistencUser = userRepository.save(user);
-        String userId = persistencUser.getId().toString();
-        String accessToken = generateAccessToken(userId, signUpDTO.getUserEmail(), request.getRequestURI()); //todo uri수정
-
-        if(accessToken == null || accessToken.isEmpty())
-            throw new Exception401(ErrorMessage.TOKEN_NOT_EXISTS);
-
-        return UserResponse.SignUpDTO.from(accessToken);
+				user.setUsedVacation(0);
+        return userRepository.save(user);
     }
 
 
@@ -97,16 +87,9 @@ public class UserService implements UserDetailsService {
         Optional<User> userOptional = userRepository.findByPhoneNumber(phoneNumber);
 
         if(phoneNumber.isBlank())
-            throw new Exception400(phoneNumber, ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PhoneNumber);
+            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PhoneNumber);
         if(userOptional.isPresent())
             throw new DuplicatePhoneNumberException();
-    }
-
-    public String generateAccessToken(String userId, String userEmail, String uri){
-        Authentication authentication = getAuthentication(userEmail);
-        List<String> roles = authentication.getAuthorities()
-            .stream().map(GrantedAuthority::getAuthority).toList();
-        return jwtTokenProvider.generateJwtAccessToken(userId, uri, roles);
     }
 
     public Authentication getAuthentication(String email) {

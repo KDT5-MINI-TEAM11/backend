@@ -4,7 +4,7 @@ import fastcampus.scheduling.jwt.dto.RefreshAccessTokenDto;
 
 public interface RefreshTokenService {
 
-	void updateRefreshToken(String refreshToken);
+	void updateRefreshToken(String userId, String refreshToken, String newRefreshToken);
 
 	RefreshAccessTokenDto refreshAccessToken(String refreshToken);
 

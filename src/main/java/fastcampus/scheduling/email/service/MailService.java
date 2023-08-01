@@ -26,11 +26,11 @@ public class MailService {
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
     private static Map<String, String> emailAuth = new ConcurrentHashMap<>();
-    public static String MAIL_SUBJECT = "인증메일"; //todo 옮기기
+
+    public static String MAIL_SUBJECT = "인증메일";
 
     public AuthEmailDTO sendEmail(SendEmailDTO sendEmailDTO) throws MailException {
         if(sendEmailDTO == null) throw new Exception500(ErrorMessage.INVALID_SEND_EMAILAUTH);
-
         String authNumber = createCode();
         emailAuth.put(sendEmailDTO.getTo(), authNumber);
 
@@ -63,7 +63,7 @@ public class MailService {
             return true;
         }
 
-        throw new Exception400(checkEmailAuthDTO.getUserEmailAuth(), ErrorMessage.INVALID_SEND_EMAILAUTH);
+        throw new Exception400(ErrorMessage.INVALID_SEND_EMAILAUTH);
     }
 
     @Transactional(readOnly = true)
@@ -72,7 +72,7 @@ public class MailService {
         Optional<User> userOptional = userRepository.findByUserEmail(email);
 
         if(email.isBlank())
-            throw new Exception400(email, ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAIL);
+            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAIL);
         if(userOptional.isPresent())
             throw new DuplicateUserEmailException();
     }

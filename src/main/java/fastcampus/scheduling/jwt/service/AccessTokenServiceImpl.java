@@ -21,9 +21,8 @@ public class AccessTokenServiceImpl implements AccessTokenService {
 		}
 		String accessToken = authorizationHeader.replace("Bearer ", "");
 
-		if (!jwtTokenProvider.validateJwtToken(accessToken)) {
-			throw new Exception401(TOKEN_NOT_VALID);
-		}
+		jwtTokenProvider.validateJwtToken(accessToken);
+
 		return accessToken;
 	}
 }

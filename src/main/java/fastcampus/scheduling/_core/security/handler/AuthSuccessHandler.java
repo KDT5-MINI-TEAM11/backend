@@ -1,9 +1,6 @@
 
 package fastcampus.scheduling._core.security.handler;
 
-import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fastcampus.scheduling._core.security.dto.SigninResponse;
 import fastcampus.scheduling._core.util.ApiResponse;
@@ -12,12 +9,10 @@ import fastcampus.scheduling._core.util.JwtTokenProvider;
 import fastcampus.scheduling.jwt.service.RefreshTokenServiceImpl;
 import java.io.IOException;
 import java.util.List;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -45,12 +40,8 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
         String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId);
         refreshTokenService.saveRefreshToken(Long.valueOf(userId), jwtTokenProvider.getRefreshTokenId(refreshToken));
 
-        ResponseCookie responseCookie = cookieProvider.generateRefreshTokenCookie(refreshToken);
-        Cookie cookie = cookieProvider.of(responseCookie);
-        response.addCookie(cookie);
-        response.setStatus(SC_OK);
-        response.setContentType(APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("utf-8");
+        response = cookieProvider.addCookie(response, refreshToken);
+
 
         SigninResponse signinResponse = SigninResponse.builder().accessToken(accessToken).build();
 

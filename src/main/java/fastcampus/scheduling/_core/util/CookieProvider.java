@@ -1,10 +1,13 @@
 package fastcampus.scheduling._core.util;
 
 import static fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_NOT_VALID;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import fastcampus.scheduling._core.errors.exception.Exception401;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -44,5 +47,15 @@ public class CookieProvider {
 		cookie.setHttpOnly(responseCookie.isHttpOnly());
 		cookie.setMaxAge((int) responseCookie.getMaxAge().getSeconds());
 		return cookie;
+	}
+
+	public HttpServletResponse addCookie(HttpServletResponse response, String refreshToken) {
+		ResponseCookie responseCookie = generateRefreshTokenCookie(refreshToken);
+		Cookie cookie = of(responseCookie);
+		response.addCookie(cookie);
+		response.setStatus(SC_OK);
+		response.setContentType(APPLICATION_JSON_VALUE);
+		response.setCharacterEncoding("utf-8");
+		return response;
 	}
 }

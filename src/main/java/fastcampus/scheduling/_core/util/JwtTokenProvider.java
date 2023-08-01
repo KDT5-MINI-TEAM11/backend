@@ -72,10 +72,10 @@ public class JwtTokenProvider {
 	public List<String> getRoles(String token) {
 		return (List<String>) getClaimsFromJwtToken(token).get("roles");
 	}
-	public boolean validateJwtToken(String token) {
+	public void validateJwtToken(String token) {
 		try {
 			Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token);
-			return true;
+			return;
 		} catch (ExpiredJwtException exception) {
 			log.error("JWT token is expired: {}", exception.getMessage());
 			throw new Exception401(TOKEN_EXPIRED);
