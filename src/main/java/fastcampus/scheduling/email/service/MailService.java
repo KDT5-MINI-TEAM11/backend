@@ -33,17 +33,14 @@ public class MailService {
         if(sendEmailDTO == null) throw new Exception500(ErrorMessage.INVALID_SEND_EMAILAUTH);
         String authNumber = createCode();
         emailAuth.put(sendEmailDTO.getTo(), authNumber);
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(sendEmailDTO.getTo());
+        message.setSubject(MAIL_SUBJECT);
+        message.setText(authNumber);
 
-        try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(sendEmailDTO.getTo());
-            message.setSubject(MAIL_SUBJECT);
-            message.setText(authNumber);
-            javaMailSender.send(message);
-        }
-        catch (MailException e){
-            throw new Exception400(ErrorMessage.INVALID_EMAIL);
-        }
+        javaMailSender.send(message);
+
+//        throw new Exception400(ErrorMessage.INVALID_EMAIL);
 
         return true;
     }
