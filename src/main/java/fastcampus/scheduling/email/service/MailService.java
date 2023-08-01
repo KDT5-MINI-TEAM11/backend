@@ -29,19 +29,23 @@ public class MailService {
 
     public static String MAIL_SUBJECT = "인증메일";
 
-    public AuthEmailDTO sendEmail(SendEmailDTO sendEmailDTO) throws MailException {
+    public boolean sendEmail(SendEmailDTO sendEmailDTO) throws MailException {
         if(sendEmailDTO == null) throw new Exception500(ErrorMessage.INVALID_SEND_EMAILAUTH);
         String authNumber = createCode();
         emailAuth.put(sendEmailDTO.getTo(), authNumber);
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(sendEmailDTO.getTo());
-        message.setSubject(MAIL_SUBJECT);
-        message.setText(authNumber);
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(sendEmailDTO.getTo());
+            message.setSubject(MAIL_SUBJECT);
+            message.setText(authNumber);
+            javaMailSender.send(message);
+        }
+        catch (MailException e){
+            throw new Exception400(ErrorMessage.INVALID_EMAIL);
+        }
 
-        javaMailSender.send(message);
-
-        return AuthEmailDTO.from(authNumber);
+        return true;
     }
 
     @Transactional(readOnly = true)
@@ -71,10 +75,10 @@ public class MailService {
         String email = checkEmailDTO.getUserEmail();
         Optional<User> userOptional = userRepository.findByUserEmail(email);
 
+        userOptional.ifPresent(user -> {throw new DuplicateUserEmailException();});
+
         if(email.isBlank())
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAIL);
-        if(userOptional.isPresent())
-            throw new DuplicateUserEmailException();
     }
 
     public String createCode() {
