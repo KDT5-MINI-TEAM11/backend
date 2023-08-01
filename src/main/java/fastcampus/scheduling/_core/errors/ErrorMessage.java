@@ -15,6 +15,7 @@ public class ErrorMessage {
     public static final String EMPTY_DATA_FOR_USER_CHECK_USEREMAIL = "이메일 중복 검사를 위한 데이터가 존재하지 않습니다.";
     public static final String EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH = "이메일 인증 검사를 위한 데이터가 존재하지 않습니다.";
     public static final String EMPTY_DATA_FOR_USER_CHECK_PhoneNumber = "핸드폰 번호 중복 검사를 위한 데이터가 존재하지 않습니다.";
+    public static final String EMPTY_DATA_FOR_USER_CHECK_Position = "직책을 입력해 주세요.";
     public static final String EMPTY_DATA_FOR_SAVE_CONTENT = "본문 내용을 입력해주세요.";
     public static final String EMPTY_DATA_FOR_SAVE_TITLE = "제목을 입력해주세요.";
 
@@ -22,7 +23,7 @@ public class ErrorMessage {
     public static final String FAILED_TO_SIGNUP = "회원가입에 실패하였습니다.";
 
     public static final String INVALID_PhoneNumber = "잘못된 핸드폰 번호 입니다.";
-    public static final String INVALID_USRENAME = "회원이름은 8자에서 16자 사이어야 합니다.";
+    public static final String INVALID_USRENAME = "회원이름은 2자에서 20자 사이어야 합니다.";
     public static final String INVALID_PASSWORD = "패스워드는 8자에서 16자 사이어야 합니다.";
     public static final String INVALID_EMAIL = "이메일 형식을 맞춰주세요.";
     public static final String INVALID_SEND_EMAIL = "인증 이메일이 잘못 되었습니다.";
