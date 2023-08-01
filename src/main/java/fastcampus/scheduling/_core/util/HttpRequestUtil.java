@@ -28,7 +28,7 @@ public class HttpRequestUtil {
 
 	public static Map<String, String> getAccessInfo() {
 
-		request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		String ip = getClientIpAddressIfServletRequestExist(request);
 
 		String agent = request.getHeader("USER-AGENT");
