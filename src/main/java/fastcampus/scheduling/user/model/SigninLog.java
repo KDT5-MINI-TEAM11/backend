@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,9 +36,11 @@ public class SigninLog {
     private User user;
 
     @Length(max = 45)
+    @NotBlank
     private String ipAddress;
 
     @Length(max = 255)
+    @NotBlank
     private String userAgent;
 
     @CreationTimestamp
