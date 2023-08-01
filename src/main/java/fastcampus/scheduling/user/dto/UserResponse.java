@@ -30,6 +30,7 @@ public class UserResponse {
         private String profileThumbUrl;
         private Position position;
         private String phoneNumber;
+        private int usedVacation;
 
         public static GetMyPageDTO from(User user) {
             return GetMyPageDTO.builder()
@@ -38,6 +39,7 @@ public class UserResponse {
                 .profileThumbUrl(user.getProfileThumbUrl())
                 .position(user.getPosition())
                 .phoneNumber(user.getPhoneNumber())
+                .usedVacation(user.getUsedVacation())
                 .build();
         }
     }
