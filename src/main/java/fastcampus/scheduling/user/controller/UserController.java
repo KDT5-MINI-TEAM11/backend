@@ -113,4 +113,12 @@ public class UserController {
 
         return ResponseEntity.ok(ApiResponse.success(SignUpDTO.from(accessToken)));
     }
+
+    @PostMapping("/api/v1/auth/checkPhoneNumber")
+    public ResponseEntity<ApiResponse.Result<Object>> checkPhoneNumber(@RequestBody @Valid UserRequest.CheckPhoneDTO checkPhoneDTO) {
+        log.info("/api/v1/auth/checkPhoneNumber POST " + checkPhoneDTO);
+        userService.checkPhone(checkPhoneDTO);
+
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
 }

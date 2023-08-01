@@ -22,7 +22,7 @@ public class UserRequest {
     @Builder
     public static class SignUpDTO {
         @NotBlank
-        @Pattern(regexp = "^[a-zA-Z0-9.%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")
+        @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")//"^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\\.[A-Za-z0-9\\-]")
         private String userEmail;
 
         @NotBlank
@@ -62,7 +62,7 @@ public class UserRequest {
     public static class SignInDTO {
 
         @NotBlank
-        @Pattern(regexp = "^[a-zA-Z0-9.%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")
+        @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")//^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\\.[A-Za-z0-9\\-]")
         private String userEmail;
 
         @NotBlank
@@ -93,4 +93,14 @@ public class UserRequest {
                 .build();
         }
     }
+
+    @Getter
+    @ToString
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CheckPhoneDTO {
+        @NotBlank
+        private String phoneNumber;
+    }
+
 }

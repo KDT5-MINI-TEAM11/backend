@@ -1,7 +1,10 @@
 package fastcampus.scheduling.email.controller;
 
 import fastcampus.scheduling._core.util.ApiResponse;
+import fastcampus.scheduling._core.util.ApiResponse.Result;
 import fastcampus.scheduling.email.dto.EmailRequest;
+import fastcampus.scheduling.email.dto.EmailResponse;
+import fastcampus.scheduling.email.dto.EmailResponse.AuthEmailDTO;
 import fastcampus.scheduling.email.service.MailService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,7 @@ public class MailApiController {
 
     private final MailService mailService;
     @PostMapping("/api/v1/auth/checkEmail")
-    public ResponseEntity<ApiResponse.Result<Object>> checkEmail(@RequestBody @Valid EmailRequest.CheckEmailDTO checkEmailDTO, Errors errors) {
+    public ResponseEntity<Result<Object>> checkEmail(@RequestBody @Valid EmailRequest.CheckEmailDTO checkEmailDTO, Errors errors) {
         log.info("/api/v1/auth/checkEmail POST " + checkEmailDTO);
         mailService.checkEmail(checkEmailDTO);
 
@@ -27,9 +30,9 @@ public class MailApiController {
     }
 
     @PostMapping("/api/v1/auth/sendEmail")
-    public ResponseEntity<ApiResponse.Result<Object>> sendEmail(@RequestBody @Valid EmailRequest.SendEmailDTO sendEmailDTO, Errors errors) {
+    public ResponseEntity<ApiResponse.Result<EmailResponse.AuthEmailDTO>> sendEmail(@RequestBody @Valid EmailRequest.SendEmailDTO sendEmailDTO, Errors errors) {
         log.info("/api/v1/auth/sendEmail POST " + sendEmailDTO);
-        boolean authEmail = mailService.sendEmail(sendEmailDTO);
+        AuthEmailDTO authEmail = mailService.sendEmail(sendEmailDTO);
 
         return ResponseEntity.ok(ApiResponse.success(authEmail));
     }

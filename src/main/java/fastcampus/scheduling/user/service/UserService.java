@@ -9,7 +9,8 @@ import fastcampus.scheduling._core.errors.ErrorMessage;
 import fastcampus.scheduling._core.errors.exception.DuplicatePhoneNumberException;
 import fastcampus.scheduling._core.errors.exception.Exception400;
 import fastcampus.scheduling._core.errors.exception.Exception401;
-import fastcampus.scheduling.user.common.Position;
+import fastcampus.scheduling._core.errors.exception.Exception500;
+import fastcampus.scheduling._core.util.JwtTokenProvider;
 import fastcampus.scheduling.user.dto.UserRequest;
 import fastcampus.scheduling.user.model.User;
 import fastcampus.scheduling.user.repository.UserRepository;
@@ -18,6 +19,8 @@ import java.util.Collection;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,8 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
 	@Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -43,14 +47,12 @@ public class UserService implements UserDetailsService {
     return new org.springframework.security.core.userdetails.User(user.getId().toString(), user.getUserPassword(), authorities);
   }
 
-    @Transactional(readOnly = true)
 	public User findByUserId(Long userId) {
 			return userRepository.findById(userId)
 					.orElseThrow(() -> new Exception401(
 							USER_NOT_FOUND));
 	}
 
-    @Transactional
 	public User updateUser(Long id, String userPassword, String phoneNumber,
 			String profileThumbUrl) {
 			User user = userRepository.findById(id)
@@ -67,39 +69,32 @@ public class UserService implements UserDetailsService {
     public User save(UserRequest.SignUpDTO signUpDTO) throws IllegalArgumentException, OptimisticLockingFailureException {
         if(signUpDTO == null) throw new Exception400(EMPTY_DATA_FOR_USER_SIGNUP);
 
-        validateSignUp(signUpDTO);
-
         User user = signUpDTO.toEntityWithHashPassword(passwordEncoder);
-		user.setUsedVacation(0);
-
+				user.setUsedVacation(0);
         return userRepository.save(user);
     }
 
+
     @Transactional(readOnly = true)
-    public void validateSignUp(UserRequest.SignUpDTO signUpDTO) {
-        String phoneNumber = signUpDTO.getPhoneNumber();
-        Position position = signUpDTO.getPosition();
-        String userName = signUpDTO.getUserName();
-        String userPassword = signUpDTO.getUserPassword();
-
-        Optional<User> userOptional = userRepository.findByPhoneNumber(phoneNumber);
-
-        userOptional.ifPresent(user -> {throw new DuplicatePhoneNumberException();});
-        System.out.println(userName);
-        System.out.println(userPassword);
-        if(phoneNumber.isBlank())
-            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PhoneNumber);
-        if(position == null || position.equals(""))
-            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_Position);
-//        if(userName.isBlank() || (userName.length() >= Constants.USERNAME_MIN_SIZE && userName.length() <= Constants.USERNAME_MAX_SIZE)) //조건 수정 필요
-//            throw new Exception400(ErrorMessage.INVALID_USRENAME);
-//        if(userPassword.isBlank() || (userPassword.length() >= Constants.PASSWORD_MIN_SIZE && userName.length() <= Constants.PASSWORD_MAX_SIZE))
-//            throw new Exception400(ErrorMessage.INVALID_PASSWORD);
+    public void checkPhone(UserRequest.CheckPhoneDTO checkPhoneDTO) {
+        if(checkPhoneDTO == null) throw new Exception500(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PhoneNumber);
+        validatePhone(checkPhoneDTO);
     }
 
-//    public Authentication getAuthentication(String email) {
-//        UserDetails userDetails = loadUserByUsername(email);
-//        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
-//            userDetails.getAuthorities());
-//    }
+    @Transactional(readOnly = true)
+    public void validatePhone(UserRequest.CheckPhoneDTO checkPhoneDTO) {
+        String phoneNumber = checkPhoneDTO.getPhoneNumber();
+        Optional<User> userOptional = userRepository.findByPhoneNumber(phoneNumber);
+
+        if(phoneNumber.isBlank())
+            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PhoneNumber);
+        if(userOptional.isPresent())
+            throw new DuplicatePhoneNumberException();
+    }
+
+    public Authentication getAuthentication(String email) {
+        UserDetails userDetails = loadUserByUsername(email);
+        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
+            userDetails.getAuthorities());
+    }
 }
