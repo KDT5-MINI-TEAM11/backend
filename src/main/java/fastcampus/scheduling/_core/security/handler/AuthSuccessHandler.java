@@ -48,7 +48,7 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
         SigninResponse signinResponse = SigninResponse.builder().accessToken(accessToken).build();
 
         // save signIn log
-        userLogService.saveSigninLog(userId, request);
+        userLogService.saveSigninLog(userId);
 
         new ObjectMapper().writeValue(response.getOutputStream(), ApiResponse.success(signinResponse));
     }
