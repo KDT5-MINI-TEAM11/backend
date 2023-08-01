@@ -7,6 +7,7 @@ import fastcampus.scheduling._core.util.ApiResponse;
 import fastcampus.scheduling._core.util.CookieProvider;
 import fastcampus.scheduling._core.util.JwtTokenProvider;
 import fastcampus.scheduling.jwt.service.RefreshTokenServiceImpl;
+import fastcampus.scheduling.user.service.UserLogService;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @RequiredArgsConstructor
 public class AuthSuccessHandler implements AuthenticationSuccessHandler {
 
+    private final UserLogService userLogService;
     private final RefreshTokenServiceImpl refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieProvider cookieProvider;
@@ -44,6 +46,9 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
 
 
         SigninResponse signinResponse = SigninResponse.builder().accessToken(accessToken).build();
+
+        // save signIn log
+        userLogService.saveSigninLog(userId, request);
 
         new ObjectMapper().writeValue(response.getOutputStream(), ApiResponse.success(signinResponse));
     }
