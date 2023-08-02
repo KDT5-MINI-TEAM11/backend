@@ -1,12 +1,19 @@
 package com.fastcampus.scheduling._core.util;
 
+import com.fastcampus.scheduling.schedule.common.ScheduleType;
+import com.fastcampus.scheduling.schedule.common.State;
+import com.fastcampus.scheduling.schedule.model.Schedule;
+import com.fastcampus.scheduling.schedule.repository.ScheduleRepository;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters.LocalDateTimeConverter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +23,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final UserRepository userRepository;
+	private final ScheduleRepository scheduleRepository;
 
 	/**
 	 * Temp User For Api Test
@@ -92,5 +100,34 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 		userRepository.save(levelThree);
 		userRepository.save(levelFour);
 		userRepository.save(manager);
+
+		Schedule schedule1 = Schedule.builder()
+			.id(1L)
+			.user(levelOne)
+			.scheduleType(ScheduleType.ANNUAL)
+			.state(State.PENDING)
+			.startDate(LocalDate.of(2023,8,1))
+			.endDate(LocalDate.of(2023,8,3))
+			.build();
+		Schedule schedule2 = Schedule.builder()
+			.id(2L)
+			.user(levelTwo)
+			.scheduleType(ScheduleType.DUTY)
+			.state(State.PENDING)
+			.startDate(LocalDate.of(2023,8,5))
+			.endDate(LocalDate.of(2023,8,6))
+			.build();
+		Schedule schedule3 = Schedule.builder()
+			.id(3L)
+			.user(levelFour)
+			.scheduleType(ScheduleType.ANNUAL)
+			.state(State.PENDING)
+			.startDate(LocalDate.of(2023,8,10))
+			.endDate(LocalDate.of(2023,8,15))
+			.build();
+
+		scheduleRepository.save(schedule1);
+		scheduleRepository.save(schedule2);
+		scheduleRepository.save(schedule3);
 	}
 }
