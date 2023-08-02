@@ -2,6 +2,7 @@ package com.fastcampus.scheduling.email.controller;
 
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.ApiResponse.Result;
+import com.fastcampus.scheduling.email.dto.EmailResponse.AuthEmailDTO;
 import com.fastcampus.scheduling.email.service.MailService;
 import com.fastcampus.scheduling.email.dto.EmailRequest;
 import javax.validation.Valid;
@@ -20,7 +21,7 @@ public class MailApiController {
 
     private final MailService mailService;
     @PostMapping("/api/v1/auth/checkEmail")
-    public ResponseEntity<Result<Object>> checkEmail(@RequestBody @Valid EmailRequest.CheckEmailDTO checkEmailDTO, Errors errors) {
+    public ResponseEntity<ApiResponse.Result<Object>> checkEmail(@RequestBody @Valid EmailRequest.CheckEmailDTO checkEmailDTO, Errors errors) {
         log.info("/api/v1/auth/checkEmail POST " + checkEmailDTO);
         mailService.checkEmail(checkEmailDTO);
 
@@ -30,10 +31,18 @@ public class MailApiController {
     @PostMapping("/api/v1/auth/sendEmail")
     public ResponseEntity<ApiResponse.Result<Object>> sendEmail(@RequestBody @Valid EmailRequest.SendEmailDTO sendEmailDTO, Errors errors) {
         log.info("/api/v1/auth/sendEmail POST " + sendEmailDTO);
-        boolean authEmail = mailService.sendEmail(sendEmailDTO);
+        String authNumber = mailService.sendEmail(sendEmailDTO);
 
-        return ResponseEntity.ok(ApiResponse.success(authEmail));
+        return ResponseEntity.ok(ApiResponse.success(authNumber));
     }
+
+//    @PostMapping("/api/v2/auth/sendEmail")
+//    public ResponseEntity<ApiResponse.Result<Object>> sendEmail(@RequestBody @Valid EmailRequest.SendEmailDTO sendEmailDTO, Errors errors) {
+//        log.info("/api/v1/auth/sendEmail POST " + sendEmailDTO);
+//        boolean authEmail = mailService.sendEmail(sendEmailDTO);
+//
+//        return ResponseEntity.ok(ApiResponse.success(authEmail));
+//    }
 
     @PostMapping("/api/v1/auth/checkEmailAuth")
     public ResponseEntity<ApiResponse.Result<Object>> checkEmailAuth(@RequestBody @Valid EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO, Errors errors) {
