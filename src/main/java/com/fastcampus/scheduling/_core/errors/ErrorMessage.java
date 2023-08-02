@@ -14,11 +14,12 @@ public class ErrorMessage {
     public static final String EMPTY_DATA_FOR_USER_UPDATE = "회원 정보 수정을 위한 데이터가 존재하지 않습니다.";
     public static final String EMPTY_DATA_FOR_USER_CHECK_USEREMAIL = "이메일 중복 검사를 위한 데이터가 존재하지 않습니다.";
     public static final String EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH = "이메일 인증 검사를 위한 데이터가 존재하지 않습니다.";
-    public static final String EMPTY_DATA_FOR_USER_CHECK_PhoneNumber = "핸드폰 번호 중복 검사를 위한 데이터가 존재하지 않습니다.";
-    public static final String EMPTY_DATA_FOR_USER_CHECK_Position = "직책을 입력해 주세요.";
+    public static final String EMPTY_DATA_FOR_USER_CHECK_PHONENUMBER = "핸드폰 번호 중복 검사를 위한 데이터가 존재하지 않습니다.";
+    public static final String EMPTY_DATA_FOR_USER_CHECK_POSITION = "직책을 입력해 주세요.";
     public static final String EMPTY_DATA_FOR_SAVE_CONTENT = "본문 내용을 입력해주세요.";
     public static final String EMPTY_DATA_FOR_SAVE_TITLE = "제목을 입력해주세요.";
-
+    public static final String EMPTY_DATA_FOR_SAVE_USER = "유저 정보가 없습니다.";
+    public static final String EMPTY_DATA_FOR_SCHEDULE = "일정이 없습니다.";
 
     public static final String FAILED_TO_SIGNUP = "회원가입에 실패하였습니다.";
 
