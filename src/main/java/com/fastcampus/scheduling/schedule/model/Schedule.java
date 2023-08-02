@@ -38,17 +38,18 @@ public class Schedule {
 	@JoinColumn(name="user_id")
 	private User user;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	private ScheduleType scheduleType;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	private State state;
 
 	@Column(nullable = false)
 	private Timestamp startDate;
 
+	@Column(nullable = false)
 	private Timestamp endDate;
 
 	@CreationTimestamp

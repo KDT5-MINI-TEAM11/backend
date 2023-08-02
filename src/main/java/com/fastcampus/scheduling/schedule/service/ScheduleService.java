@@ -1,5 +1,5 @@
 package com.fastcampus.scheduling.schedule.service;
 
-public interface SchedulingService {
+public interface ScheduleService {
 
 }

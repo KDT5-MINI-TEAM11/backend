@@ -1,8 +1,12 @@
 package com.fastcampus.scheduling.user.dto;
 
+import com.fastcampus.scheduling.schedule.common.ScheduleType;
+import com.fastcampus.scheduling.schedule.common.State;
+import com.fastcampus.scheduling.schedule.model.DummySchedule;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.model.User;
-
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -47,6 +51,7 @@ public class UserResponse {
     @Getter
     @Builder
     public static class GetUserHeaderDTO {
+
         private String userName;
         private Position position;
         private String profileThumbNail;
@@ -63,4 +68,73 @@ public class UserResponse {
 
     }
 
+    @Getter
+    @Builder
+    public static class GetDummyScheduleDTO {
+
+        private ScheduleType scheduleType;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private State state;
+
+        public static GetDummyScheduleDTO from(DummySchedule schedule) {
+            return GetDummyScheduleDTO.builder()
+                .scheduleType(schedule.getScheduleType())
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
+                .state(schedule.getState())
+                .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class AddDummyScheduleDTO {
+
+        private ScheduleType scheduleType;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private State state;
+
+        public static AddDummyScheduleDTO from(DummySchedule schedule) {
+            return AddDummyScheduleDTO.builder()
+                .scheduleType(schedule.getScheduleType())
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
+                .state(schedule.getState())
+                .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class CancelDummyScheduleDTO {
+
+        private String message;
+
+        public static CancelDummyScheduleDTO from(String message) {
+            return CancelDummyScheduleDTO.builder()
+                .message(message)
+                .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class ModifyDummyScheduleDTO {
+
+        private ScheduleType scheduleType;
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private State state;
+
+        public static ModifyDummyScheduleDTO from(DummySchedule schedule) {
+            return ModifyDummyScheduleDTO.builder()
+                .scheduleType(schedule.getScheduleType())
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
+                .state(schedule.getState())
+                .build();
+        }
+    }
 }
