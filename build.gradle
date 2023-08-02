@@ -23,7 +23,7 @@ repositories {
 
 jar {
 	manifest {
-		attributes 'Main-Class': 'fastcampus.scheduling.schedulingApplication'
+		attributes 'Main-Class': 'com.fastcampus.scheduling.schedulingApplication'
 	}
 }
 
