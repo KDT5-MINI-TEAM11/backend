@@ -3,7 +3,7 @@ package com.fastcampus.scheduling.schedule.model;
 import com.fastcampus.scheduling.schedule.common.ScheduleType;
 import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.user.model.User;
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -47,14 +47,14 @@ public class Schedule {
 	private State state;
 
 	@Column(nullable = false)
-	private Timestamp startDate;
+	private LocalDate startDate;
 
 	@Column(nullable = false)
-	private Timestamp endDate;
+	private LocalDate endDate;
 
 	@CreationTimestamp
-	private Timestamp createdAt;
+	private LocalDate createdAt;
 
 	@UpdateTimestamp
-	private Timestamp updatedAt;
+	private LocalDate updatedAt;
 }
