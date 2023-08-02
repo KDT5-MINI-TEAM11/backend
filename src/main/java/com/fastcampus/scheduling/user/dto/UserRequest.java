@@ -1,7 +1,10 @@
 package com.fastcampus.scheduling.user.dto;
 
+import com.fastcampus.scheduling.schedule.common.ScheduleType;
+import com.fastcampus.scheduling.schedule.model.DummySchedule;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.model.User;
+import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -90,6 +93,57 @@ public class UserRequest {
                 .userPassword(user.getUserPassword())
                 .profileThumbUrl(user.getProfileThumbUrl())
                 .phoneNumber(user.getPhoneNumber())
+                .build();
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class AddDummyScheduleDTO {
+
+        @NotBlank
+        private ScheduleType scheduleType;
+
+        @NotBlank
+        private LocalDate startDate;
+
+        @NotBlank
+        private LocalDate endDate;
+
+        public static AddDummyScheduleDTO from(DummySchedule schedule) {
+            return AddDummyScheduleDTO.builder()
+                .scheduleType(schedule.getScheduleType())
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
+                .build();
+        }
+    }
+
+    public static class CancelDummyScheduleDTO {
+
+
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    public static class ModifyScheduleDTO {
+
+        @NotBlank
+        private LocalDate startDate;
+
+        @NotBlank
+        private LocalDate endDate;
+
+        public static ModifyScheduleDTO from(DummySchedule schedule) {
+            return ModifyScheduleDTO.builder()
+                .startDate(schedule.getStartDate())
+                .endDate(schedule.getEndDate())
                 .build();
         }
     }
