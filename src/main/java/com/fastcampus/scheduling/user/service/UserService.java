@@ -83,9 +83,9 @@ public class UserService implements UserDetailsService {
         System.out.println(userName);
         System.out.println(userPassword);
         if(phoneNumber.isBlank())
-            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PhoneNumber);
+            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PHONENUMBER);
         if(position == null || position.equals(""))
-            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_Position);
+            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_POSITION);
 //        if(userName.isBlank() || (userName.length() >= Constants.USERNAME_MIN_SIZE && userName.length() <= Constants.USERNAME_MAX_SIZE)) //조건 수정 필요
 //            throw new Exception400(ErrorMessage.INVALID_USRENAME);
 //        if(userPassword.isBlank() || (userPassword.length() >= Constants.PASSWORD_MIN_SIZE && userName.length() <= Constants.PASSWORD_MAX_SIZE))
