@@ -2,6 +2,7 @@ package com.fastcampus.scheduling.schedule.service;
 
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
+import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.repository.ScheduleRepository;
@@ -30,7 +31,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             .scheduleType(addScheduleDTO.getScheduleType())
             .startDate(addScheduleDTO.getStartDate())
             .endDate(addScheduleDTO.getEndDate())
-            .state(addScheduleDTO.getState())
+            .state(State.PENDING)
             .build();
 
         return scheduleRepository.save(schedule);
