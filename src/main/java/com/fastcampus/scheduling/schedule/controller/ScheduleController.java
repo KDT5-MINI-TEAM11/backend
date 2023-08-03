@@ -8,8 +8,7 @@ import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.GetUserScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.service.ScheduleServiceImpl;
-import com.fastcampus.scheduling.user.service.UserService;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,12 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScheduleController {
 
     private final ScheduleServiceImpl scheduleServiceImpl;
-    private final UserService userService;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
 
     @GetMapping("/user/schedule")
-    public ResponseEntity<ApiResponse.Result<ScheduleResponse.GetUserScheduleDTO>> getSchedule() {
+    public ResponseEntity<Result<ScheduleResponse.GetUserScheduleDTO>> getSchedule() {
         Long userId = Long.valueOf(
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
@@ -60,8 +56,28 @@ public class ScheduleController {
     }
 
     @PatchMapping("/user/schedule/modify")
-    public Schedule modifySchedule(@PathVariable Long id, @RequestBody ModifyScheduleDTO modifyScheduleDTO) {
-        return scheduleServiceImpl.modifySchedule(id, modifyScheduleDTO);
+    public ResponseEntity<Result<ModifyScheduleDTO>> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO) {
+
+        Long userId = Long.valueOf(
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+
+        Schedule schedule = scheduleServiceImpl.getScheduleById(userId);
+
+        LocalDate startDate = modifyScheduleDTO.getStartDate();
+        if (startDate != null) {
+            schedule.setStartDate(startDate);
+        }
+
+        LocalDate endDate = modifyScheduleDTO.getEndDate();
+        if (endDate != null) {
+            schedule.setEndDate(endDate);
+        }
+
+        Schedule modifySchedule = scheduleServiceImpl.modifySchedule(userId, schedule.getStartDate(), schedule.getEndDate());
+
+        ModifyScheduleDTO modifyScheduleDTOs = ModifyScheduleDTO.from(modifySchedule);
+
+        return ResponseEntity.ok(ApiResponse.success(modifyScheduleDTOs));
     }
 
 
