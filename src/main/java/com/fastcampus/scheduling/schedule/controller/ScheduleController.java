@@ -5,11 +5,11 @@ import com.fastcampus.scheduling._core.util.ApiResponse.Result;
 import com.fastcampus.scheduling.schedule.dto.ScheduleRequest.ModifyScheduleDTO;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
+import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.GetUserScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.service.ScheduleServiceImpl;
 import com.fastcampus.scheduling.user.service.UserService;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,14 +33,14 @@ public class ScheduleController {
 
     @GetMapping("/user/schedule")
     public ResponseEntity<ApiResponse.Result<ScheduleResponse.GetUserScheduleDTO>> getSchedule() {
-
         Long userId = Long.valueOf(
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
-        List<Schedule> userSchedules = scheduleServiceImpl.getScheduleById(userId);
+        Schedule schedule = scheduleServiceImpl.getScheduleById(userId);
 
-        return ResponseEntity.ok(ApiResponse.success(userSchedules));
+        GetUserScheduleDTO getUserScheduleDTO = GetUserScheduleDTO.from(schedule);
 
+        return ResponseEntity.ok(ApiResponse.success(getUserScheduleDTO));
 
     }
 
