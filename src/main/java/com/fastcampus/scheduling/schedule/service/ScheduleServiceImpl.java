@@ -1,10 +1,11 @@
 package com.fastcampus.scheduling.schedule.service;
 
+import com.fastcampus.scheduling._core.errors.ErrorMessage;
+import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling.schedule.dto.ScheduleRequest.ModifyScheduleDTO;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.repository.ScheduleRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
     @Override
-    public List<Schedule> getScheduleById(Long userId) {
-        return scheduleRepository.findByScheduleId(userId);
-
+    public Schedule getScheduleById(Long userId) {
+        return scheduleRepository.findById(userId)
+            .orElseThrow(() -> new Exception401(
+                ErrorMessage.USER_NOT_FOUND));
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ScheduleService {
 
-    List<Schedule> getScheduleById(Long userId);
+    Schedule getScheduleById(Long userId);
 
     Schedule addSchedule(ScheduleResponse.AddScheduleDTO addScheduleDTO);
 
