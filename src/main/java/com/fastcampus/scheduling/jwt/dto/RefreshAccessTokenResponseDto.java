@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class RefreshAccessTokenDto {
+public class RefreshAccessTokenResponseDto {
 	private String accessToken;
-	public RefreshAccessTokenDto(String accessToken) {
+	public RefreshAccessTokenResponseDto(String accessToken) {
 		this.accessToken = accessToken;
 	}
 }
