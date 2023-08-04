@@ -38,7 +38,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         List<String> ignored = Arrays.asList(
             "/h2-console/**",
-            "/api/v1/auth/**"
+            "/api/v1/auth/**",
+            "/api/v2/auth/**"
         );
         if (ignored.stream().anyMatch(pattern -> antPathMatcher.match(pattern, request.getRequestURI()))) {
             filterChain.doFilter(request, response);
