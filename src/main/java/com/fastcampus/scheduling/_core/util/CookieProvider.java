@@ -22,6 +22,7 @@ public class CookieProvider {
 		return ResponseCookie.from("refresh-token", refreshToken)
 				.httpOnly(true)
 				//.secure(true)
+				.sameSite("None")
 				.secure(false)
 				.path("/")
 				.maxAge(Long.parseLong(refreshTokenExpiredTime))

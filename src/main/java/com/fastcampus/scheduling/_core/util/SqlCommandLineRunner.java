@@ -42,7 +42,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.phoneNumber("010-7777-7777")
 				.position(Position.LEVEL1)
 				.profileThumbUrl("https://shorturl.at/COVY3")
-				.createdAt(Timestamp.valueOf(LocalDateTime.now()))
+				.createdAt(LocalDate.now())
 				.usedVacation(0)
 				.build();
 
@@ -54,7 +54,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.phoneNumber("010-2222-2222")
 				.position(Position.LEVEL3)
 				.profileThumbUrl("https://shorturl.at/qIMPU")
-				.createdAt(Timestamp.valueOf(LocalDateTime.now()))
+				.createdAt(LocalDate.now())
 				.usedVacation(8)
 				.build();
 
@@ -66,7 +66,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.phoneNumber("010-4444-4444")
 				.position(Position.LEVEL2)
 				.profileThumbUrl("https://shorturl.at/bjqDZ")
-				.createdAt(Timestamp.valueOf(LocalDateTime.now()))
+				.createdAt(LocalDate.now())
 				.usedVacation(1)
 				.build();
 
@@ -76,9 +76,9 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.userName("Suletta Mercury")
 				.userPassword(bCryptPasswordEncoder.encode("caliburn1234"))
 				.phoneNumber("010-8888-8888")
-				.position(Position.MANAGER)
+				.position(Position.LEVEL4)
 				.profileThumbUrl("https://shorturl.at/actIT")
-				.createdAt(Timestamp.valueOf(LocalDateTime.now()))
+				.createdAt(LocalDate.now())
 				.usedVacation(10)
 				.build();
 
@@ -89,17 +89,43 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.userName("Aznable Char")
 				.userPassword(bCryptPasswordEncoder.encode("password1234"))
 				.phoneNumber("010-3333-3333")
-				.position(Position.LEVEL4)
+				.position(Position.MANAGER)
 				.profileThumbUrl("https://shorturl.at/yzCV4")
-				.createdAt(Timestamp.valueOf(LocalDateTime.now()))
+				.createdAt(LocalDate.now())
 				.usedVacation(5)
 				.build();
+
+		User managerJW = User.builder()
+			.id(6L)
+			.userEmail("jw@naver.com")
+			.userName("LeeJW")
+			.userPassword(bCryptPasswordEncoder.encode("qwer1234!"))
+			.phoneNumber("010-3333-0001")
+			.position(Position.MANAGER)
+			.profileThumbUrl("https://shorturl.at/yzCV4")
+			.createdAt(LocalDate.now())
+			.usedVacation(10)
+			.build();
+
+		User managerGH = User.builder()
+			.id(7L)
+			.userEmail("gh@naver.com")
+			.userName("NamGH")
+			.userPassword(bCryptPasswordEncoder.encode("qwer1234!"))
+			.phoneNumber("010-3333-0002")
+			.position(Position.MANAGER)
+			.profileThumbUrl("https://shorturl.at/yzCV4")
+			.createdAt(LocalDate.now())
+			.usedVacation(10)
+			.build();
 
 		userRepository.save(levelOne);
 		userRepository.save(levelTwo);
 		userRepository.save(levelThree);
 		userRepository.save(levelFour);
 		userRepository.save(manager);
+		userRepository.save(managerJW);
+		userRepository.save(managerGH);
 
 		Schedule schedule1 = Schedule.builder()
 			.id(1L)
