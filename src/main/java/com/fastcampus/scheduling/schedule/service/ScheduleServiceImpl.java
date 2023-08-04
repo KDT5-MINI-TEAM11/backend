@@ -64,8 +64,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Schedule schedule = scheduleRepository.findByIdAndUserId(id, userId);
 
-        if (schedule != null) {
-            String message = "일정(ID: " + id + ")이(가) 취소되었습니다.";
+        if (schedule != null && schedule.getState() == State.PENDING) {
+            scheduleRepository.delete(schedule);
         }
     }
 
@@ -82,8 +82,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    public List<Schedule> getSchedulesBetweenDates(LocalDate startDate, LocalDate endDate) {
+    public List<Schedule> getSchedulesBetweenDates(State state, LocalDate startDate, LocalDate endDate) {
 
-        return scheduleRepository.findSchedulesByStartDateBetween(startDate, endDate);
+        return scheduleRepository.findSchedulesByStateAndStartDateBetween(state.APPROVE, startDate, endDate);
     }
 }

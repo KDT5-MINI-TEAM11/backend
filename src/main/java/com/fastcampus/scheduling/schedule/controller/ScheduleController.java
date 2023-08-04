@@ -2,6 +2,7 @@ package com.fastcampus.scheduling.schedule.controller;
 
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.ApiResponse.Result;
+import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.dto.ScheduleRequest.ModifyScheduleDTO;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.GetAllScheduleDTO;
@@ -86,7 +87,6 @@ public class ScheduleController {
         scheduleServiceImpl.cancelSchedule(id, userId);
 
         String message = "정상적으로 취소 되었습니다";
-
         return ResponseEntity.ok(ApiResponse.success(message));
     }
 
@@ -122,7 +122,7 @@ public class ScheduleController {
         LocalDate startDate = currentYearMonth.minusMonths(1).atDay(6);
         LocalDate endDate = currentYearMonth.plusMonths(1).atDay(13);
 
-        List<Schedule> allSchedules = scheduleServiceImpl.getSchedulesBetweenDates(startDate, endDate);
+        List<Schedule> allSchedules = scheduleServiceImpl.getSchedulesBetweenDates(State.APPROVE, startDate, endDate);
 
         List<GetAllScheduleDTO> allSchedulesDTO = allSchedules.stream()
             .map(schedule -> GetAllScheduleDTO.from(schedule))

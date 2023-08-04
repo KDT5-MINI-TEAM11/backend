@@ -1,5 +1,6 @@
 package com.fastcampus.scheduling.schedule.service;
 
+import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import java.time.LocalDate;
@@ -19,6 +20,6 @@ public interface ScheduleService {
 
     List<Schedule> findByUserId(Long userId);
 
-    List<Schedule> getSchedulesBetweenDates(LocalDate startDate, LocalDate endDate);
+    List<Schedule> getSchedulesBetweenDates(State state, LocalDate startDate, LocalDate endDate);
 
 }
