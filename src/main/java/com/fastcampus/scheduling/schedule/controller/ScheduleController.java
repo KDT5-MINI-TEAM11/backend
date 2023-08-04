@@ -33,7 +33,7 @@ public class ScheduleController {
 
     @GetMapping("/user/schedule")
     public ResponseEntity<Result<List<GetUserScheduleDTO>>> getScheduleAfterDate(
-        @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        @RequestParam(name = "date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
 
         Long userId = Long.valueOf(
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
@@ -93,7 +93,9 @@ public class ScheduleController {
 
     @GetMapping("/user/schedule/list")
 
-    public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(@RequestParam("year") int year, @RequestParam("month") int month) {
+    public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(
+        @RequestParam(name = "year", required = false) int year,
+        @RequestParam(name = "month", required = false) int month) {
 
         List<Schedule> allSchedules = scheduleServiceImpl.getSchedulesByYearAndMonth(year, month);
 
