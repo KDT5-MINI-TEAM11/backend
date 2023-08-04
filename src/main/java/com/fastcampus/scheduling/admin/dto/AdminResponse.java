@@ -15,15 +15,6 @@ public class AdminResponse {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ResolveDTO{
-        private ScheduleType scheduleType;
-        private State state;
-    }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class GetAllScheduleDTO{
         private Long id;
         private String userName;
@@ -32,5 +23,17 @@ public class AdminResponse {
         private LocalDate startDate;
         private LocalDate endDate;
         private State state;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetAllUserDTO{
+        private Long id;
+        private String userName;
+        private String profileThumbUrl;
+        private Position position;
+        private LocalDate createAt;
     }
 }
