@@ -38,7 +38,13 @@ public class ScheduleController {
         Long userId = Long.valueOf(
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
-        List<Schedule> schedules = scheduleServiceImpl.findByUserId(userId);
+        LocalDate currentDate = LocalDate.now();
+        int currentYear = currentDate.getYear();
+
+        LocalDate startDate = LocalDate.of(currentYear, 1, 1);
+        LocalDate endDate = LocalDate.of(currentYear, 12, 31);
+
+        List<Schedule> schedules = scheduleServiceImpl.getAllSchedulesByUserIdAndDate(userId, startDate, endDate);
 
         List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
             .map(schedule -> GetUserScheduleDTO.from(schedule))
@@ -53,9 +59,13 @@ public class ScheduleController {
         Long userId = Long.valueOf(
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
-        LocalDate today = LocalDate.now().minusMonths(1).plusDays(6);
+        LocalDate currentDate = LocalDate.now();
+        int currentYear = currentDate.getYear();
 
-        List<Schedule> schedules = scheduleServiceImpl.getAllSchedulesByUserIdAndDate(userId, today);
+        LocalDate startDate = LocalDate.of(currentYear, 1, 1);
+        LocalDate endDate = LocalDate.of(currentYear, 12, 31);
+
+        List<Schedule> schedules = scheduleServiceImpl.getAllSchedulesByUserIdAndDate(userId, startDate, endDate);
 
         List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
             .map(schedule -> GetUserScheduleDTO.from(schedule))
@@ -113,14 +123,11 @@ public class ScheduleController {
     }
 
     @GetMapping("/user/schedule/list")
-
     public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(
-        @RequestParam(name = "year", required = false) int year,
-        @RequestParam(name = "month", required = false) int month) {
+        @RequestParam(name = "year", required = false) int year) {
 
-        YearMonth currentYearMonth = YearMonth.of(year, month);
-        LocalDate startDate = currentYearMonth.minusMonths(1).atDay(6);
-        LocalDate endDate = currentYearMonth.plusMonths(1).atDay(13);
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year, 12, 31);
 
         List<Schedule> allSchedules = scheduleServiceImpl.getSchedulesBetweenDates(State.APPROVE, startDate, endDate);
 
