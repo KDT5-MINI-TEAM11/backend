@@ -58,7 +58,7 @@ public class UserDummyController {
 				.scheduleType(ScheduleType.ANNUAL)
 				.startDate(LocalDate.parse("2023-08-01", formatter))
 				.endDate(LocalDate.parse("2023-08-01", formatter))
-				.state(State.REJECT)
+				.state(State.APPROVE)
 				.build();
 
 		scheduleDTOList.add(GetDummyScheduleDTO.from(dummySchedule));
