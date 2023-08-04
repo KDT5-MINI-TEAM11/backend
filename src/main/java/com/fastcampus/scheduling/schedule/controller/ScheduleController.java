@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,13 +31,29 @@ public class ScheduleController {
     private final ScheduleServiceImpl scheduleServiceImpl;
 
     @GetMapping("/user/schedule")
-    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getScheduleAfterDate(
-        @RequestParam(name = "date", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getScheduleAfterDate() {
 
         Long userId = Long.valueOf(
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
-        List<Schedule> schedules = scheduleServiceImpl.getAllSchedulesByUserIdAndDate(userId, date);
+        List<Schedule> schedules = scheduleServiceImpl.findByUserId(userId);
+
+        List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
+            .map(schedule -> GetUserScheduleDTO.from(schedule))
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(ApiResponse.success(userSchedulesDTO));
+    }
+
+    @GetMapping("/user/schedule-today")
+    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getScheduleAfterToday() {
+
+        Long userId = Long.valueOf(
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+
+        LocalDate today = LocalDate.now().minusMonths(1).plusDays(6);
+
+        List<Schedule> schedules = scheduleServiceImpl.getAllSchedulesByUserIdAndDate(userId, today);
 
         List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
             .map(schedule -> GetUserScheduleDTO.from(schedule))
@@ -48,7 +63,7 @@ public class ScheduleController {
     }
 
     @PostMapping("/user/schedule/add")
-    public ResponseEntity<Result<AddScheduleDTO>>  addSchedule(@RequestBody AddScheduleDTO addScheduleDTO) {
+    public ResponseEntity<Result<AddScheduleDTO>> addSchedule(@RequestBody AddScheduleDTO addScheduleDTO) {
 
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 

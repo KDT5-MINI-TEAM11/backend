@@ -22,6 +22,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
 
+    @Transactional
+    public List<Schedule> findByUserId(Long userId) {
+        return scheduleRepository.findByUserId(userId);
+    }
+
+    @Transactional
     public List<Schedule> getAllSchedulesByUserIdAndDate(Long userId, LocalDate startDate) {
 
         List<Schedule> allSchedules = scheduleRepository.findByUserIdAndStartDateAfter(userId, startDate);
