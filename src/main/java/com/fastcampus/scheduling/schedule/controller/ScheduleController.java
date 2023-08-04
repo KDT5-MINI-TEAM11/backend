@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,18 +32,19 @@ public class ScheduleController {
     private final ScheduleServiceImpl scheduleServiceImpl;
 
     @GetMapping("/user/schedule")
-    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getSchedule() {
+    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getScheduleAfterDate(
+        @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+
         Long userId = Long.valueOf(
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
-        List<Schedule> schedules = scheduleServiceImpl.getAllSchedulesByUserId(userId);
+        List<Schedule> schedules = scheduleServiceImpl.getAllSchedulesByUserIdAndDate(userId, date);
 
-        List<GetUserScheduleDTO> userAllSchedulesDTO = schedules.stream()
+        List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
             .map(schedule -> GetUserScheduleDTO.from(schedule))
             .collect(Collectors.toList());
 
-        return ResponseEntity.ok(ApiResponse.success(userAllSchedulesDTO));
-
+        return ResponseEntity.ok(ApiResponse.success(userSchedulesDTO));
     }
 
     @PostMapping("/user/schedule/add")

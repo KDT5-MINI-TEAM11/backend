@@ -15,7 +15,7 @@ public interface ScheduleService {
 
     Schedule modifySchedule(Long id, LocalDate startDate, LocalDate endDate);
 
-    List<Schedule> getAllSchedulesByUserId(Long userId);
+    List<Schedule> getAllSchedulesByUserIdAndDate(Long userId, LocalDate startDate);
 
     List<Schedule> getSchedulesByYearAndMonth(int year, int month);
 
