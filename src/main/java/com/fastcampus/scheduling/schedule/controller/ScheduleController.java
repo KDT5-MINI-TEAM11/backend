@@ -9,6 +9,7 @@ import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.GetUserScheduleDT
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.service.ScheduleServiceImpl;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -117,7 +118,11 @@ public class ScheduleController {
         @RequestParam(name = "year", required = false) int year,
         @RequestParam(name = "month", required = false) int month) {
 
-        List<Schedule> allSchedules = scheduleServiceImpl.getSchedulesByYearAndMonth(year, month);
+        YearMonth currentYearMonth = YearMonth.of(year, month);
+        LocalDate startDate = currentYearMonth.minusMonths(1).atDay(6);
+        LocalDate endDate = currentYearMonth.plusMonths(1).atDay(13);
+
+        List<Schedule> allSchedules = scheduleServiceImpl.getSchedulesBetweenDates(startDate, endDate);
 
         List<GetAllScheduleDTO> allSchedulesDTO = allSchedules.stream()
             .map(schedule -> GetAllScheduleDTO.from(schedule))
