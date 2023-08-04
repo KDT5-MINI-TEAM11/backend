@@ -2,7 +2,7 @@ package com.fastcampus.scheduling.user.model;
 
 
 import com.fastcampus.scheduling.user.common.Position;
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -55,9 +55,9 @@ public class User {
     private Integer usedVacation;
 
     @CreationTimestamp
-    private Timestamp createdAt;
+    private LocalDate createdAt;
 
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    private LocalDate updatedAt;
 
 }

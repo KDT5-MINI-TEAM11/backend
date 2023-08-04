@@ -5,12 +5,12 @@ import com.fastcampus.scheduling._core.util.ApiResponse.Result;
 import com.fastcampus.scheduling._core.util.CookieProvider;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
 import com.fastcampus.scheduling.jwt.service.RefreshTokenService;
-import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.dto.UserRequest;
 import com.fastcampus.scheduling.user.dto.UserResponse;
 import com.fastcampus.scheduling.user.dto.UserResponse.GetMyPageDTO;
 import com.fastcampus.scheduling.user.dto.UserResponse.GetUserHeaderDTO;
 import com.fastcampus.scheduling.user.dto.UserResponse.SignUpDTO;
+import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.service.UserService;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -97,6 +97,10 @@ public class UserController {
     public ResponseEntity<ApiResponse.Result<UserResponse.SignUpDTO>> signUp(
         HttpServletRequest request, @RequestBody @Valid UserRequest.SignUpDTO signUpDTO, HttpServletResponse response) {
         log.info("/api/v1/auth/signup POST " + signUpDTO);
+
+//        if(signUpDTO.getPosition().equals(Position.MANAGER))
+//            throw new Exception400(ErrorMessage.INVALID_POSITION);
+
         User user = userService.save(signUpDTO); // 중복등은 서비스에서 체크
 
         String userEmail = user.getUserEmail();

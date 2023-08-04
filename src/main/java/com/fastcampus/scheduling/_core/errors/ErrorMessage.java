@@ -23,7 +23,9 @@ public class ErrorMessage {
 
     public static final String FAILED_TO_SIGNUP = "회원가입에 실패하였습니다.";
 
-    public static final String INVALID_PhoneNumber = "잘못된 핸드폰 번호 입니다.";
+    public static final String INVALID_CHANGE_POSITION = "잘못 된 요청 입니다.";
+    public static final String INVALID_POSITION = "직책을 확인해 주세요.";
+    public static final String INVALID_PHONENUMBER = "잘못된 핸드폰 번호 입니다.";
     public static final String INVALID_USRENAME = "회원이름은 2자에서 20자 사이어야 합니다.";
     public static final String INVALID_PASSWORD = "패스워드는 8자에서 16자 사이어야 합니다.";
     public static final String INVALID_EMAIL = "이메일 형식을 맞춰주세요.";
