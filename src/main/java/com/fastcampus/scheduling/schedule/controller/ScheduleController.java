@@ -10,13 +10,13 @@ import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.service.ScheduleServiceImpl;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,8 +77,16 @@ public class ScheduleController {
     }
 
     @PostMapping("/user/schedule/cancel")
-    public void cancelSchedule(@PathVariable Long id) {
-        scheduleServiceImpl.cancelSchedule(id);
+    public ResponseEntity<Result> cancelSchedule(@RequestBody Map<String, String> request) {
+        Long userId = Long.valueOf(
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+
+        Long id = Long.valueOf(request.get("id"));
+        scheduleServiceImpl.cancelSchedule(id, userId);
+
+        String message = "정상적으로 취소 되었습니다";
+
+        return ResponseEntity.ok(ApiResponse.success(message));
     }
 
     @PatchMapping("/user/schedule/modify")

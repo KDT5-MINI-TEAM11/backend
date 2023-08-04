@@ -60,8 +60,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    public void cancelSchedule(Long id) {
+    public void cancelSchedule(Long id, Long userId) {
 
+        Schedule schedule = scheduleRepository.findByIdAndUserId(id, userId);
+
+        if (schedule != null) {
+            String message = "일정(ID: " + id + ")이(가) 취소되었습니다.";
+        }
     }
 
     @Transactional

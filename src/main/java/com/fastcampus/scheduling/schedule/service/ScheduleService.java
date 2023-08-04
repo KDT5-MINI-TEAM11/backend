@@ -11,7 +11,7 @@ public interface ScheduleService {
 
     Schedule addSchedule(ScheduleResponse.AddScheduleDTO addScheduleDTO);
 
-    void cancelSchedule(Long userId);
+    void cancelSchedule(Long id, Long userId);
 
     Schedule modifySchedule(Long id, LocalDate startDate, LocalDate endDate);
 
