@@ -17,8 +17,8 @@ public interface ScheduleService {
 
     List<Schedule> getAllSchedulesByUserIdAndDate(Long userId, LocalDate startDate);
 
-    List<Schedule> getSchedulesByYearAndMonth(int year, int month);
-
     List<Schedule> findByUserId(Long userId);
+
+    List<Schedule> getSchedulesBetweenDates(LocalDate startDate, LocalDate endDate);
 
 }

@@ -82,8 +82,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    public List<Schedule> getSchedulesByYearAndMonth(int year, int month) {
+    public List<Schedule> getSchedulesBetweenDates(LocalDate startDate, LocalDate endDate) {
 
-        return scheduleRepository.findByStartDateYearAndStartDateMonth(year, month);
+        return scheduleRepository.findSchedulesByStartDateBetween(startDate, endDate);
     }
 }
