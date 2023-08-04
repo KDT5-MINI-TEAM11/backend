@@ -39,8 +39,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             SigninRequest signinRequest = objectMapper.readValue(request.getInputStream(), SigninRequest.class);
             String userEmail = signinRequest.getUserEmail();
             String userPassword = signinRequest.getUserPassword();
-            log.info("generateAuthenticationToken: " + userEmail);
-            log.info("generateAuthenticationToken: " + userPassword);
+            log.info("Request Email: " + userEmail);
+            log.info("Request Password: " + userPassword);
             if (userEmail == null || userPassword == null) {
                 throw new FieldMissExceptionException();
             }
