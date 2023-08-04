@@ -88,15 +88,12 @@ public class ScheduleController {
 
         Schedule existingSchedule = scheduleServiceImpl.getScheduleById(userId);
 
-        LocalDate newStartDate = modifyScheduleDTO.getStartDate();
-        LocalDate newEndDate = modifyScheduleDTO.getEndDate();
-
-        if (newStartDate != null) {
-            existingSchedule.setStartDate(newStartDate);
+        if (modifyScheduleDTO != null) {
+            existingSchedule.setStartDate(modifyScheduleDTO.getStartDate());
         }
 
-        if (newEndDate != null) {
-            existingSchedule.setEndDate(newEndDate);
+        if (modifyScheduleDTO != null) {
+            existingSchedule.setEndDate(modifyScheduleDTO.getEndDate());
         }
 
         Schedule modifiedSchedule = scheduleServiceImpl.modifySchedule(userId, existingSchedule.getStartDate(), existingSchedule.getEndDate());
