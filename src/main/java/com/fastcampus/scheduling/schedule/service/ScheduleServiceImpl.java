@@ -86,4 +86,5 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         return scheduleRepository.findSchedulesByStateAndStartDateBetween(state.APPROVE, startDate, endDate);
     }
+
 }
