@@ -1,5 +1,6 @@
 package com.fastcampus.scheduling.user.controller;
 
+import com.fastcampus.scheduling._core.security.dto.SigninResponse;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.ApiResponse.Result;
 import com.fastcampus.scheduling._core.util.CookieProvider;
@@ -115,7 +116,31 @@ public class UserController {
         refreshTokenService.saveRefreshToken(Long.valueOf(userId), jwtTokenProvider.getRefreshTokenId(refreshToken));
         cookieProvider.addCookie(response, refreshToken);
 
-
         return ResponseEntity.ok(ApiResponse.success(SignUpDTO.from(accessToken)));
+    }
+
+    @PostMapping("/api/v2/auth/signup")
+    public ResponseEntity<ApiResponse.Result<SigninResponse>> signUpV2(
+        HttpServletRequest request, @RequestBody @Valid UserRequest.SignUpDTO signUpDTO, HttpServletResponse response) {
+        log.info("/api/v1/auth/signup POST " + signUpDTO);
+
+        User user = userService.save(signUpDTO); // 중복등은 서비스에서 체크
+
+        String userEmail = user.getUserEmail();
+        org.springframework.security.core.userdetails.User savedUser = (org.springframework.security.core.userdetails.User) userService.loadUserByUsername(userEmail);
+        String userId = savedUser.getUsername();
+        List<String> roles = savedUser.getAuthorities()
+            .stream()
+            .map(GrantedAuthority::getAuthority)
+            .toList();
+        String accessToken = jwtTokenProvider.generateJwtAccessToken(userId, request.getRequestURI(), roles);
+        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId);
+        refreshTokenService.saveRefreshToken(Long.valueOf(userId), jwtTokenProvider.getRefreshTokenId(refreshToken));
+        cookieProvider.addCookie(response, refreshToken);
+        SigninResponse signinResponse = SigninResponse.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+        return ResponseEntity.ok(ApiResponse.success(signinResponse));
     }
 }
