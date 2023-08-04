@@ -1,6 +1,5 @@
 package com.fastcampus.scheduling.schedule.service;
 
-import com.fastcampus.scheduling.schedule.dto.ScheduleRequest;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import java.time.LocalDate;
@@ -16,6 +15,8 @@ public interface ScheduleService {
 
     Schedule modifySchedule(Long id, LocalDate startDate, LocalDate endDate);
 
+    List<Schedule> getAllSchedulesByUserId(Long userId);
 
+    List<Schedule> getSchedulesByYearAndMonth(int year, int month);
 
 }

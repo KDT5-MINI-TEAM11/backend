@@ -6,7 +6,10 @@ import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.repository.ScheduleRepository;
+import com.fastcampus.scheduling.user.model.User;
+import com.fastcampus.scheduling.user.repository.UserRepository;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
+
+    @Transactional
+    public List<Schedule> getAllSchedulesByUserId(Long userId) {
+
+        return scheduleRepository.getAllSchedulesByUserId(userId);
+    }
 
     @Transactional
     public Schedule getScheduleById(Long userId) {
@@ -27,7 +37,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Transactional
     public Schedule addSchedule(AddScheduleDTO addScheduleDTO) {
+
+        User user = userRepository.findById(addScheduleDTO.getUserId())
+            .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
+
         Schedule schedule = Schedule.builder()
+            .user(user)
             .scheduleType(addScheduleDTO.getScheduleType())
             .startDate(addScheduleDTO.getStartDate())
             .endDate(addScheduleDTO.getEndDate())
@@ -54,4 +69,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.save(schedule);
     }
 
+    @Transactional
+    public List<Schedule> getSchedulesByYearAndMonth(int year, int month) {
+
+        return scheduleRepository.findByStartDateYearAndStartDateMonth(year, month);
+    }
 }
