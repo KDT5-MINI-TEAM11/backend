@@ -21,6 +21,8 @@ public class ScheduleResponse {
 	@Builder
 	public static class GetUserScheduleDTO {
 
+		private  Long id;
+
 		private ScheduleType scheduleType;
 
 		private State state;
@@ -31,6 +33,7 @@ public class ScheduleResponse {
 
 		public static GetUserScheduleDTO from(Schedule schedule) {
 			return GetUserScheduleDTO.builder()
+				.id(schedule.getId())
 				.scheduleType(schedule.getScheduleType())
 				.state(schedule.getState())
 				.startDate(schedule.getStartDate())
@@ -80,6 +83,8 @@ public class ScheduleResponse {
 	@ToString
 	public static class GetAllScheduleDTO {
 
+		private Long id;
+
 		private String userName;
 
 		private String userEmail;
@@ -96,6 +101,7 @@ public class ScheduleResponse {
 			User user = schedule.getUser();
 
 			return GetAllScheduleDTO.builder()
+				.id(schedule.getId())
 				.userName(user.getUserName())
 				.userEmail(user.getUserEmail())
 				.scheduleType(schedule.getScheduleType())
