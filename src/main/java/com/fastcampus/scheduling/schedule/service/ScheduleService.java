@@ -19,4 +19,6 @@ public interface ScheduleService {
 
     List<Schedule> getSchedulesByYearAndMonth(int year, int month);
 
+    List<Schedule> findByUserId(Long userId);
+
 }
