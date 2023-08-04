@@ -3,6 +3,7 @@ package com.fastcampus.scheduling._core.security.filter;
 import static com.fastcampus.scheduling._core.errors.ErrorMessage.MISMATCH_SIGN_IN_INFO;
 
 import com.fastcampus.scheduling.user.service.UserService;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +30,14 @@ public class CustomAuthenticationProvider implements org.springframework.securit
         String userPassword = (String) authenticationToken.getCredentials();
 
         org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) userService.loadUserByUsername(userEmail);
-        log.info("authenticate: " + user.getUsername());
-        log.info("authenticate: " + user.getPassword());
+        log.info("Before Compare Password");
+        log.info("authenticate UserID : " + user.getUsername());
+        log.info("authenticate UserPassword : " + user.getPassword());
+
+        byte[] passwordb = userPassword.getBytes(StandardCharsets.UTF_8);
+        CustomBCrypt.checkpw(passwordb, user.getPassword());
         if (!passwordEncoder.matches(userPassword, user.getPassword())) {
-            log.warn("password Not Match");
+            log.warn("password Not Match From matches");
             throw new BadCredentialsException(MISMATCH_SIGN_IN_INFO);
         }
         // set credentials null

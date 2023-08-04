@@ -3,10 +3,11 @@ package com.fastcampus.scheduling.jwt.service;
 import static com.fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_NOT_VALID;
 import static com.fastcampus.scheduling._core.errors.ErrorMessage.USER_NOT_FOUND;
 
+import com.fastcampus.scheduling.jwt.dto.RefreshAccessTokenRequestDto;
 import com.fastcampus.scheduling.jwt.model.RefreshToken;
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
-import com.fastcampus.scheduling.jwt.dto.RefreshAccessTokenDto;
+import com.fastcampus.scheduling.jwt.dto.RefreshAccessTokenResponseDto;
 import com.fastcampus.scheduling.jwt.repository.RefreshTokenRepository;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
@@ -53,7 +54,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 	}
 
 	@Override
-	public RefreshAccessTokenDto refreshAccessToken(String userId) {
+	public RefreshAccessTokenResponseDto refreshAccessToken(String userId) {
 		try {
 			User findUser = userRepository.findById(Long.valueOf(userId))
 					.orElseThrow(() -> new Exception401(
@@ -66,7 +67,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 			String newAccessToken = jwtTokenProvider.generateJwtAccessToken(userId, "/refresh-token",
 					roles);
 
-			return RefreshAccessTokenDto.builder()
+			return RefreshAccessTokenResponseDto.builder()
 					.accessToken(newAccessToken)
 					.build();
 		} catch (Exception exception) {
@@ -98,5 +99,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 			throw new Exception401(TOKEN_NOT_VALID);
 		}
 		return findRefreshToken;
+	}
+
+	@Override
+	public String getRefreshToken(RefreshAccessTokenRequestDto request) {
+
+		String refreshToken = request.getRefreshToken();
+
+		jwtTokenProvider.validateJwtToken(refreshToken);
+
+		return refreshToken;
 	}
 }
