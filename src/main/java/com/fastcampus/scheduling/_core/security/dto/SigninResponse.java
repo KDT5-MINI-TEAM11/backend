@@ -8,5 +8,7 @@ import lombok.Getter;
 public class SigninResponse {
 
 	private String accessToken;
+	//temp var for cross domain
+	private String refreshToken;
 
 }
