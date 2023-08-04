@@ -45,7 +45,7 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
         response = cookieProvider.addCookie(response, refreshToken);
 
 
-        SigninResponse signinResponse = SigninResponse.builder().accessToken(accessToken).build();
+        SigninResponse signinResponse = SigninResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
 
         // save signIn log
         userLogService.saveSigninLog(userId);
