@@ -66,6 +66,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         if (schedule != null && schedule.getState() == State.PENDING) {
             scheduleRepository.delete(schedule);
+        } else {
+            throw new IllegalArgumentException(ErrorMessage.CANNOT_CANCEL_SCHEDULE);
         }
     }
 
