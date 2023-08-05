@@ -22,6 +22,4 @@ public interface ScheduleService {
 
     List<Schedule> getSchedulesBetweenDates(State state, LocalDate startDate, LocalDate endDate);
 
-    List<Schedule> findByUserId(Long userId);
-
 }

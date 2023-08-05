@@ -33,39 +33,21 @@ public class ScheduleController {
     private final ScheduleServiceImpl scheduleServiceImpl;
 
     @GetMapping("/user/schedule")
-    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getScheduleAfterDate() {
+    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getUserSchedule(
+        @RequestParam(name = "year", required = false) Integer year) {
 
         Long userId = Long.valueOf(
             SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
-        LocalDate currentDate = LocalDate.now();
-        int currentYear = currentDate.getYear();
+        List<Schedule> schedules;
 
-        LocalDate startDate = LocalDate.of(currentYear, 1, 1);
-        LocalDate endDate = LocalDate.of(currentYear, 12, 31);
-
-        List<Schedule> schedules = scheduleServiceImpl.getAllSchedulesByUserIdAndDate(userId, startDate, endDate);
-
-        List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
-            .map(schedule -> GetUserScheduleDTO.from(schedule))
-            .collect(Collectors.toList());
-
-        return ResponseEntity.ok(ApiResponse.success(userSchedulesDTO));
-    }
-
-    @GetMapping("/user/schedule-today")
-    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getScheduleAfterToday() {
-
-        Long userId = Long.valueOf(
-            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-
-        LocalDate currentDate = LocalDate.now();
-        int currentYear = currentDate.getYear();
-
-        LocalDate startDate = LocalDate.of(currentYear, 1, 1);
-        LocalDate endDate = LocalDate.of(currentYear, 12, 31);
-
-        List<Schedule> schedules = scheduleServiceImpl.getAllSchedulesByUserIdAndDate(userId, startDate, endDate);
+        if (year != null) {
+            LocalDate startDate = LocalDate.of(year, 1, 1);
+            LocalDate endDate = LocalDate.of(year, 12, 31);
+            schedules = scheduleServiceImpl.findByYear(userId, startDate, endDate);
+        } else {
+            schedules = scheduleServiceImpl.findByUserId(userId);
+        }
 
         List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
             .map(schedule -> GetUserScheduleDTO.from(schedule))
@@ -124,12 +106,17 @@ public class ScheduleController {
 
     @GetMapping("/user/schedule/list")
     public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(
-        @RequestParam(name = "year", required = false) int year) {
+        @RequestParam(name = "year", required = false) Integer year) {
 
-        LocalDate startDate = LocalDate.of(year, 1, 1);
-        LocalDate endDate = LocalDate.of(year, 12, 31);
+        List<Schedule> allSchedules;
 
-        List<Schedule> allSchedules = scheduleServiceImpl.getSchedulesBetweenDates(State.APPROVE, startDate, endDate);
+        if (year != null) {
+            LocalDate startDate = LocalDate.of(year, 1, 1);
+            LocalDate endDate = LocalDate.of(year, 12, 31);
+            allSchedules = scheduleServiceImpl.getSchedulesBetweenDates(State.APPROVE, startDate, endDate);
+        } else {
+            allSchedules = scheduleServiceImpl.findByAllYear(State.APPROVE);
+        }
 
         List<GetAllScheduleDTO> allSchedulesDTO = allSchedules.stream()
             .map(schedule -> GetAllScheduleDTO.from(schedule))

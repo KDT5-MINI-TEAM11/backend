@@ -28,7 +28,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    public List<Schedule> getAllSchedulesByUserIdAndDate(Long userId, LocalDate startDate, LocalDate endDate) {
+    public List<Schedule> findByYear(Long userId, LocalDate startDate, LocalDate endDate) {
 
         List<Schedule> allSchedules = scheduleRepository.findByUserIdAndStartDateAfterAndStartDateBefore(userId, startDate, endDate);
 
@@ -85,6 +85,12 @@ public class ScheduleServiceImpl implements ScheduleService {
     public List<Schedule> getSchedulesBetweenDates(State state, LocalDate startDate, LocalDate endDate) {
 
         return scheduleRepository.findSchedulesByStateAndStartDateBetween(state.APPROVE, startDate, endDate);
+    }
+
+    @Transactional
+    public List<Schedule> findByAllYear(State state) {
+
+        return scheduleRepository.findSchedulesByState(state.APPROVE);
     }
 
 }

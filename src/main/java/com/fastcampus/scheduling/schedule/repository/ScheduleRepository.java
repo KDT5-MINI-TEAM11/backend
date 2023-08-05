@@ -20,4 +20,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findSchedulesByStateAndStartDateBetween(State state, LocalDate startDate, LocalDate endDate);
 
+    List<Schedule> findSchedulesByState(State state);
+
 }
