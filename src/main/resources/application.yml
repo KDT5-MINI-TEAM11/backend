@@ -31,7 +31,7 @@ spring:
     default: local
 
   datasource:
-    url: jdbc:h2:mem:test;MODE=MySQL
+    url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: fc11
     password:
@@ -71,10 +71,11 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: mysql_url
+    url: jdbc:mysql://54.206.244.160:3306/schedule
     username: ${MYSQL_ID}
     password: ${MYSQL_PASSWORD}
-
+    hikari:
+      connection-timeout: 10000
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
