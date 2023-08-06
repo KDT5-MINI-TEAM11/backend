@@ -71,7 +71,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://54.206.244.160:3306/schedule
+    url: ${MYSQL_URL}
     username: ${MYSQL_ID}
     password: ${MYSQL_PASSWORD}
     hikari:
