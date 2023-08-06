@@ -2,7 +2,6 @@ package com.fastcampus.scheduling.schedule.service;
 
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
 import com.fastcampus.scheduling._core.errors.exception.Exception400;
-import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling._core.exception.CustomException;
 import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
@@ -30,13 +29,6 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<Schedule> allSchedules = scheduleRepository.findByUserIdAndYear(userId, startDate, endDate);
 
         return allSchedules;
-    }
-
-    @Transactional
-    public Schedule getScheduleById(Long userId) {
-        return scheduleRepository.findById(userId)
-            .orElseThrow(() -> new Exception401(
-                ErrorMessage.USER_NOT_FOUND));
     }
 
     @Transactional

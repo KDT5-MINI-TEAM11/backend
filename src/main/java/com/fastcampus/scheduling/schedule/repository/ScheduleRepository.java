@@ -1,6 +1,5 @@
 package com.fastcampus.scheduling.schedule.repository;
 
-import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +20,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("SELECT s FROM Schedule s WHERE s.startDate >= :startDate AND s.endDate <= :endDate")
     List<Schedule> findAllByYear(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
-
 
 }
