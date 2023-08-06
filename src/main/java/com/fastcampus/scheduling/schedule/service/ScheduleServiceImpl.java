@@ -1,7 +1,9 @@
 package com.fastcampus.scheduling.schedule.service;
 
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
+import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
+import com.fastcampus.scheduling._core.exception.CustomException;
 import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.Schedule;
@@ -23,14 +25,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final UserRepository userRepository;
 
     @Transactional
-    public List<Schedule> findByUserId(Long userId) {
-        return scheduleRepository.findByUserId(userId);
-    }
-
-    @Transactional
     public List<Schedule> findByYear(Long userId, LocalDate startDate, LocalDate endDate) {
 
-        List<Schedule> allSchedules = scheduleRepository.findByUserIdAndStartDateAfterAndStartDateBefore(userId, startDate, endDate);
+        List<Schedule> allSchedules = scheduleRepository.findByUserIdAndYear(userId, startDate, endDate);
 
         return allSchedules;
     }
@@ -48,6 +45,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         User user = userRepository.findById(addScheduleDTO.getUserId())
             .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
 
+        LocalDate startDate = addScheduleDTO.getStartDate();
+        LocalDate endDate = addScheduleDTO.getEndDate();
+
+        if (startDate.isAfter(endDate)) {
+            throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
+        }
+
         Schedule schedule = Schedule.builder()
             .user(user)
             .scheduleType(addScheduleDTO.getScheduleType())
@@ -60,14 +64,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    public void cancelSchedule(Long id, Long userId) {
-
+    public void cancelSchedule(Long id, Long userId) throws CustomException {
         Schedule schedule = scheduleRepository.findByIdAndUserId(id, userId);
 
         if (schedule != null && schedule.getState() == State.PENDING) {
             scheduleRepository.delete(schedule);
         } else {
-            throw new IllegalArgumentException(ErrorMessage.CANNOT_CANCEL_SCHEDULE);
+            throw new Exception400(ErrorMessage.CANNOT_CANCEL_SCHEDULE);
         }
     }
 
@@ -84,15 +87,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    public List<Schedule> getSchedulesBetweenDates(State state, LocalDate startDate, LocalDate endDate) {
-
-        return scheduleRepository.findSchedulesByStateAndStartDateBetween(state.APPROVE, startDate, endDate);
+    public Schedule getScheduleByIdAndUserId(Long id, Long userId) {
+        return scheduleRepository.findByIdAndUserId(id, userId);
     }
 
     @Transactional
-    public List<Schedule> findByAllYear(State state) {
+    public List<Schedule> findAllByYear(LocalDate startDate, LocalDate endDate) {
 
-        return scheduleRepository.findSchedulesByState(state.APPROVE);
+        return scheduleRepository.findAllByYear(startDate, endDate);
     }
 
 }
