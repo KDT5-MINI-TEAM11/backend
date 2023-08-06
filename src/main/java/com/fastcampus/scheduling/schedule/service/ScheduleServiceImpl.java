@@ -80,6 +80,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleRepository.findById(id)
             .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
 
+        if (startDate.isAfter(endDate)) {
+            throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
+        }
+
         schedule.setStartDate(startDate);
         schedule.setEndDate(endDate);
 
