@@ -5,25 +5,24 @@ server:
       charset: UTF-8
       force: true
 
-spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${mail.username}
-    password: ${mail.password}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          timeout: 5000
-          debug: true
-          starttls:
-            enable: true
-
 logging:
   level:
     '[fastcampus.scheduling]': DEBUG
     '[org.hibernate.type]': TRACE
+
+spring:
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: true
+        ssl:
+          enable: true
+          trust: smtp.naver.com
 ---
 
 spring:

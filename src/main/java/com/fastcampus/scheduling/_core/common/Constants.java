@@ -1,9 +1,10 @@
 package com.fastcampus.scheduling._core.common;
 
-public class Constants {
-    public static final int USERNAME_MIN_SIZE = 2;
-    public static final int USERNAME_MAX_SIZE = 20;
-    public static final int PASSWORD_MIN_SIZE = 8;
-    public static final int PASSWORD_MAX_SIZE = 16;
+public interface Constants {
+    int USED_VACATION = 0;
+    long MAIL_AUTH_TIME = 180l;
+    String SCHEDULE_APPROVE = "요청이 승인 되었습니다.";
+    String SCHEDULE_REJECT = "요청이 반려 되었습니다.";
+    String MAIL_SUBJECT = "인증메일";
 
 }
