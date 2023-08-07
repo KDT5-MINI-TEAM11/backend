@@ -101,12 +101,12 @@ public class UserController {
 
         User user = userService.save(signUpDTO);
 
-        String accessToken = getAccessToken(request, response, user);
+        String accessToken = generateAccessToken(request, response, user);
 
         return ResponseEntity.ok(ApiResponse.success(SignUpDTO.from(accessToken)));
     }
 
-    private String getAccessToken(HttpServletRequest request, HttpServletResponse response, User user) {
+    private String generateAccessToken(HttpServletRequest request, HttpServletResponse response, User user) {
         String userEmail = user.getUserEmail();
         org.springframework.security.core.userdetails.User savedUser = (org.springframework.security.core.userdetails.User) userService.loadUserByUsername(userEmail);
         String userId = savedUser.getUsername();
