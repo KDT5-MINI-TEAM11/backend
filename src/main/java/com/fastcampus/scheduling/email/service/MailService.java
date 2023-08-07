@@ -8,10 +8,14 @@ import com.fastcampus.scheduling._core.errors.exception.Exception500;
 import com.fastcampus.scheduling.email.dto.EmailRequest;
 import com.fastcampus.scheduling.email.dto.EmailRequest.CheckEmailAuthDTO;
 import com.fastcampus.scheduling.email.dto.EmailRequest.SendEmailDTO;
-import com.fastcampus.scheduling.email.repository.RedisRepository;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MailService {
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
-    private final RedisRepository emailRepository;
+
+    private final Map<String, String> authMap = new ConcurrentHashMap<>();
 
     public boolean sendEmail(SendEmailDTO sendEmailDTO) {
         if(sendEmailDTO == null)
@@ -37,17 +42,13 @@ public class MailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
         try {
-            helper.setFrom("ahdzlq12@naver.com");
+            helper.setFrom(Constants.MAIL_FROM);
             helper.setTo(sendEmailDTO.getTo());
             helper.setSubject(Constants.MAIL_SUBJECT);
             helper.setText(authNumber);
             javaMailSender.send(message);
-            emailRepository.save(CheckEmailAuthDTO.builder()
-                .userEmail(sendEmailDTO.getTo())
-                .userEmailAuth(authNumber)
-                .build());
+            authMap.put(authNumber, getDateTime());
         }catch (MailException | MessagingException e){
-            System.out.println(e);
             throw new Exception500(ErrorMessage.FAILED_TO_SEND_EMAIL);
         }
 
@@ -72,15 +73,24 @@ public class MailService {
         if(checkEmailAuthDTO == null)
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH);
 
-        CheckEmailAuthDTO checkEmailAuthDTOPersistance = emailRepository.findById(checkEmailAuthDTO.getUserEmail()).orElseThrow(()
-            -> new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH));
-
-        if(checkEmailAuthDTO.getUserEmailAuth().isEmpty() ||
-            !checkEmailAuthDTOPersistance.getUserEmailAuth().equals(checkEmailAuthDTO.getUserEmailAuth()))
+        if(checkEmailAuthDTO.getUserEmailAuth().isEmpty())
             throw new Exception400(ErrorMessage.INVALID_SEND_EMAILAUTH);
 
-        emailRepository.delete(checkEmailAuthDTOPersistance);
-        return true;
+        return checkExpiredNumber(checkEmailAuthDTO);
+    }
+
+    public boolean checkExpiredNumber(CheckEmailAuthDTO checkEmailAuthDTO) {
+        String startDateTime = authMap.get(checkEmailAuthDTO.getUserEmailAuth());
+
+        if (startDateTime == null)
+            throw new IllegalArgumentException(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH);
+
+        LocalDateTime startTime = LocalDateTime.parse(startDateTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        Duration timeDifference = Duration.between(startTime, currentTime);
+
+        return timeDifference.toMinutes() <= Constants.MAIL_AUTH_TIME;
     }
 
     public String createCode() {
@@ -99,4 +109,10 @@ public class MailService {
         return key.toString();
     }
 
+    private static String getDateTime() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return currentDateTime.format(formatter);
+    }
 }

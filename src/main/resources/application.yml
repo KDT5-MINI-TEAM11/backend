@@ -13,9 +13,9 @@ logging:
 spring:
   mail:
     host: smtp.naver.com
-    port: 465
-    username: ""
-    password: ""
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
     properties:
       mail:
         smtp:
@@ -34,10 +34,6 @@ spring:
     driver-class-name: org.h2.Driver
     username: fc11
     password:
-
-  redis:
-    host: 127.0.0.1
-    port: 6379
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
