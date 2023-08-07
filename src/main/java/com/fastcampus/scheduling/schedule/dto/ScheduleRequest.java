@@ -1,7 +1,5 @@
 package com.fastcampus.scheduling.schedule.dto;
 
-import com.fastcampus.scheduling.schedule.common.ScheduleType;
-import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;

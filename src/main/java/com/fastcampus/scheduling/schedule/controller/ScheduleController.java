@@ -33,7 +33,6 @@ public class ScheduleController {
 
     @GetMapping("/user/schedule")
     public ResponseEntity<Result<List<GetUserScheduleDTO>>> getUserSchedule(@RequestParam(name = "year", required = true) Integer year) {
-
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
         List<Schedule> schedules;
@@ -51,7 +50,6 @@ public class ScheduleController {
 
     @PostMapping("/user/schedule/add")
     public ResponseEntity<Result<AddScheduleDTO>> addSchedule(@RequestBody AddScheduleDTO addScheduleDTO) {
-
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         addScheduleDTO.setUserId(userId);
 
@@ -76,26 +74,15 @@ public class ScheduleController {
     public ResponseEntity<Result<ModifyScheduleDTO>> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
-        Schedule existingSchedule = scheduleServiceImpl.getScheduleByIdAndUserId(modifyScheduleDTO.getId(), userId);
+        Schedule modifiedSchedule = scheduleServiceImpl.modifySchedule(modifyScheduleDTO, userId);
 
-        if (modifyScheduleDTO != null) {
-            existingSchedule.setStartDate(modifyScheduleDTO.getStartDate());
-        }
-
-        if (modifyScheduleDTO != null) {
-            existingSchedule.setEndDate(modifyScheduleDTO.getEndDate());
-        }
-
-        Schedule modifiedSchedule = scheduleServiceImpl.modifySchedule(modifyScheduleDTO.getId(), existingSchedule.getStartDate(), existingSchedule.getEndDate());
         ModifyScheduleDTO modifyScheduleResponseDTO = ModifyScheduleDTO.from(modifiedSchedule);
 
         return ResponseEntity.ok(ApiResponse.success(modifyScheduleResponseDTO));
     }
 
     @GetMapping("/schedule/list")
-    public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(
-        @RequestParam(name = "year", required = true) Integer year) {
-
+    public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(@RequestParam(name = "year", required = true) Integer year) {
         List<Schedule> allSchedules;
 
         LocalDate startDate = LocalDate.of(year, 1, 1);
