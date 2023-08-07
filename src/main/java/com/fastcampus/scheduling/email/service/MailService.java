@@ -55,36 +55,32 @@ public class MailService {
     }
 
     @Transactional(readOnly = true)
-    public void checkEmail(EmailRequest.CheckEmailDTO checkEmailDTO) {
-        if(checkEmailDTO == null) throw new Exception500(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAIL);
-
-        validateEmail(checkEmailDTO);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean checkEmailAuth(EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO) {
-        if(checkEmailAuthDTO == null) throw new Exception500(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH);
-        Optional<User> userOptional = userRepository.findByUserEmail(checkEmailAuthDTO.getUserEmail());
-        String email = checkEmailAuthDTO.getUserEmail();
-        String emailAuth = checkEmailAuthDTO.getUserEmailAuth();
-
-        if(this.emailAuth.get(email).equals(emailAuth)){
-            this.emailAuth.remove(email);
-            return true;
-        }
-
-        throw new Exception400(ErrorMessage.INVALID_SEND_EMAILAUTH);
-    }
-
-    @Transactional(readOnly = true)
-    public void validateEmail(EmailRequest.CheckEmailDTO checkEmailDTO) {
-        String email = checkEmailDTO.getUserEmail();
-        Optional<User> userOptional = userRepository.findByUserEmail(email);
-
-        userOptional.ifPresent(user -> {throw new DuplicateUserEmailException();});
-
-        if(email.isBlank())
+    public boolean checkEmail(EmailRequest.CheckEmailDTO checkEmailDTO) {
+        if(checkEmailDTO == null)
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAIL);
+
+        User duplicatedEmail = userRepository.findByUserEmail(checkEmailDTO.getUserEmail())
+            .orElse(null);
+
+        if(duplicatedEmail != null)
+            throw new DuplicateUserEmailException();
+
+        return true;
+    }
+
+    public boolean checkEmailAuth(EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO) {
+        if(checkEmailAuthDTO == null)
+            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH);
+
+        CheckEmailAuthDTO checkEmailAuthDTOPersistance = emailRepository.findById(checkEmailAuthDTO.getUserEmail()).orElseThrow(()
+            -> new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH));
+
+        if(checkEmailAuthDTO.getUserEmailAuth().isEmpty() ||
+            !checkEmailAuthDTOPersistance.getUserEmailAuth().equals(checkEmailAuthDTO.getUserEmailAuth()))
+            throw new Exception400(ErrorMessage.INVALID_SEND_EMAILAUTH);
+
+        emailRepository.delete(checkEmailAuthDTOPersistance);
+        return true;
     }
 
     public String createCode() {
