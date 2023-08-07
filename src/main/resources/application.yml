@@ -35,6 +35,10 @@ spring:
     username: fc11
     password:
 
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -73,8 +77,12 @@ spring:
     url: ${MYSQL_URL}
     username: ${MYSQL_ID}
     password: ${MYSQL_PASSWORD}
-    hikari:
-      connection-timeout: 10000
+#    hikari:
+#      connection-timeout: 10000
+  redis:
+     host: ${spring.redis.host}
+     port: ${spring.redis.port}
+
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -86,6 +94,19 @@ spring:
         format_sql: true
         show_sql: true
         #open-in-view: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          debug: true
+          starttls:
+            enable: true
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
