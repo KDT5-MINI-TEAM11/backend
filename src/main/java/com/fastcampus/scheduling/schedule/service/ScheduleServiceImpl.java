@@ -1,7 +1,8 @@
 package com.fastcampus.scheduling.schedule.service;
 
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
-import com.fastcampus.scheduling._core.errors.exception.Exception401;
+import com.fastcampus.scheduling._core.errors.exception.Exception400;
+import com.fastcampus.scheduling._core.exception.CustomException;
 import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.Schedule;
@@ -23,23 +24,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final UserRepository userRepository;
 
     @Transactional
-    public List<Schedule> findByUserId(Long userId) {
-        return scheduleRepository.findByUserId(userId);
-    }
+    public List<Schedule> findByYear(Long userId, LocalDate startDate, LocalDate endDate) {
 
-    @Transactional
-    public List<Schedule> getAllSchedulesByUserIdAndDate(Long userId, LocalDate startDate) {
-
-        List<Schedule> allSchedules = scheduleRepository.findByUserIdAndStartDateAfter(userId, startDate);
+        List<Schedule> allSchedules = scheduleRepository.findSchedulesByUserIdAndStartDateBetween(userId, startDate, endDate);
 
         return allSchedules;
-    }
-
-    @Transactional
-    public Schedule getScheduleById(Long userId) {
-        return scheduleRepository.findById(userId)
-            .orElseThrow(() -> new Exception401(
-                ErrorMessage.USER_NOT_FOUND));
     }
 
     @Transactional
@@ -47,6 +36,17 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         User user = userRepository.findById(addScheduleDTO.getUserId())
             .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
+
+        LocalDate startDate = addScheduleDTO.getStartDate();
+        LocalDate endDate = addScheduleDTO.getEndDate();
+
+        if (startDate.isAfter(endDate)) {
+            throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
+        }
+
+        if (isScheduleOverlap(addScheduleDTO)) {
+            throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
+        }
 
         Schedule schedule = Schedule.builder()
             .user(user)
@@ -59,13 +59,30 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.save(schedule);
     }
 
-    @Transactional
-    public void cancelSchedule(Long id, Long userId) {
+    private boolean isScheduleOverlap(AddScheduleDTO addScheduleDTO) {
+        List<Schedule> existingSchedules = scheduleRepository.findByUserAndDatesOverlap(
+            addScheduleDTO.getUserId(),
+            addScheduleDTO.getStartDate(),
+            addScheduleDTO.getEndDate()
+        );
 
+        for (Schedule existingSchedule : existingSchedules) {
+            if (existingSchedule.getStartDate().isBefore(addScheduleDTO.getEndDate()) &&
+                existingSchedule.getEndDate().isAfter(addScheduleDTO.getStartDate())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Transactional
+    public void cancelSchedule(Long id, Long userId) throws CustomException {
         Schedule schedule = scheduleRepository.findByIdAndUserId(id, userId);
 
-        if (schedule != null) {
-            String message = "일정(ID: " + id + ")이(가) 취소되었습니다.";
+        if (schedule != null && schedule.getState() == State.PENDING) {
+            scheduleRepository.delete(schedule);
+        } else {
+            throw new Exception400(ErrorMessage.CANNOT_CANCEL_SCHEDULE);
         }
     }
 
@@ -75,6 +92,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleRepository.findById(id)
             .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
 
+        if (startDate.isAfter(endDate)) {
+            throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
+        }
+
         schedule.setStartDate(startDate);
         schedule.setEndDate(endDate);
 
@@ -82,8 +103,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    public List<Schedule> getSchedulesBetweenDates(LocalDate startDate, LocalDate endDate) {
+    public Schedule getScheduleByIdAndUserId(Long id, Long userId) {
+        return scheduleRepository.findByIdAndUserId(id, userId);
+    }
+
+    @Transactional
+    public List<Schedule> findAllByYear(LocalDate startDate, LocalDate endDate) {
 
         return scheduleRepository.findSchedulesByStartDateBetween(startDate, endDate);
     }
+
 }
