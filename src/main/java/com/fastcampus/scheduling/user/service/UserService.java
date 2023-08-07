@@ -1,16 +1,15 @@
 package com.fastcampus.scheduling.user.service;
 
+import com.fastcampus.scheduling._core.common.Constants;
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
-import com.fastcampus.scheduling._core.errors.exception.DuplicatePhoneNumberException;
 import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling.user.common.Position;
+import com.fastcampus.scheduling.user.dto.UserRequest;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
-import com.fastcampus.scheduling.user.dto.UserRequest;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -46,8 +45,7 @@ public class UserService implements UserDetailsService {
 	}
 
     @Transactional
-	public User updateUser(Long id, String userPassword, String phoneNumber,
-			String profileThumbUrl) {
+	public User updateUser(Long id, String userPassword, String phoneNumber, String profileThumbUrl) throws IllegalArgumentException, OptimisticLockingFailureException{
 			User user = userRepository.findById(id)
 					.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
 
@@ -60,41 +58,31 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public User save(UserRequest.SignUpDTO signUpDTO) throws IllegalArgumentException, OptimisticLockingFailureException {
-        if(signUpDTO == null) throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_SIGNUP);
-
         validateSignUp(signUpDTO);
 
         User user = signUpDTO.toEntityWithHashPassword(passwordEncoder);
-		user.setUsedVacation(0);
+		user.setUsedVacation(Constants.USED_VACATION);
 
         return userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
     public void validateSignUp(UserRequest.SignUpDTO signUpDTO) {
+        if(signUpDTO == null)
+            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_SIGNUP);
+
+        if(signUpDTO.getPosition().equals(Position.MANAGER))
+            throw new Exception400(ErrorMessage.INVALID_POSITION);
+
         String phoneNumber = signUpDTO.getPhoneNumber();
-        Position position = signUpDTO.getPosition();
-        String userName = signUpDTO.getUserName();
-        String userPassword = signUpDTO.getUserPassword();
 
-        Optional<User> userOptional = userRepository.findByPhoneNumber(phoneNumber);
+        User duplicatedPhoneNumber = userRepository.findByPhoneNumber(phoneNumber)
+            .orElse(null);
 
-        userOptional.ifPresent(user -> {throw new DuplicatePhoneNumberException();});
-        System.out.println(userName);
-        System.out.println(userPassword);
+        if(duplicatedPhoneNumber != null)
+            throw new Exception400(ErrorMessage.DUPLICATE_PHONENUMBER);
+
         if(phoneNumber.isBlank())
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PHONENUMBER);
-        if(position == null || position.equals(""))
-            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_POSITION);
-//        if(userName.isBlank() || (userName.length() >= Constants.USERNAME_MIN_SIZE && userName.length() <= Constants.USERNAME_MAX_SIZE)) //조건 수정 필요
-//            throw new Exception400(ErrorMessage.INVALID_USRENAME);
-//        if(userPassword.isBlank() || (userPassword.length() >= Constants.PASSWORD_MIN_SIZE && userName.length() <= Constants.PASSWORD_MAX_SIZE))
-//            throw new Exception400(ErrorMessage.INVALID_PASSWORD);
     }
-
-//    public Authentication getAuthentication(String email) {
-//        UserDetails userDetails = loadUserByUsername(email);
-//        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
-//            userDetails.getAuthorities());
-//    }
 }
