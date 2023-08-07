@@ -64,6 +64,18 @@ jwt:
 ---
 # for dev
 spring:
+  mail:
+    host: smtp.naver.com
+    port: 587
+    username: ${mail_username}
+    password: ${mail_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+        ssl:
+          enable: true
+          trust: smtp.naver.com
   config:
     activate:
       on-profile: dev
@@ -75,34 +87,18 @@ spring:
     password: ${MYSQL_PASSWORD}
 #    hikari:
 #      connection-timeout: 10000
-  redis:
-     host: ${spring.redis.host}
-     port: ${spring.redis.port}
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: update
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     properties:
       hibernate:
         format_sql: true
         show_sql: true
         #open-in-view: true
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${mail.username}
-    password: ${mail.password}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          timeout: 5000
-          debug: true
-          starttls:
-            enable: true
 
 jwt:
   secret-key: ${JWT_SECRET_KEY}
@@ -120,12 +116,24 @@ logging:
 
 #for prod
 spring:
+  mail:
+    host: smtp.naver.com
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+        ssl:
+          enable: true
+          trust: smtp.naver.com
   config:
     activate:
       on-profile: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: mysql_url
+    url: ${MYSQL_URL}
     username: ${MYSQL_ID}
     password: ${MYSQL_PASSWORD}
 
