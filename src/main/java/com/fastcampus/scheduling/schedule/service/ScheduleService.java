@@ -1,6 +1,5 @@
 package com.fastcampus.scheduling.schedule.service;
 
-import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import java.time.LocalDate;

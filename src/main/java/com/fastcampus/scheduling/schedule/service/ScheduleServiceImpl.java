@@ -26,7 +26,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     public List<Schedule> findByYear(Long userId, LocalDate startDate, LocalDate endDate) {
 
-        List<Schedule> allSchedules = scheduleRepository.findByUserIdAndYear(userId, startDate, endDate);
+        List<Schedule> allSchedules = scheduleRepository.findSchedulesByUserIdAndStartDateBetween(userId, startDate, endDate);
 
         return allSchedules;
     }
@@ -44,6 +44,10 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
         }
 
+        if (isScheduleOverlap(addScheduleDTO)) {
+            throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
+        }
+
         Schedule schedule = Schedule.builder()
             .user(user)
             .scheduleType(addScheduleDTO.getScheduleType())
@@ -53,6 +57,22 @@ public class ScheduleServiceImpl implements ScheduleService {
             .build();
 
         return scheduleRepository.save(schedule);
+    }
+
+    private boolean isScheduleOverlap(AddScheduleDTO addScheduleDTO) {
+        List<Schedule> existingSchedules = scheduleRepository.findByUserAndDatesOverlap(
+            addScheduleDTO.getUserId(),
+            addScheduleDTO.getStartDate(),
+            addScheduleDTO.getEndDate()
+        );
+
+        for (Schedule existingSchedule : existingSchedules) {
+            if (existingSchedule.getStartDate().isBefore(addScheduleDTO.getEndDate()) &&
+                existingSchedule.getEndDate().isAfter(addScheduleDTO.getStartDate())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Transactional
@@ -90,7 +110,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     public List<Schedule> findAllByYear(LocalDate startDate, LocalDate endDate) {
 
-        return scheduleRepository.findAllByYear(startDate, endDate);
+        return scheduleRepository.findSchedulesByStartDateBetween(startDate, endDate);
     }
 
 }

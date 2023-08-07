@@ -15,10 +15,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findAllByOrderByIdDesc();
 
-    @Query("SELECT s FROM Schedule s WHERE s.user.id = :userId AND s.startDate >= :startDate AND s.endDate <= :endDate")
-    List<Schedule> findByUserIdAndYear(@Param("userId") Long userId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    @Query("SELECT s FROM Schedule s WHERE s.user.id = :userId AND s.endDate > :startDate AND s.startDate < :endDate")
+    List<Schedule> findByUserAndDatesOverlap(@Param("userId") Long userId, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
-    @Query("SELECT s FROM Schedule s WHERE s.startDate >= :startDate AND s.endDate <= :endDate")
-    List<Schedule> findAllByYear(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    List<Schedule> findSchedulesByUserIdAndStartDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
+
+    List<Schedule> findSchedulesByStartDateBetween(LocalDate startDate, LocalDate endDate);
+
 
 }

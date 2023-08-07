@@ -45,4 +45,5 @@ public class ErrorMessage {
     public static final String INNER_SERVER_ERROR = "서버 내부 오류가 발생 했습니다.";
 
     public static final String CANNOT_CANCEL_SCHEDULE = "취소할 수 없는 상태의 일정입니다.";
+    public static final String OVERLAPPING_SCHEDULE = "이미 신청한 일정입니다.";
 }

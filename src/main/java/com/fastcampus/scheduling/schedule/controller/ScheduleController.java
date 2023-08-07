@@ -1,7 +1,5 @@
 package com.fastcampus.scheduling.schedule.controller;
 
-import com.fastcampus.scheduling._core.errors.ErrorMessage;
-import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.exception.CustomException;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.ApiResponse.Result;
@@ -34,12 +32,7 @@ public class ScheduleController {
     private final ScheduleServiceImpl scheduleServiceImpl;
 
     @GetMapping("/user/schedule")
-    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getUserSchedule(
-        @RequestParam(name = "year", required = true) Integer year) {
-
-        if (year == null) {
-            throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
-        }
+    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getUserSchedule(@RequestParam(name = "year", required = true) Integer year) {
 
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
@@ -102,10 +95,6 @@ public class ScheduleController {
     @GetMapping("/user/schedule/list")
     public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(
         @RequestParam(name = "year", required = true) Integer year) {
-
-        if (year == null) {
-            throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
-        }
 
         List<Schedule> allSchedules;
 
