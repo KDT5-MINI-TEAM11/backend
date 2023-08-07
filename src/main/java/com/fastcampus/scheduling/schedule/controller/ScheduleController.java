@@ -92,7 +92,7 @@ public class ScheduleController {
         return ResponseEntity.ok(ApiResponse.success(modifyScheduleResponseDTO));
     }
 
-    @GetMapping("/user/schedule/list")
+    @GetMapping("/schedule/list")
     public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(
         @RequestParam(name = "year", required = true) Integer year) {
 
