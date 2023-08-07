@@ -2,7 +2,6 @@ package com.fastcampus.scheduling.admin.controller;
 
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
 import com.fastcampus.scheduling._core.errors.exception.Exception400;
-import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
 import com.fastcampus.scheduling.admin.dto.AdminRequest;
@@ -12,12 +11,12 @@ import com.fastcampus.scheduling.admin.dto.AdminRequest.RejectDTO;
 import com.fastcampus.scheduling.admin.dto.AdminResponse;
 import com.fastcampus.scheduling.admin.dto.AdminResponse.GetAllUserDTO;
 import com.fastcampus.scheduling.admin.service.AdminService;
-import com.fastcampus.scheduling.user.common.Position;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,7 +64,8 @@ public class AdminController {
     @PostMapping("/api/v1/admin/change-position")
     public ResponseEntity<ApiResponse.Result<Object>> position(HttpServletRequest request, @RequestBody AdminRequest.UpdatePositionDTO updatePositionDTO){
         log.info("/api/v1/admin/change-position POST" + updatePositionDTO);
-        Long userId = getUserId(request);
+        Long userId = Long.valueOf(
+            SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
         if(userId.equals(updatePositionDTO.getId()))
             throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
@@ -82,15 +82,4 @@ public class AdminController {
 
         return ResponseEntity.ok(ApiResponse.success(null));
     }
-
-    public Long getUserId(HttpServletRequest request){
-        String authorizationHeader = request.getHeader("Authorization");
-
-        if(authorizationHeader == null || !authorizationHeader.startsWith("Bearer "))
-            throw new Exception401(ErrorMessage.TOKEN_NOT_EXISTS);
-
-        String accessToken = authorizationHeader.substring(7);
-        return Long.valueOf(jwtTokenProvider.getUserId(accessToken));
-    }
-
 }
