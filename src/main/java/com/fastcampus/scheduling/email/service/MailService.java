@@ -1,21 +1,23 @@
 package com.fastcampus.scheduling.email.service;
 
+import com.fastcampus.scheduling._core.common.Constants;
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
 import com.fastcampus.scheduling._core.errors.exception.DuplicateUserEmailException;
 import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.errors.exception.Exception500;
 import com.fastcampus.scheduling.email.dto.EmailRequest;
+import com.fastcampus.scheduling.email.dto.EmailRequest.CheckEmailAuthDTO;
 import com.fastcampus.scheduling.email.dto.EmailRequest.SendEmailDTO;
+import com.fastcampus.scheduling.email.repository.RedisRepository;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,24 +26,32 @@ import org.springframework.transaction.annotation.Transactional;
 public class MailService {
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
-    private static Map<String, String> emailAuth = new ConcurrentHashMap<>();
+    private final RedisRepository emailRepository;
 
-    public static String MAIL_SUBJECT = "인증메일";
+    public boolean sendEmail(SendEmailDTO sendEmailDTO) {
+        if(sendEmailDTO == null)
+            throw new Exception500(ErrorMessage.INVALID_SEND_EMAILAUTH);
 
-    public String sendEmail(SendEmailDTO sendEmailDTO) throws MailException {
-        if(sendEmailDTO == null) throw new Exception500(ErrorMessage.INVALID_SEND_EMAILAUTH);
         String authNumber = createCode();
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(sendEmailDTO.getTo());
-        message.setSubject(MAIL_SUBJECT);
-        message.setText(authNumber);
+        try {
+            helper.setFrom("ahdzlq12@naver.com");
+            helper.setTo(sendEmailDTO.getTo());
+            helper.setSubject(Constants.MAIL_SUBJECT);
+            helper.setText(authNumber);
+            javaMailSender.send(message);
+            emailRepository.save(CheckEmailAuthDTO.builder()
+                .userEmail(sendEmailDTO.getTo())
+                .userEmailAuth(authNumber)
+                .build());
+        }catch (MailException | MessagingException e){
+            System.out.println(e);
+            throw new Exception500(ErrorMessage.FAILED_TO_SEND_EMAIL);
+        }
 
-        javaMailSender.send(message);
-        emailAuth.put(sendEmailDTO.getTo(), authNumber);
-
-        return authNumber;
-//        throw new Exception400(ErrorMessage.INVALID_EMAIL);
+        return true;
     }
 
     @Transactional(readOnly = true)

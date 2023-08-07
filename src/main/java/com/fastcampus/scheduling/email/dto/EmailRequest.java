@@ -1,11 +1,16 @@
 package com.fastcampus.scheduling.email.dto;
 
+import com.fastcampus.scheduling._core.common.Constants;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 public class EmailRequest {
 
@@ -16,9 +21,8 @@ public class EmailRequest {
     public static class SendEmailDTO {
 
         @NotBlank
-        @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$") //"/^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\\.[A-Za-z0-9\\-]+/")
+        @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
         private String to;
-
     }
 
     @Getter
@@ -28,22 +32,23 @@ public class EmailRequest {
     public static class CheckEmailDTO {
 
         @NotBlank
-        @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$") //"/^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\\.[A-Za-z0-9\\-]+/")
+        @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
         private String userEmail;
-
     }
 
     @Getter
     @ToString
-    @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
+    @RedisHash(value="CheckEmailAuthDTO", timeToLive = Constants.MAIL_AUTH_TIME)
     public static class CheckEmailAuthDTO {
 
+        @Id
         @NotBlank
-        @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$") //"/^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\\.[A-Za-z0-9\\-]+/")
+        @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$")
         private String userEmail;
-        @NotBlank
-        private String userEmailAuth;
 
+        @NonNull
+        private String userEmailAuth;
     }
 }
