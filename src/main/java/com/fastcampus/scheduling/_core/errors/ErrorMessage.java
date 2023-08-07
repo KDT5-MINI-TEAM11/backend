@@ -25,6 +25,7 @@ public interface ErrorMessage {
     String INVALID_EMAIL = "이메일 형식을 맞춰주세요.";
     String INVALID_SEND_EMAIL = "인증 이메일이 잘못 되었습니다.";
     String INVALID_SEND_EMAILAUTH = "인증 번호가 잘못 되었습니다.";
+    String EXPIRED_SEND_EMAILAUTH = "인증 번호가 만료 되었습니다.";
     String NOT_FOUND_USER_FOR_UPDATE = "회원 정보 수정을 위한 회원 정보가 존재하지 않습니다.";
     String DUPLICATE_USEREMAIL = "이미 가입 된 이메일 입니다.";
     String DUPLICATE_PHONENUMBER = "이미 저장 된 번호 입니다.";
