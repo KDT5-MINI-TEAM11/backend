@@ -32,7 +32,7 @@ public class AdminController {
 
     @GetMapping("/api/v1/admin/list")
     public ResponseEntity<ApiResponse.Result<List<AdminResponse.GetAllScheduleDTO>>> getAllSchedule(){
-
+        log.info("/api/v1/admin/list GET");
         List<AdminResponse.GetAllScheduleDTO> schedulingResponses = adminService.findAllSchedule();
 
         return ResponseEntity.ok(ApiResponse.success(schedulingResponses));
@@ -40,7 +40,7 @@ public class AdminController {
 
     @GetMapping("/api/v1/admin/worker-list")
     public ResponseEntity<ApiResponse.Result<List<AdminResponse.GetAllUserDTO>>> getAllUser(){
-
+        log.info("/api/v1/admin/worker-list GET");
         List<GetAllUserDTO> userResponse = adminService.findAllUser();
 
         return ResponseEntity.ok(ApiResponse.success(userResponse));
@@ -48,24 +48,26 @@ public class AdminController {
 
     @PostMapping("/api/v1/admin/reject")
     public ResponseEntity<ApiResponse.Result<Object>> reject(HttpServletRequest request, @RequestBody RejectDTO rejectDTO){
-        adminService.updateScheduleReject(rejectDTO);
+        log.info("/api/v1/admin/reject POST" + rejectDTO);
+        String result = adminService.updateScheduleReject(rejectDTO);
 
-        return ResponseEntity.ok(ApiResponse.success("요청이 반려 되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping("/api/v1/admin/approve")
-    public ResponseEntity<ApiResponse.Result<Object>> approve(HttpServletRequest request, @RequestBody ApproveDTO resolveDTO){
-        adminService.updateScheduleApprove(resolveDTO);
+    public ResponseEntity<ApiResponse.Result<Object>> approve(HttpServletRequest request, @RequestBody ApproveDTO approveDTO){
+        log.info("/api/v1/admin/approve POST" + approveDTO);
+        String result = adminService.updateScheduleApprove(approveDTO);
 
-        return ResponseEntity.ok(ApiResponse.success("요청이 승인 되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping("/api/v1/admin/change-position")
     public ResponseEntity<ApiResponse.Result<Object>> position(HttpServletRequest request, @RequestBody AdminRequest.UpdatePositionDTO updatePositionDTO){
+        log.info("/api/v1/admin/change-position POST" + updatePositionDTO);
         Long userId = getUserId(request);
-        Position position = adminService.getPosition(userId);
 
-        if(updatePositionDTO.getPosition().equals(position))
+        if(userId.equals(updatePositionDTO.getId()))
             throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
 
         adminService.updatePosition(updatePositionDTO);
@@ -75,6 +77,7 @@ public class AdminController {
 
     @PostMapping("/api/v1/admin/pending")
     public ResponseEntity<ApiResponse.Result<Object>> cancel(HttpServletRequest request, @RequestBody PendingDTO pendingDTO){
+        log.info("/api/v1/admin/pending POST" + pendingDTO);
         adminService.updateSchedulePending(pendingDTO);
 
         return ResponseEntity.ok(ApiResponse.success(null));
