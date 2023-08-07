@@ -99,11 +99,14 @@ public class UserController {
         HttpServletRequest request, @RequestBody @Valid UserRequest.SignUpDTO signUpDTO, HttpServletResponse response) {
         log.info("/api/v1/auth/signup POST " + signUpDTO);
 
-//        if(signUpDTO.getPosition().equals(Position.MANAGER))
-//            throw new Exception400(ErrorMessage.INVALID_POSITION);
+        User user = userService.save(signUpDTO);
 
-        User user = userService.save(signUpDTO); // 중복등은 서비스에서 체크
+        String accessToken = getAccessToken(request, response, user);
 
+        return ResponseEntity.ok(ApiResponse.success(SignUpDTO.from(accessToken)));
+    }
+
+    private String getAccessToken(HttpServletRequest request, HttpServletResponse response, User user) {
         String userEmail = user.getUserEmail();
         org.springframework.security.core.userdetails.User savedUser = (org.springframework.security.core.userdetails.User) userService.loadUserByUsername(userEmail);
         String userId = savedUser.getUsername();
@@ -115,8 +118,7 @@ public class UserController {
         String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId);
         refreshTokenService.saveRefreshToken(Long.valueOf(userId), jwtTokenProvider.getRefreshTokenId(refreshToken));
         cookieProvider.addCookie(response, refreshToken);
-
-        return ResponseEntity.ok(ApiResponse.success(SignUpDTO.from(accessToken)));
+        return accessToken;
     }
 
     @PostMapping("/api/v2/auth/signup")
