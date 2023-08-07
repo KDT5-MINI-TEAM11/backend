@@ -1,5 +1,7 @@
 package com.fastcampus.scheduling._core.errors;
 
+import static com.fastcampus.scheduling._core.errors.ErrorMessage.INVALID_CHANGE_POSITION;
+
 import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling._core.errors.exception.Exception403;
@@ -8,8 +10,10 @@ import com.fastcampus.scheduling._core.errors.exception.Exception500;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,6 +41,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception500.class)
     public ResponseEntity<ApiResponse.Result<Object>> serverError(Exception500 e){
         return new ResponseEntity<>(e.body(), e.status());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse.Result<Object>> missingServletRequestParameterException(){
+        ApiResponse.Result<Object> apiResult = ApiResponse.error(INVALID_CHANGE_POSITION, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiResult, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse.Result<Object>> methodArgumentTypeMismatchException(){
+        ApiResponse.Result<Object> apiResult = ApiResponse.error(INVALID_CHANGE_POSITION, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiResult, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

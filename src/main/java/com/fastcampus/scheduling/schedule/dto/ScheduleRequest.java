@@ -21,6 +21,9 @@ public class ScheduleRequest {
     public static class ModifyScheduleDTO {
 
         @NotBlank
+        private  Long id;
+
+        @NotBlank
         private LocalDate startDate;
 
         @NotBlank
@@ -28,6 +31,7 @@ public class ScheduleRequest {
 
         public static ModifyScheduleDTO from(Schedule schedule) {
             return ModifyScheduleDTO.builder()
+                .id(schedule.getId())
                 .startDate(schedule.getStartDate())
                 .endDate(schedule.getEndDate())
                 .build();
