@@ -44,7 +44,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
@@ -59,6 +59,10 @@ spring:
   output:
     ansi:
       enabled: always
+  sql:
+    init:
+      schema-locations: classpath:/db/data.sql
+      mode: always
 
 jwt:
   secret-key: secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey
