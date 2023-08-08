@@ -42,8 +42,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         validateStartDate(addScheduleDTO.getStartDate());
 
         if (addScheduleDTO.getScheduleType() == ScheduleType.ANNUAL) {
-            LocalDateTime startDate = LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN);
-            LocalDateTime endDate = LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX);
+            LocalDateTime startDate = LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0));
+            LocalDateTime endDate = LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX.withNano(0));
 
             if (startDate.isAfter(endDate)) {
                 throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
@@ -61,7 +61,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             user.setUsedVacation(user.getUsedVacation() + requestedVacationDays);
 
         } else if (addScheduleDTO.getScheduleType() == ScheduleType.DUTY) {
-            LocalDateTime startDate = LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN);
+            LocalDateTime startDate = LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0));
             addScheduleDTO.setEndDate(startDate.toLocalDate());
 
             if (isDutyScheduleOverlap(addScheduleDTO.getUserId(), startDate)) {
@@ -71,8 +71,8 @@ public class ScheduleServiceImpl implements ScheduleService {
             Schedule schedule = Schedule.builder()
                 .user(user)
                 .scheduleType(addScheduleDTO.getScheduleType())
-                .startDate(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN))
-                .endDate(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX))
+                .startDate(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0)))
+                .endDate(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX.withNano(0)))
                 .state(State.PENDING)
                 .build();
 
@@ -82,8 +82,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = Schedule.builder()
             .user(user)
             .scheduleType(addScheduleDTO.getScheduleType())
-            .startDate(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN))
-            .endDate(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX))
+            .startDate(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0)))
+            .endDate(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX.withNano(0)))
             .state(State.PENDING)
             .build();
 
@@ -127,9 +127,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
             User user = existingSchedule.getUser();
             LocalDateTime newStartDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(),
-                LocalTime.MIN);
+                LocalTime.MIN.withNano(0));
             LocalDateTime newEndDate = LocalDateTime.of(modifyScheduleDTO.getEndDate(),
-                LocalTime.MIN);
+                LocalTime.MAX.withNano(0));
 
             if (newStartDate.isAfter(newEndDate)) {
                 throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
@@ -157,8 +157,8 @@ public class ScheduleServiceImpl implements ScheduleService {
          }
 
         if (existingSchedule.getScheduleType() == ScheduleType.DUTY) {
-            LocalDateTime newStartDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MIN);
-            LocalDateTime newEndDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MAX);
+            LocalDateTime newStartDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0));
+            LocalDateTime newEndDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MAX.withNano(0));
 
             if (isDutyScheduleOverlap(modifyScheduleDTO.getId(), newStartDate)) {
                 throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
@@ -189,13 +189,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     private boolean isScheduleOverlap(ScheduleRequest.AddScheduleDTO addScheduleDTO) {
         List<Schedule> existingSchedules = scheduleRepository.findByUserAndDatesOverlap(
             addScheduleDTO.getUserId(),
-            LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN),
-            LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX)
+            LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0)),
+            LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX.withNano(0))
         );
 
         for (Schedule existingSchedule : existingSchedules) {
-            if (existingSchedule.getStartDate().isBefore(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX)) &&
-                existingSchedule.getEndDate().isAfter(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN))) {
+            if (existingSchedule.getStartDate().isBefore(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX.withNano(0))) &&
+                existingSchedule.getEndDate().isAfter(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0)))) {
                 return true;
             }
         }
@@ -213,7 +213,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private void validateStartDate(LocalDate startDate) {
         LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime selectedStartDate = LocalDateTime.of(startDate, LocalTime.MIN);
+        LocalDateTime selectedStartDate = LocalDateTime.of(startDate, LocalTime.MIN.withNano(0));
 
         if (selectedStartDate.isBefore(currentDate)) {
             throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
