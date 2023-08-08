@@ -52,10 +52,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         int requestedVacationDays = calculateDuration(startDate, endDate);
 
         if (addScheduleDTO.getScheduleType() == ScheduleType.ANNUAL) {
-            if (requestedVacationDays > user.getUsedVacation()) {
+            int remainingVacation = user.getPosition().getTotalVacation() - user.getUsedVacation();
+
+            if (requestedVacationDays > remainingVacation) {
                 throw new Exception400(ErrorMessage.INSUFFICIENT_VACATION_DAYS);
             }
-            user.setUsedVacation(user.getUsedVacation() - requestedVacationDays);
+            user.setUsedVacation(user.getUsedVacation() + requestedVacationDays);
         }
 
         Schedule schedule = Schedule.builder()
@@ -79,7 +81,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             User user = schedule.getUser();
 
             if (schedule.getScheduleType() == ScheduleType.ANNUAL) {
-                user.setUsedVacation(user.getUsedVacation() + canceledVacationDays);
+                user.setUsedVacation(user.getUsedVacation() - canceledVacationDays);
             }
 
             scheduleRepository.delete(schedule);
@@ -108,17 +110,18 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
         }
 
-        if (requestedVacationDays > user.getUsedVacation()) {
-            throw new Exception400(ErrorMessage.INSUFFICIENT_VACATION_DAYS);
-        }
-
         if (newStartDate != null || newEndDate != null) {
             int newVacationDays = calculateDuration(newStartDate != null ? newStartDate : oldStartDate,
                 newEndDate != null ? newEndDate : oldEndDate);
 
             if (existingSchedule.getScheduleType() == ScheduleType.ANNUAL) {
+                int remainingVacation = user.getPosition().getTotalVacation() - user.getUsedVacation();
+
+                if (requestedVacationDays > remainingVacation) {
+                    throw new Exception400(ErrorMessage.INSUFFICIENT_VACATION_DAYS);
+                }
                 user.setUsedVacation(
-                    (user.getUsedVacation() + requestedVacationDays) - newVacationDays);
+                    (user.getUsedVacation() - requestedVacationDays) + newVacationDays);
             }
             userRepository.save(user);
         }
