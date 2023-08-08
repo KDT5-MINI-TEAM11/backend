@@ -7,7 +7,6 @@ import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.user.model.DummyUser;
 import com.fastcampus.scheduling.user.model.User;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,8 +36,8 @@ public class ScheduleResponse {
 				.id(schedule.getId())
 				.scheduleType(schedule.getScheduleType())
 				.state(schedule.getState())
-				.startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
-				.endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
+				.startDate(schedule.getStartDate())
+				.endDate(schedule.getEndDate())
 				.build();
 		}
 	}
@@ -70,8 +69,8 @@ public class ScheduleResponse {
 			return AddScheduleDTO.builder()
 				.userId(schedule.getUser().getId())
 				.scheduleType(schedule.getScheduleType())
-				.startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
-				.endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
+				.startDate(schedule.getStartDate())
+				.endDate(schedule.getEndDate())
 				.state(schedule.getState())
 				.build();
 		}
@@ -103,8 +102,8 @@ public class ScheduleResponse {
 				.id(schedule.getId())
 				.userName(user.getUserName())
 				.scheduleType(schedule.getScheduleType())
-				.startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
-				.endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
+				.startDate(schedule.getStartDate())
+				.endDate(schedule.getEndDate())
 				.state(schedule.getState())
 				.build();
 		}
@@ -131,8 +130,8 @@ public class ScheduleResponse {
 					.userName(user.getUserName())
 					.userEmail(user.getUserEmail())
 					.scheduleType(schedule.getScheduleType())
-					.startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
-					.endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
+					.startDate(schedule.getStartDate())
+					.endDate(schedule.getEndDate())
 					.state(schedule.getState())
 					.build();
 		}
@@ -148,8 +147,8 @@ public class ScheduleResponse {
 		public static ModifyScheduleDTO from(Schedule schedule) {
 			return ModifyScheduleDTO.builder()
 				.type(schedule.getScheduleType())
-				.startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
-				.endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
+				.startDate(schedule.getStartDate())
+				.endDate(schedule.getEndDate())
 				.state(schedule.getState())
 				.build();
 		}
