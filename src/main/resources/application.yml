@@ -29,6 +29,10 @@ spring:
     cache: false
     encoding: UTF-8
     mode: HTML
+
+default-user:
+  password: ${DEFAULT_USER_PASS}
+
 ---
 
 spring:
