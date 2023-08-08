@@ -29,11 +29,16 @@ spring:
     cache: false
     encoding: UTF-8
     mode: HTML
+
+default-user:
+  password: ${DEFAULT_USER_PASS}
+
 ---
 
 spring:
-  profiles:
-    default: local
+  config:
+    activate:
+      on-profile: local
 
   datasource:
     url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
@@ -44,9 +49,9 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     properties:
       hibernate:
         format_sql: true
@@ -61,8 +66,8 @@ spring:
       enabled: always
   sql:
     init:
-      #schema-locations: classpath:/db/schema.sql
-      #mode: always
+      schema-locations: classpath:db/schema.sql
+      mode: always
 
 jwt:
   secret-key: secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey
@@ -74,10 +79,6 @@ jwt:
 ---
 # for dev
 server:
-  config:
-    activate:
-      on-profile: dev
-
   ssl:
     enabled: true
     key-store-type: PKCS12
@@ -88,6 +89,10 @@ server:
     key-alias: team11
 
 spring:
+  config:
+    activate:
+      on-profile: dev
+
   mail:
     host: smtp.naver.com
     port: 587
@@ -106,8 +111,8 @@ spring:
     url: ${MYSQL_URL}
     username: ${MYSQL_ID}
     password: ${MYSQL_PASSWORD}
-#    hikari:
-#      connection-timeout: 10000
+  #    hikari:
+  #      connection-timeout: 10000
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect

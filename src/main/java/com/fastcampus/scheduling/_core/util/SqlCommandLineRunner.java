@@ -1,19 +1,18 @@
 package com.fastcampus.scheduling._core.util;
 
-import com.fastcampus.scheduling.schedule.common.ScheduleType;
-import com.fastcampus.scheduling.schedule.common.State;
-import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.repository.ScheduleRepository;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SqlCommandLineRunner implements CommandLineRunner {
@@ -22,6 +21,9 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 	private final UserRepository userRepository;
 	private final ScheduleRepository scheduleRepository;
 
+	@Value("${default-user.password}")
+	private String password;
+
 	/**
 	 * Temp User For Api Test
 	 * Will remove when deploy
@@ -29,14 +31,14 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 	 * @throws Exception
 	 */
 	@Override
-	@Transactional
 	public void run(String... args) {
+
 
 		try {
 			User levelOne = User.builder()
 				.userEmail("oregundam@celestial-being.net")
 				.userName("Setsuna F Seiei")
-				.userPassword(bCryptPasswordEncoder.encode("exia1234"))
+				.userPassword(bCryptPasswordEncoder.encode(password))
 				.phoneNumber("010-7777-7777")
 				.position(Position.LEVEL1)
 				.profileThumbUrl("https://shorturl.at/COVY3")
@@ -47,7 +49,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			User levelTwo = User.builder()
 				.userEmail("firstgundam@gundam.net")
 				.userName("Amuro Ray")
-				.userPassword(bCryptPasswordEncoder.encode("first1234"))
+				.userPassword(bCryptPasswordEncoder.encode(password))
 				.phoneNumber("010-2222-2222")
 				.position(Position.LEVEL3)
 				.profileThumbUrl("https://shorturl.at/qIMPU")
@@ -58,7 +60,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			User levelThree = User.builder()
 				.userEmail("sayla_mass007@gundam.net")
 				.userName("Sayla Mass")
-				.userPassword(bCryptPasswordEncoder.encode("gundam5678"))
+				.userPassword(bCryptPasswordEncoder.encode(password))
 				.phoneNumber("010-4444-4444")
 				.position(Position.LEVEL2)
 				.profileThumbUrl("https://shorturl.at/bjqDZ")
@@ -69,7 +71,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			User levelFour = User.builder()
 				.userEmail("suletta@mercury.com")
 				.userName("Suletta Mercury")
-				.userPassword(bCryptPasswordEncoder.encode("caliburn1234"))
+				.userPassword(bCryptPasswordEncoder.encode(password))
 				.phoneNumber("010-8888-8888")
 				.position(Position.LEVEL4)
 				.profileThumbUrl("https://shorturl.at/actIT")
@@ -81,7 +83,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			User manager = User.builder()
 				.userEmail("redcomet3@3xfaster.com")
 				.userName("Aznable Char")
-				.userPassword(bCryptPasswordEncoder.encode("password1234"))
+				.userPassword(bCryptPasswordEncoder.encode(password))
 				.phoneNumber("010-3333-3333")
 				.position(Position.MANAGER)
 				.profileThumbUrl("https://shorturl.at/yzCV4")
@@ -92,7 +94,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			User managerJW = User.builder()
 				.userEmail("jw@naver.com")
 				.userName("LeeJW")
-				.userPassword(bCryptPasswordEncoder.encode("qwer1234!"))
+				.userPassword(bCryptPasswordEncoder.encode(password))
 				.phoneNumber("010-3333-0001")
 				.position(Position.MANAGER)
 				.profileThumbUrl("https://shorturl.at/yzCV4")
@@ -103,7 +105,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			User managerGH = User.builder()
 				.userEmail("gh@naver.com")
 				.userName("NamGH")
-				.userPassword(bCryptPasswordEncoder.encode("qwer1234!"))
+				.userPassword(bCryptPasswordEncoder.encode(password))
 				.phoneNumber("010-3333-0002")
 				.position(Position.MANAGER)
 				.profileThumbUrl("https://shorturl.at/yzCV4")
@@ -119,33 +121,9 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			userRepository.save(managerJW);
 			userRepository.save(managerGH);
 
-			Schedule schedule1 = Schedule.builder()
-				.user(levelOne)
-				.scheduleType(ScheduleType.ANNUAL)
-				.state(State.PENDING)
-				.startDate(LocalDateTime.of(2023,8,1,0,0,0))
-				.endDate(LocalDateTime.of(2023,8,3,23,59,59))
-				.build();
-			Schedule schedule2 = Schedule.builder()
-				.user(levelTwo)
-				.scheduleType(ScheduleType.DUTY)
-				.state(State.PENDING)
-				.startDate(LocalDateTime.of(2023,8,5,0,0,0))
-				.endDate(LocalDateTime.of(2023,8,6,23,59,59))
-				.build();
-			Schedule schedule3 = Schedule.builder()
-				.user(levelFour)
-				.scheduleType(ScheduleType.ANNUAL)
-				.state(State.PENDING)
-				.startDate(LocalDateTime.of(2023,8,10,0,0,0))
-				.endDate(LocalDateTime.of(2023,8,15,23,59,0))
-				.build();
-
-			scheduleRepository.save(schedule1);
-			scheduleRepository.save(schedule2);
-			scheduleRepository.save(schedule3);
 		}catch (Exception e){
-
+			log.warn("EXCEPTION OCCURRED IN SQL COMMAND RUNNER");
+			log.warn(e.getMessage());
 		}
 
 	}
