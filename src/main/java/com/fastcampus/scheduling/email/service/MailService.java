@@ -24,12 +24,15 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @RequiredArgsConstructor
 @Service
 public class MailService {
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
+    private final TemplateEngine templateEngine;
 
     private final Map<String, String> authMap = new ConcurrentHashMap<>();
 
@@ -40,15 +43,19 @@ public class MailService {
         String authNumber = createCode();
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        Context context = new Context();
 
         try {
+            context.setVariable("authNumber", authNumber);
+            String emailContent = templateEngine.process("Email", context);
             helper.setFrom(Constants.MAIL_FROM);
             helper.setTo(sendEmailDTO.getTo());
             helper.setSubject(Constants.MAIL_SUBJECT);
-            helper.setText(authNumber);
+            helper.setText(emailContent, true);
             javaMailSender.send(message);
             authMap.put(authNumber, getDateTime());
         }catch (MailException | MessagingException e){
+            System.out.println(e);
             throw new Exception500(ErrorMessage.FAILED_TO_SEND_EMAIL);
         }
 
