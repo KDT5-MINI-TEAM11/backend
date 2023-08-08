@@ -33,15 +33,7 @@ public class AdminService {
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE);
 
         return scheduleList.stream()
-            .map(schedule -> AdminResponse.GetAllScheduleDTO.builder()
-                .id(schedule.getId())
-                .userName(schedule.getUser().getUserName())
-                .position(schedule.getUser().getPosition())
-                .type(schedule.getScheduleType())
-                .startDate(schedule.getStartDate())
-                .endDate(schedule.getEndDate())
-                .state(schedule.getState())
-                .build())
+            .map(schedule -> AdminResponse.GetAllScheduleDTO.from(schedule))
             .toList();
     }
 
@@ -53,13 +45,7 @@ public class AdminService {
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SAVE_USER);
 
         return userList.stream()
-            .map(user -> AdminResponse.GetAllUserDTO.builder()
-                .id(user.getId())
-                .userName(user.getUserName())
-                .profileThumbUrl(user.getProfileThumbUrl())
-                .position(user.getPosition())
-                .createAt(user.getCreatedAt())
-                .build())
+            .map(user -> AdminResponse.GetAllUserDTO.from(user))
             .toList();
     }
 
