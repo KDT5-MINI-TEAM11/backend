@@ -2,6 +2,7 @@ package com.fastcampus.scheduling.user.model;
 
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,7 +24,7 @@ import org.hibernate.validator.constraints.Length;
 @Getter
 @Setter
 @Builder
-@Table(name = "sign_in_log_tb")
+@Table(name = "signin_log_tb")
 @Entity
 public class SigninLog {
 
@@ -37,13 +38,16 @@ public class SigninLog {
 
     @Length(max = 45)
     @NotBlank
+    @Column(name = "ip_address")
     private String ipAddress;
 
     @Length(max = 255)
     @NotBlank
+    @Column(name = "user_agent")
     private String userAgent;
 
     @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
 }
