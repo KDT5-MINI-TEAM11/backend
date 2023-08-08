@@ -5,6 +5,15 @@ server:
       charset: UTF-8
       force: true
 
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store-password: ${CERT_PASS}
+    protocol: TLS
+    enabled-protocols: TLSv1.2
+    key-store: ${CERT_PATH}
+    key-alias: team11
+
 logging:
   level:
     '[fastcampus.scheduling]': DEBUG
@@ -39,6 +48,10 @@ spring:
   config:
     activate:
       on-profile: local
+
+server:
+  ssl:
+    key-store: ${LOCAL_CERT_PATH}
 
   datasource:
     url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
@@ -78,16 +91,6 @@ jwt:
 
 ---
 # for dev
-server:
-  ssl:
-    enabled: true
-    key-store-type: PKCS12
-    key-store-password: ${CERT_PASS}
-    protocol: TLS
-    enabled-protocols: TLSv1.2
-    key-store: ${CERT_PATH}
-    key-alias: team11
-
 spring:
   config:
     activate:
@@ -139,15 +142,6 @@ logging:
     name: app-dev
 ---
 #for prod
-server:
-  ssl:
-    enabled: true
-    key-store-type: PKCS12
-    key-store-password: ${CERT_PASS}
-    protocol: TLS
-    enabled-protocols: TLSv1.2
-    key-store: ${CERT_PATH}
-    key-alias: team11
 
 spring:
   config:
