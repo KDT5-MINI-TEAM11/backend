@@ -5,6 +5,7 @@ import com.fastcampus.scheduling.schedule.model.DummySchedule;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.model.User;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -108,10 +109,10 @@ public class UserRequest {
         private ScheduleType scheduleType;
 
         @NotBlank
-        private LocalDate startDate;
+        private LocalDateTime startDate;
 
         @NotBlank
-        private LocalDate endDate;
+        private LocalDateTime endDate;
 
         public static AddDummyScheduleDTO from(DummySchedule schedule) {
             return AddDummyScheduleDTO.builder()
@@ -142,8 +143,8 @@ public class UserRequest {
 
         public static ModifyScheduleDTO from(DummySchedule schedule) {
             return ModifyScheduleDTO.builder()
-                .startDate(schedule.getStartDate())
-                .endDate(schedule.getEndDate())
+                .startDate(schedule.getStartDate().toLocalDate())
+                .endDate(schedule.getEndDate().toLocalDate())
                 .build();
         }
     }

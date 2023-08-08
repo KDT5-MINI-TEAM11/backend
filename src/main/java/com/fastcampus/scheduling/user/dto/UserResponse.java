@@ -5,8 +5,8 @@ import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.model.DummySchedule;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.model.User;
-import java.sql.Timestamp;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -73,15 +73,15 @@ public class UserResponse {
     public static class GetDummyScheduleDTO {
 
         private ScheduleType scheduleType;
-        private LocalDate startDate;
-        private LocalDate endDate;
+        private LocalDateTime startDate;
+        private LocalDateTime endDate;
         private State state;
 
         public static GetDummyScheduleDTO from(DummySchedule schedule) {
             return GetDummyScheduleDTO.builder()
                 .scheduleType(schedule.getScheduleType())
-                .startDate(schedule.getStartDate())
-                .endDate(schedule.getEndDate())
+                .startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
+                .endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
                 .state(schedule.getState())
                 .build();
         }
@@ -92,15 +92,15 @@ public class UserResponse {
     public static class AddDummyScheduleDTO {
 
         private ScheduleType scheduleType;
-        private LocalDate startDate;
-        private LocalDate endDate;
+        private LocalDateTime startDate;
+        private LocalDateTime endDate;
         private State state;
 
         public static AddDummyScheduleDTO from(DummySchedule schedule) {
             return AddDummyScheduleDTO.builder()
                 .scheduleType(schedule.getScheduleType())
-                .startDate(schedule.getStartDate())
-                .endDate(schedule.getEndDate())
+                .startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
+                .endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
                 .state(schedule.getState())
                 .build();
         }
@@ -124,15 +124,15 @@ public class UserResponse {
     public static class ModifyDummyScheduleDTO {
 
         private ScheduleType scheduleType;
-        private LocalDate startDate;
-        private LocalDate endDate;
+        private LocalDateTime startDate;
+        private LocalDateTime endDate;
         private State state;
 
         public static ModifyDummyScheduleDTO from(DummySchedule schedule) {
             return ModifyDummyScheduleDTO.builder()
                 .scheduleType(schedule.getScheduleType())
-                .startDate(schedule.getStartDate())
-                .endDate(schedule.getEndDate())
+                .startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
+                .endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
                 .state(schedule.getState())
                 .build();
         }
