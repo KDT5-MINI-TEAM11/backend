@@ -5,13 +5,13 @@ import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.exception.CustomException;
 import com.fastcampus.scheduling.schedule.common.ScheduleType;
 import com.fastcampus.scheduling.schedule.common.State;
-import com.fastcampus.scheduling.schedule.dto.ScheduleRequest.ModifyScheduleDTO;
-import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
+import com.fastcampus.scheduling.schedule.dto.ScheduleRequest;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.repository.ScheduleRepository;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,19 +27,19 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final UserRepository userRepository;
 
     @Transactional
-    public List<Schedule> findByYear(Long userId, LocalDate startDate, LocalDate endDate) {
+    public List<Schedule> findByYear(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
         List<Schedule> allSchedules = scheduleRepository.findSchedulesByUserIdAndStartDateBetween(userId, startDate, endDate);
 
         return allSchedules;
     }
 
     @Transactional
-    public Schedule addSchedule(AddScheduleDTO addScheduleDTO) {
+    public Schedule addSchedule(ScheduleRequest.AddScheduleDTO addScheduleDTO) {
         User user = userRepository.findById(addScheduleDTO.getUserId())
             .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
 
-        LocalDate startDate = addScheduleDTO.getStartDate();
-        LocalDate endDate = addScheduleDTO.getEndDate();
+        LocalDateTime startDate = LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN);
+        LocalDateTime endDate = LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MIN);
 
         if (startDate.isAfter(endDate)) {
             throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
@@ -63,8 +63,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = Schedule.builder()
             .user(user)
             .scheduleType(addScheduleDTO.getScheduleType())
-            .startDate(addScheduleDTO.getStartDate())
-            .endDate(addScheduleDTO.getEndDate())
+            .startDate(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN))
+            .endDate(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX))
             .state(State.PENDING)
             .build();
 
@@ -91,20 +91,20 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    public Schedule modifySchedule(ModifyScheduleDTO modifyScheduleDTO, Long userId) {
+    public Schedule modifySchedule(ScheduleRequest.ModifyScheduleDTO modifyScheduleDTO, Long userId) {
         Schedule existingSchedule = getScheduleByIdAndUserId(modifyScheduleDTO.getId(), userId);
 
         if (existingSchedule.getState() != State.PENDING) {
             throw new Exception400(ErrorMessage.APPROVED_SCHEDULE);
         }
 
-        LocalDate oldStartDate = existingSchedule.getStartDate();
-        LocalDate oldEndDate = existingSchedule.getEndDate();
+        LocalDateTime oldStartDate = existingSchedule.getStartDate();
+        LocalDateTime oldEndDate = existingSchedule.getEndDate();
         int requestedVacationDays = calculateDuration(oldStartDate, oldEndDate);
 
         User user = existingSchedule.getUser();
-        LocalDate newStartDate = modifyScheduleDTO.getStartDate();
-        LocalDate newEndDate = modifyScheduleDTO.getEndDate();
+        LocalDateTime newStartDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MIN);
+        LocalDateTime newEndDate = LocalDateTime.of(modifyScheduleDTO.getEndDate(), LocalTime.MAX);
 
         if (newStartDate.isAfter(newEndDate)) {
             throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
@@ -143,24 +143,25 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
-    public List<Schedule> findAllByYear(LocalDate startDate, LocalDate endDate) {
+    public List<Schedule> findAllByYear(LocalDateTime startDate, LocalDateTime endDate) {
+
         return scheduleRepository.findSchedulesByStartDateBetween(startDate, endDate);
     }
 
-    private int calculateDuration(LocalDate startDate, LocalDate endDate) {
+    private int calculateDuration(LocalDateTime startDate, LocalDateTime endDate) {
         return (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
     }
 
-    private boolean isScheduleOverlap(AddScheduleDTO addScheduleDTO) {
+    private boolean isScheduleOverlap(ScheduleRequest.AddScheduleDTO addScheduleDTO) {
         List<Schedule> existingSchedules = scheduleRepository.findByUserAndDatesOverlap(
             addScheduleDTO.getUserId(),
-            addScheduleDTO.getStartDate(),
-            addScheduleDTO.getEndDate()
+            LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN),
+            LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX)
         );
 
         for (Schedule existingSchedule : existingSchedules) {
-            if (existingSchedule.getStartDate().isBefore(addScheduleDTO.getEndDate()) &&
-                existingSchedule.getEndDate().isAfter(addScheduleDTO.getStartDate())) {
+            if (existingSchedule.getStartDate().isBefore(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX)) &&
+                existingSchedule.getEndDate().isAfter(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN))) {
                 return true;
             }
         }

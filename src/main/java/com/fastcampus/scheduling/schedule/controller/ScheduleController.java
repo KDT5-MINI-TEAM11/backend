@@ -3,13 +3,15 @@ package com.fastcampus.scheduling.schedule.controller;
 import com.fastcampus.scheduling._core.exception.CustomException;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.ApiResponse.Result;
+import com.fastcampus.scheduling.schedule.dto.ScheduleRequest;
 import com.fastcampus.scheduling.schedule.dto.ScheduleRequest.ModifyScheduleDTO;
+import com.fastcampus.scheduling.schedule.dto.ScheduleResponse;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.AddScheduleDTO;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.GetAllScheduleDTO;
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.GetUserScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.service.ScheduleServiceImpl;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,8 +39,8 @@ public class ScheduleController {
 
         List<Schedule> schedules;
 
-        LocalDate startDate = LocalDate.of(year, 1, 1);
-        LocalDate endDate = LocalDate.of(year, 12, 31);
+        LocalDateTime startDate = LocalDateTime.of(year, 1, 1,0,0);
+        LocalDateTime endDate = LocalDateTime.of(year, 12, 31,23,59);
         schedules = scheduleServiceImpl.findByYear(userId, startDate, endDate);
 
         List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
@@ -49,12 +51,12 @@ public class ScheduleController {
     }
 
     @PostMapping("/user/schedule/add")
-    public ResponseEntity<Result<AddScheduleDTO>> addSchedule(@RequestBody AddScheduleDTO addScheduleDTO) {
+    public ResponseEntity<Result<ScheduleResponse.AddScheduleDTO>> addSchedule(@RequestBody ScheduleRequest.AddScheduleDTO addScheduleDTO) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         addScheduleDTO.setUserId(userId);
 
         Schedule savedSchedule = scheduleServiceImpl.addSchedule(addScheduleDTO);
-        AddScheduleDTO addSchedule = AddScheduleDTO.from(savedSchedule);
+        ScheduleResponse.AddScheduleDTO addSchedule = AddScheduleDTO.from(savedSchedule);
 
         return ResponseEntity.ok(ApiResponse.success(addSchedule));
     }
@@ -85,8 +87,8 @@ public class ScheduleController {
     public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(@RequestParam(name = "year", required = true) Integer year) {
         List<Schedule> allSchedules;
 
-        LocalDate startDate = LocalDate.of(year, 1, 1);
-        LocalDate endDate = LocalDate.of(year, 12, 31);
+        LocalDateTime startDate = LocalDateTime.of(year, 1, 1,0,0);
+        LocalDateTime endDate = LocalDateTime.of(year, 12, 31,23,59);
         allSchedules = scheduleServiceImpl.findAllByYear(startDate, endDate);
 
         List<GetAllScheduleDTO> allSchedulesDTO = allSchedules.stream()
