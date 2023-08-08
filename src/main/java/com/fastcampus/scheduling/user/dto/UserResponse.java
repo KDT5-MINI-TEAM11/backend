@@ -1,12 +1,7 @@
 package com.fastcampus.scheduling.user.dto;
 
-import com.fastcampus.scheduling.schedule.common.ScheduleType;
-import com.fastcampus.scheduling.schedule.common.State;
-import com.fastcampus.scheduling.schedule.model.DummySchedule;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.model.User;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -68,73 +63,4 @@ public class UserResponse {
 
     }
 
-    @Getter
-    @Builder
-    public static class GetDummyScheduleDTO {
-
-        private ScheduleType scheduleType;
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
-        private State state;
-
-        public static GetDummyScheduleDTO from(DummySchedule schedule) {
-            return GetDummyScheduleDTO.builder()
-                .scheduleType(schedule.getScheduleType())
-                .startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
-                .endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
-                .state(schedule.getState())
-                .build();
-        }
-    }
-
-    @Getter
-    @Builder
-    public static class AddDummyScheduleDTO {
-
-        private ScheduleType scheduleType;
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
-        private State state;
-
-        public static AddDummyScheduleDTO from(DummySchedule schedule) {
-            return AddDummyScheduleDTO.builder()
-                .scheduleType(schedule.getScheduleType())
-                .startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
-                .endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
-                .state(schedule.getState())
-                .build();
-        }
-    }
-
-    @Getter
-    @Builder
-    public static class CancelDummyScheduleDTO {
-
-        private String message;
-
-        public static CancelDummyScheduleDTO from(String message) {
-            return CancelDummyScheduleDTO.builder()
-                .message(message)
-                .build();
-        }
-    }
-
-    @Getter
-    @Builder
-    public static class ModifyDummyScheduleDTO {
-
-        private ScheduleType scheduleType;
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
-        private State state;
-
-        public static ModifyDummyScheduleDTO from(DummySchedule schedule) {
-            return ModifyDummyScheduleDTO.builder()
-                .scheduleType(schedule.getScheduleType())
-                .startDate(LocalDateTime.of(schedule.getStartDate().toLocalDate(), LocalTime.MIN))
-                .endDate(LocalDateTime.of(schedule.getEndDate().toLocalDate(), LocalTime.MAX))
-                .state(schedule.getState())
-                .build();
-        }
-    }
 }
