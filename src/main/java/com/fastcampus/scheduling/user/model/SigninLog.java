@@ -1,7 +1,7 @@
 package com.fastcampus.scheduling.user.model;
 
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -44,6 +44,6 @@ public class SigninLog {
     private String userAgent;
 
     @CreationTimestamp
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
 }
