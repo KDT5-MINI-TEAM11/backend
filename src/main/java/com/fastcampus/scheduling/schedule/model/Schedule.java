@@ -51,6 +51,7 @@ public class Schedule {
 
 	@Column(nullable = false, name ="end_date")
 	private LocalDateTime endDate;
+
 	@Column(name = "created_at")
 	@CreationTimestamp
 	private LocalDateTime createdAt;
@@ -58,4 +59,8 @@ public class Schedule {
 	@Column(name = "updated_at")
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
+
+	public void rejectScheduleOverDate() {
+		this.state = State.REJECT;
+	}
 }
