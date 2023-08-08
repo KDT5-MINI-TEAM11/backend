@@ -42,7 +42,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.phoneNumber("010-7777-7777")
 				.position(Position.LEVEL1)
 				.profileThumbUrl("https://shorturl.at/COVY3")
-				.createdAt(LocalDate.now())
+				.createdAt(LocalDateTime.now())
 				.usedVacation(0)
 				.build();
 
@@ -54,7 +54,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.phoneNumber("010-2222-2222")
 				.position(Position.LEVEL3)
 				.profileThumbUrl("https://shorturl.at/qIMPU")
-				.createdAt(LocalDate.now())
+				.createdAt(LocalDateTime.now())
 				.usedVacation(8)
 				.build();
 
@@ -66,7 +66,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.phoneNumber("010-4444-4444")
 				.position(Position.LEVEL2)
 				.profileThumbUrl("https://shorturl.at/bjqDZ")
-				.createdAt(LocalDate.now())
+				.createdAt(LocalDateTime.now())
 				.usedVacation(1)
 				.build();
 
@@ -78,7 +78,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.phoneNumber("010-8888-8888")
 				.position(Position.LEVEL4)
 				.profileThumbUrl("https://shorturl.at/actIT")
-				.createdAt(LocalDate.now())
+				.createdAt(LocalDateTime.now())
 				.usedVacation(10)
 				.build();
 
@@ -91,7 +91,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 				.phoneNumber("010-3333-3333")
 				.position(Position.MANAGER)
 				.profileThumbUrl("https://shorturl.at/yzCV4")
-				.createdAt(LocalDate.now())
+				.createdAt(LocalDateTime.now())
 				.usedVacation(5)
 				.build();
 
@@ -103,7 +103,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			.phoneNumber("010-3333-0001")
 			.position(Position.MANAGER)
 			.profileThumbUrl("https://shorturl.at/yzCV4")
-			.createdAt(LocalDate.now())
+			.createdAt(LocalDateTime.now())
 			.usedVacation(10)
 			.build();
 
@@ -115,7 +115,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			.phoneNumber("010-3333-0002")
 			.position(Position.MANAGER)
 			.profileThumbUrl("https://shorturl.at/yzCV4")
-			.createdAt(LocalDate.now())
+			.createdAt(LocalDateTime.now())
 			.usedVacation(10)
 			.build();
 
@@ -132,24 +132,24 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			.user(levelOne)
 			.scheduleType(ScheduleType.ANNUAL)
 			.state(State.PENDING)
-			.startDate(LocalDate.of(2023,8,1))
-			.endDate(LocalDate.of(2023,8,3))
+			.startDate(LocalDateTime.of(2023,8,1,0,0,0))
+			.endDate(LocalDateTime.of(2023,8,3,23,59,59))
 			.build();
 		Schedule schedule2 = Schedule.builder()
 			.id(2L)
 			.user(levelTwo)
 			.scheduleType(ScheduleType.DUTY)
 			.state(State.PENDING)
-			.startDate(LocalDate.of(2023,8,5))
-			.endDate(LocalDate.of(2023,8,6))
+			.startDate(LocalDateTime.of(2023,8,5,0,0,0))
+			.endDate(LocalDateTime.of(2023,8,6,23,59,59))
 			.build();
 		Schedule schedule3 = Schedule.builder()
 			.id(3L)
 			.user(levelFour)
 			.scheduleType(ScheduleType.ANNUAL)
 			.state(State.PENDING)
-			.startDate(LocalDate.of(2023,8,10))
-			.endDate(LocalDate.of(2023,8,15))
+			.startDate(LocalDateTime.of(2023,8,10,0,0,0))
+			.endDate(LocalDateTime.of(2023,8,15,23,59,0))
 			.build();
 
 		scheduleRepository.save(schedule1);

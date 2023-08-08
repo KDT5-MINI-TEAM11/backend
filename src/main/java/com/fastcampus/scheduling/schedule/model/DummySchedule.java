@@ -2,7 +2,7 @@ package com.fastcampus.scheduling.schedule.model;
 
 import com.fastcampus.scheduling.schedule.common.ScheduleType;
 import com.fastcampus.scheduling.schedule.common.State;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -28,9 +28,9 @@ public class DummySchedule {
 	private State state;
 
 	@Column(nullable = false)
-	private LocalDate startDate;
+	private LocalDateTime startDate;
 
 	@Column(nullable = false)
-	private LocalDate endDate;
+	private LocalDateTime endDate;
 
 }

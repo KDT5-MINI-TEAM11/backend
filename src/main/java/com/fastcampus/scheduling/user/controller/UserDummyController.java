@@ -11,7 +11,7 @@ import com.fastcampus.scheduling.user.dto.UserRequest.CancelDummyScheduleDTO;
 import com.fastcampus.scheduling.user.dto.UserResponse;
 import com.fastcampus.scheduling.user.dto.UserResponse.GetDummyScheduleDTO;
 import com.fastcampus.scheduling.user.dto.UserResponse.ModifyDummyScheduleDTO;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +38,8 @@ public class UserDummyController {
 
 		DummySchedule dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.ANNUAL)
-				.startDate(LocalDate.parse("2023-08-01", formatter))
-				.endDate(LocalDate.parse("2023-08-05", formatter))
+				.startDate(LocalDateTime.parse("2023-08-01", formatter))
+				.endDate(LocalDateTime.parse("2023-08-05", formatter))
 				.state(State.REJECT)
 				.build();
 
@@ -47,8 +47,8 @@ public class UserDummyController {
 
 		dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.ANNUAL)
-				.startDate(LocalDate.parse("2023-08-05", formatter))
-				.endDate(LocalDate.parse("2023-08-05", formatter))
+				.startDate(LocalDateTime.parse("2023-08-05", formatter))
+				.endDate(LocalDateTime.parse("2023-08-05", formatter))
 				.state(State.PENDING)
 				.build();
 
@@ -56,8 +56,8 @@ public class UserDummyController {
 
 		dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.ANNUAL)
-				.startDate(LocalDate.parse("2023-08-01", formatter))
-				.endDate(LocalDate.parse("2023-08-01", formatter))
+				.startDate(LocalDateTime.parse("2023-08-01", formatter))
+				.endDate(LocalDateTime.parse("2023-08-01", formatter))
 				.state(State.APPROVE)
 				.build();
 
@@ -70,8 +70,8 @@ public class UserDummyController {
 	public ResponseEntity<Result<UserResponse.AddDummyScheduleDTO>> addUserSchedule(@RequestBody AddDummyScheduleDTO addDummyScheduleDTO) {
 		DummySchedule dummySchedule = DummySchedule.builder()
 				.scheduleType(addDummyScheduleDTO.getScheduleType())
-				.startDate(LocalDate.parse(addDummyScheduleDTO.getStartDate().toString(), formatter))
-				.endDate(LocalDate.parse(addDummyScheduleDTO.getEndDate().toString(), formatter))
+				.startDate(LocalDateTime.parse(addDummyScheduleDTO.getStartDate().toString(), formatter))
+				.endDate(LocalDateTime.parse(addDummyScheduleDTO.getEndDate().toString(), formatter))
 				.state(State.PENDING)
 				.build();
 
@@ -88,8 +88,8 @@ public class UserDummyController {
 	public ResponseEntity<Result<ModifyDummyScheduleDTO>> updateUserSchedule(@RequestBody UserRequest.ModifyScheduleDTO modifyScheduleDTO) {
 		DummySchedule dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.ANNUAL)
-				.startDate(LocalDate.parse(modifyScheduleDTO.getStartDate().toString(), formatter))
-				.endDate(LocalDate.parse(modifyScheduleDTO.getEndDate().toString(), formatter))
+				.startDate(LocalDateTime.parse(modifyScheduleDTO.getStartDate().toString(), formatter))
+				.endDate(LocalDateTime.parse(modifyScheduleDTO.getEndDate().toString(), formatter))
 				.state(State.PENDING)
 				.build();
 
