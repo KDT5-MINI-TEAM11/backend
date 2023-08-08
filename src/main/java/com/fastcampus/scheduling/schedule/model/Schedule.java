@@ -3,7 +3,7 @@ package com.fastcampus.scheduling.schedule.model;
 import com.fastcampus.scheduling.schedule.common.ScheduleType;
 import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.user.model.User;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -38,7 +38,7 @@ public class Schedule {
 	@JoinColumn(name="user_id")
 	private User user;
 
-	@Column(nullable = false, length = 20)
+	@Column(nullable = false, length = 20, name = "schedule_type")
 	@Enumerated(EnumType.STRING)
 	private ScheduleType scheduleType;
 
@@ -46,15 +46,16 @@ public class Schedule {
 	@Enumerated(EnumType.STRING)
 	private State state;
 
-	@Column(nullable = false)
-	private LocalDate startDate;
+	@Column(nullable = false, name ="start_date")
+	private LocalDateTime startDate;
 
-	@Column(nullable = false)
-	private LocalDate endDate;
-
+	@Column(nullable = false, name ="end_date")
+	private LocalDateTime endDate;
+	@Column(name = "created_at")
 	@CreationTimestamp
-	private LocalDate createdAt;
+	private LocalDateTime createdAt;
 
+	@Column(name = "updated_at")
 	@UpdateTimestamp
-	private LocalDate updatedAt;
+	private LocalDateTime updatedAt;
 }

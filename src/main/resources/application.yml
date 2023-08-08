@@ -23,6 +23,12 @@ spring:
         ssl:
           enable: true
           trust: smtp.naver.com
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    encoding: UTF-8
+    mode: HTML
 ---
 
 spring:

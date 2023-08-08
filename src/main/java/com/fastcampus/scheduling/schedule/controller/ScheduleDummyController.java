@@ -8,6 +8,8 @@ import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.GetScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.DummySchedule;
 import com.fastcampus.scheduling.user.model.DummyUser;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +47,8 @@ public class ScheduleDummyController {
 
 		DummySchedule dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.ANNUAL)
-				.startDate(LocalDate.parse("2023-08-01", formatter))
-				.endDate(LocalDate.parse("2023-08-05", formatter))
+				.startDate(LocalDateTime.of(LocalDate.of(2023,8,1), LocalTime.MIN))
+				.endDate(LocalDateTime.of(LocalDate.of(2023,8,5), LocalTime.MAX))
 				.state(State.PENDING)
 				.build();
 
@@ -54,8 +56,8 @@ public class ScheduleDummyController {
 
 		dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.DUTY)
-				.startDate(LocalDate.parse("2023-08-10", formatter))
-				.endDate(LocalDate.parse("2023-08-10", formatter))
+				.startDate(LocalDateTime.of(LocalDate.of(2023,8,10), LocalTime.MIN))
+				.endDate(LocalDateTime.of(LocalDate.of(2023,8,11), LocalTime.MAX))
 				.state(State.REJECT)
 				.build();
 
@@ -63,8 +65,8 @@ public class ScheduleDummyController {
 
 		dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.ANNUAL)
-				.startDate(LocalDate.parse("2023-08-11", formatter))
-				.endDate(LocalDate.parse("2023-08-13", formatter))
+				.startDate(LocalDateTime.of(LocalDate.of(2023,8,11), LocalTime.MIN))
+				.endDate(LocalDateTime.of(LocalDate.of(2023,8,13), LocalTime.MAX))
 				.state(State.APPROVE)
 				.build();
 
@@ -72,8 +74,8 @@ public class ScheduleDummyController {
 
 		dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.ANNUAL)
-				.startDate(LocalDate.parse("2023-08-20", formatter))
-				.endDate(LocalDate.parse("2023-08-20", formatter))
+				.startDate(LocalDateTime.of(LocalDate.of(2023,8,20), LocalTime.MIN))
+				.endDate(LocalDateTime.of(LocalDate.of(2023,8,20), LocalTime.MAX))
 				.state(State.PENDING)
 				.build();
 
@@ -81,8 +83,8 @@ public class ScheduleDummyController {
 
 		dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.DUTY)
-				.startDate(LocalDate.parse("2023-08-20", formatter))
-				.endDate(LocalDate.parse("2023-08-20", formatter))
+				.startDate(LocalDateTime.of(LocalDate.of(2023,8,20), LocalTime.MIN))
+				.endDate(LocalDateTime.of(LocalDate.of(2023,8,20), LocalTime.MAX))
 				.state(State.APPROVE)
 				.build();
 
@@ -90,8 +92,8 @@ public class ScheduleDummyController {
 
 		dummySchedule = DummySchedule.builder()
 				.scheduleType(ScheduleType.DUTY)
-				.startDate(LocalDate.parse("2023-08-24", formatter))
-				.endDate(LocalDate.parse("2023-08-24", formatter))
+				.startDate(LocalDateTime.of(LocalDate.of(2023,8,24), LocalTime.MIN))
+				.endDate(LocalDateTime.of(LocalDate.of(2023,8,24), LocalTime.MAX))
 				.state(State.REJECT)
 				.build();
 

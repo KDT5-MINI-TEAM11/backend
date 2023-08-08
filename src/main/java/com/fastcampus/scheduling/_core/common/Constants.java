@@ -6,5 +6,5 @@ public interface Constants {
     String SCHEDULE_APPROVE = "요청이 승인 되었습니다.";
     String SCHEDULE_REJECT = "요청이 반려 되었습니다.";
     String MAIL_SUBJECT = "인증메일";
-    String MAIL_FROM = "Manager11@naver.com";
+    String MAIL_FROM = "ahdzlq12@naver.com";
 }

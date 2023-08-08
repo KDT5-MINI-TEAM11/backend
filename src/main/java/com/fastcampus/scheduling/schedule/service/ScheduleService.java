@@ -1,18 +1,17 @@
 package com.fastcampus.scheduling.schedule.service;
 
-import com.fastcampus.scheduling.schedule.dto.ScheduleRequest.ModifyScheduleDTO;
-import com.fastcampus.scheduling.schedule.dto.ScheduleResponse;
+import com.fastcampus.scheduling.schedule.dto.ScheduleRequest;
 import com.fastcampus.scheduling.schedule.model.Schedule;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ScheduleService {
 
-    Schedule addSchedule(ScheduleResponse.AddScheduleDTO addScheduleDTO);
+    Schedule addSchedule(ScheduleRequest.AddScheduleDTO addScheduleDTO);
 
     void cancelSchedule(Long id, Long userId);
 
-    List<Schedule> findAllByYear(LocalDate startDate, LocalDate endDate);
+    List<Schedule> findAllByYear(LocalDateTime startDate, LocalDateTime endDate);
 
-    Schedule modifySchedule(ModifyScheduleDTO modifyScheduleDTO, Long userId);
+    Schedule modifySchedule(ScheduleRequest.ModifyScheduleDTO modifyScheduleDTO, Long userId);
 }

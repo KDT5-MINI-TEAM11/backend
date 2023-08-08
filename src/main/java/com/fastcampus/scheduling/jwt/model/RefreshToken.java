@@ -12,15 +12,16 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "refresh_token")
+@Table(name = "refresh_token_tb")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RefreshToken {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@Column(unique = true)
+	@Column(unique = true, name = "user_id")
 	private Long userId;
+	@Column(name = "refresh_token_id")
 	private String refreshTokenId;
 
 	public static RefreshToken of(Long userId, String refreshTokenId) {
