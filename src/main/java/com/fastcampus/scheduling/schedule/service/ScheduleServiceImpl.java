@@ -10,6 +10,7 @@ import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.repository.ScheduleRepository;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -38,26 +39,44 @@ public class ScheduleServiceImpl implements ScheduleService {
         User user = userRepository.findById(addScheduleDTO.getUserId())
             .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
 
-        LocalDateTime startDate = LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN);
-        LocalDateTime endDate = LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MIN);
-
-        if (startDate.isAfter(endDate)) {
-            throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
-        }
-
-        if (isScheduleOverlap(addScheduleDTO)) {
-            throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
-        }
-
-        int requestedVacationDays = calculateDuration(startDate, endDate);
+        validateStartDate(addScheduleDTO.getStartDate());
 
         if (addScheduleDTO.getScheduleType() == ScheduleType.ANNUAL) {
+            LocalDateTime startDate = LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN);
+            LocalDateTime endDate = LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX);
+
+            if (startDate.isAfter(endDate)) {
+                throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
+            }
+            if (isScheduleOverlap(addScheduleDTO)) {
+                throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
+            }
+
+            int requestedVacationDays = calculateDuration(startDate, endDate);
             int remainingVacation = user.getPosition().getTotalVacation() - user.getUsedVacation();
 
             if (requestedVacationDays > remainingVacation) {
                 throw new Exception400(ErrorMessage.INSUFFICIENT_VACATION_DAYS);
             }
             user.setUsedVacation(user.getUsedVacation() + requestedVacationDays);
+
+        } else if (addScheduleDTO.getScheduleType() == ScheduleType.DUTY) {
+            LocalDateTime startDate = LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN);
+            addScheduleDTO.setEndDate(startDate.toLocalDate());
+
+            if (isDutyScheduleOverlap(addScheduleDTO.getUserId(), startDate)) {
+                throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
+            }
+
+            Schedule schedule = Schedule.builder()
+                .user(user)
+                .scheduleType(addScheduleDTO.getScheduleType())
+                .startDate(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN))
+                .endDate(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX))
+                .state(State.PENDING)
+                .build();
+
+            return scheduleRepository.save(schedule);
         }
 
         Schedule schedule = Schedule.builder()
@@ -94,45 +113,60 @@ public class ScheduleServiceImpl implements ScheduleService {
     public Schedule modifySchedule(ScheduleRequest.ModifyScheduleDTO modifyScheduleDTO, Long userId) {
         Schedule existingSchedule = getScheduleByIdAndUserId(modifyScheduleDTO.getId(), userId);
 
+        validateStartDate(modifyScheduleDTO.getStartDate());
+
         if (existingSchedule.getState() != State.PENDING) {
             throw new Exception400(ErrorMessage.APPROVED_SCHEDULE);
         }
 
-        LocalDateTime oldStartDate = existingSchedule.getStartDate();
-        LocalDateTime oldEndDate = existingSchedule.getEndDate();
-        int requestedVacationDays = calculateDuration(oldStartDate, oldEndDate);
+        if (existingSchedule.getScheduleType() == ScheduleType.ANNUAL) {
 
-        User user = existingSchedule.getUser();
-        LocalDateTime newStartDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MIN);
-        LocalDateTime newEndDate = LocalDateTime.of(modifyScheduleDTO.getEndDate(), LocalTime.MAX);
+            LocalDateTime oldStartDate = existingSchedule.getStartDate();
+            LocalDateTime oldEndDate = existingSchedule.getEndDate();
+            int requestedVacationDays = calculateDuration(oldStartDate, oldEndDate);
 
-        if (newStartDate.isAfter(newEndDate)) {
-            throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
-        }
+            User user = existingSchedule.getUser();
+            LocalDateTime newStartDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(),
+                LocalTime.MIN);
+            LocalDateTime newEndDate = LocalDateTime.of(modifyScheduleDTO.getEndDate(),
+                LocalTime.MIN);
 
-        if (newStartDate != null || newEndDate != null) {
-            int newVacationDays = calculateDuration(newStartDate != null ? newStartDate : oldStartDate,
-                newEndDate != null ? newEndDate : oldEndDate);
+            if (newStartDate.isAfter(newEndDate)) {
+                throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
+            }
 
-            if (existingSchedule.getScheduleType() == ScheduleType.ANNUAL) {
+            if (newStartDate != null || newEndDate != null) {
+                int newVacationDays = calculateDuration(
+                    newStartDate != null ? newStartDate : oldStartDate,
+                    newEndDate != null ? newEndDate : oldEndDate);
+
                 int remainingVacation = user.getPosition().getTotalVacation() - user.getUsedVacation();
 
-                if (requestedVacationDays > remainingVacation) {
+                if (remainingVacation < newVacationDays) {
                     throw new Exception400(ErrorMessage.INSUFFICIENT_VACATION_DAYS);
                 }
-                user.setUsedVacation(
-                    (user.getUsedVacation() - requestedVacationDays) + newVacationDays);
+                user.setUsedVacation((user.getUsedVacation() - requestedVacationDays) + newVacationDays);
             }
             userRepository.save(user);
-        }
+            if (newStartDate != null) {
+                existingSchedule.setStartDate(newStartDate);
+            }
+            if (newEndDate != null) {
+                existingSchedule.setEndDate(newEndDate);
+            }
+         }
 
-        if (newStartDate != null) {
+        if (existingSchedule.getScheduleType() == ScheduleType.DUTY) {
+            LocalDateTime newStartDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MIN);
+            LocalDateTime newEndDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MAX);
+
+            if (isDutyScheduleOverlap(modifyScheduleDTO.getId(), newStartDate)) {
+                throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
+            }
+
             existingSchedule.setStartDate(newStartDate);
-        }
-        if (newEndDate != null) {
             existingSchedule.setEndDate(newEndDate);
         }
-
         scheduleRepository.save(existingSchedule);
         return existingSchedule;
     }
@@ -166,5 +200,23 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
         return false;
+    }
+
+    private boolean isDutyScheduleOverlap(Long userId, LocalDateTime newStartDate) {
+        List<Schedule> existingSchedules = scheduleRepository.findByUserAndDatesOverlap(
+            userId,
+            newStartDate,
+            newStartDate.plusDays(1)
+        );
+        return !existingSchedules.isEmpty();
+    }
+
+    private void validateStartDate(LocalDate startDate) {
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime selectedStartDate = LocalDateTime.of(startDate, LocalTime.MIN);
+
+        if (selectedStartDate.isBefore(currentDate)) {
+            throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
+        }
     }
 }
