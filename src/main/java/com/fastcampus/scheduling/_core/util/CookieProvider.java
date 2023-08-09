@@ -20,9 +20,9 @@ public class CookieProvider {
 
 	public ResponseCookie generateRefreshTokenCookie(String refreshToken) {
 		return ResponseCookie.from("refresh-token", refreshToken)
+				.sameSite("None")
 				.httpOnly(true)
 				.secure(true)
-				.sameSite("None")
 				.path("/")
 				.maxAge(Long.parseLong(refreshTokenExpiredTime))
 				.build();
@@ -51,8 +51,7 @@ public class CookieProvider {
 
 	public HttpServletResponse addCookie(HttpServletResponse response, String refreshToken) {
 		ResponseCookie responseCookie = generateRefreshTokenCookie(refreshToken);
-		Cookie cookie = of(responseCookie);
-		response.addCookie(cookie);
+		response.addHeader("Set-Cookie", responseCookie.toString());
 		response.setStatus(SC_OK);
 		response.setContentType(APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding("utf-8");
