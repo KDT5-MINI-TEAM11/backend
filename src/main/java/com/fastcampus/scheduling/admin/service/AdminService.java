@@ -11,6 +11,7 @@ import com.fastcampus.scheduling.admin.dto.AdminResponse;
 import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.repository.ScheduleRepository;
+import com.fastcampus.scheduling.schedule.service.ScheduleServiceImpl;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminService {
     private final ScheduleRepository scheduleRepository;
+    private final ScheduleServiceImpl scheduleServiceImpl;
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
@@ -56,13 +58,22 @@ public class AdminService {
 
         try {
             Optional<Schedule> scheduleOptional = scheduleRepository.findById(rejectDTO.getId());
-            scheduleOptional.orElseThrow(() -> new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE))
-                .setState(State.REJECT);
+            Schedule schedule = scheduleOptional.orElseThrow(() -> new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE));
+
+            if (schedule.getState() == State.APPROVE || schedule.getState() == State.PENDING) {
+                int canceledVacationDays = scheduleServiceImpl.calculateDuration(schedule.getStartDate(), schedule.getEndDate());
+
+                User user = schedule.getUser();
+                user.setUsedVacation(user.getUsedVacation() - canceledVacationDays);
+
+                schedule.setState(State.REJECT);
+                return Constants.SCHEDULE_REJECT;
+            } else {
+                throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE);
+            }
         }catch (IllegalArgumentException e){
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE);
         }
-
-        return Constants.SCHEDULE_REJECT;
     }
 
     @Transactional

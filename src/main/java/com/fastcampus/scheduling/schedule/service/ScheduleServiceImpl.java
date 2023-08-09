@@ -48,7 +48,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             if (startDate.isAfter(endDate)) {
                 throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
             }
-            if (isScheduleOverlap(addScheduleDTO)) {
+            if (isScheduleAddOverlap(addScheduleDTO)) {
                 throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
             }
 
@@ -78,7 +78,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 
             return scheduleRepository.save(schedule);
         }
-
         Schedule schedule = Schedule.builder()
             .user(user)
             .scheduleType(addScheduleDTO.getScheduleType())
@@ -95,8 +94,13 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleRepository.findByIdAndUserId(id, userId);
 
         if (schedule != null && schedule.getState() == State.PENDING || schedule.getState() == State.APPROVE) {
-            int canceledVacationDays = calculateDuration(schedule.getStartDate(), schedule.getEndDate());
+            LocalDateTime now = LocalDateTime.now();
 
+            if (schedule.getStartDate().isBefore(now)) {
+                throw new Exception400(ErrorMessage.CANNOT_CANCEL_SCHEDULE);
+            }
+
+            int canceledVacationDays = calculateDuration(schedule.getStartDate(), schedule.getEndDate());
             User user = schedule.getUser();
 
             if (schedule.getScheduleType() == ScheduleType.ANNUAL) {
@@ -120,6 +124,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
 
         if (existingSchedule.getScheduleType() == ScheduleType.ANNUAL) {
+            if (isScheduleModifyOverlap(modifyScheduleDTO)) {
+                throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
+            }
 
             LocalDateTime oldStartDate = existingSchedule.getStartDate();
             LocalDateTime oldEndDate = existingSchedule.getEndDate();
@@ -182,11 +189,11 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleRepository.findSchedulesByStartDateBetween(startDate, endDate);
     }
 
-    private int calculateDuration(LocalDateTime startDate, LocalDateTime endDate) {
+    public int calculateDuration(LocalDateTime startDate, LocalDateTime endDate) {
         return (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
     }
 
-    private boolean isScheduleOverlap(ScheduleRequest.AddScheduleDTO addScheduleDTO) {
+    private boolean isScheduleAddOverlap(ScheduleRequest.AddScheduleDTO addScheduleDTO) {
         List<Schedule> existingSchedules = scheduleRepository.findByUserAndDatesOverlap(
             addScheduleDTO.getUserId(),
             LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0)),
@@ -194,8 +201,26 @@ public class ScheduleServiceImpl implements ScheduleService {
         );
 
         for (Schedule existingSchedule : existingSchedules) {
-            if (existingSchedule.getStartDate().isBefore(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX.withNano(0))) &&
+            if (existingSchedule.getState() != State.REJECT &&
+                existingSchedule.getStartDate().isBefore(LocalDateTime.of(addScheduleDTO.getEndDate(), LocalTime.MAX.withNano(0))) &&
                 existingSchedule.getEndDate().isAfter(LocalDateTime.of(addScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0)))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isScheduleModifyOverlap(ScheduleRequest.ModifyScheduleDTO modifyScheduleDTO) {
+        List<Schedule> existingSchedules = scheduleRepository.findByScheduleAndDatesOverlap(
+            modifyScheduleDTO.getId(),
+            LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0)),
+            LocalDateTime.of(modifyScheduleDTO.getEndDate(), LocalTime.MAX.withNano(0))
+        );
+
+        for (Schedule existingSchedule : existingSchedules) {
+            if (existingSchedule.getState() != State.REJECT &&
+                existingSchedule.getStartDate().isBefore(LocalDateTime.of(modifyScheduleDTO.getEndDate(), LocalTime.MAX.withNano(0))) &&
+                existingSchedule.getEndDate().isAfter(LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0)))) {
                 return true;
             }
         }
@@ -213,7 +238,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private void validateStartDate(LocalDate startDate) {
         LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime selectedStartDate = LocalDateTime.of(startDate, LocalTime.MIN.withNano(0));
+        LocalDateTime selectedStartDate = LocalDateTime.of(startDate, LocalTime.MAX.withNano(0));
 
         if (selectedStartDate.isBefore(currentDate)) {
             throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
