@@ -4,7 +4,7 @@ import com.fastcampus.scheduling.schedule.common.ScheduleType;
 import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.user.model.User;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,17 +25,17 @@ public class ScheduleResponse {
 
 		private State state;
 
-		private LocalDateTime startDate;
+		private LocalDate startDate;
 
-		private LocalDateTime endDate;
+		private LocalDate endDate;
 
 		public static GetUserScheduleDTO from(Schedule schedule) {
 			return GetUserScheduleDTO.builder()
 				.id(schedule.getId())
 				.scheduleType(schedule.getScheduleType())
 				.state(schedule.getState())
-				.startDate(schedule.getStartDate())
-				.endDate(schedule.getEndDate())
+				.startDate(schedule.getStartDate().toLocalDate())
+				.endDate(schedule.getEndDate().toLocalDate())
 				.build();
 		}
 	}
@@ -55,10 +55,10 @@ public class ScheduleResponse {
 		private ScheduleType scheduleType;
 
 		@NotBlank
-		private LocalDateTime startDate;
+		private LocalDate startDate;
 
 		@NotBlank
-		private LocalDateTime endDate;
+		private LocalDate endDate;
 
 		@NotBlank
 		private State state;
@@ -67,8 +67,8 @@ public class ScheduleResponse {
 			return AddScheduleDTO.builder()
 				.userId(schedule.getUser().getId())
 				.scheduleType(schedule.getScheduleType())
-				.startDate(schedule.getStartDate())
-				.endDate(schedule.getEndDate())
+				.startDate(schedule.getStartDate().toLocalDate())
+				.endDate(schedule.getEndDate().toLocalDate())
 				.state(schedule.getState())
 				.build();
 		}
@@ -87,9 +87,9 @@ public class ScheduleResponse {
 
 		private ScheduleType scheduleType;
 
-		private LocalDateTime startDate;
+		private LocalDate startDate;
 
-		private LocalDateTime endDate;
+		private LocalDate endDate;
 
 		private State state;
 
@@ -100,8 +100,8 @@ public class ScheduleResponse {
 				.id(schedule.getId())
 				.userName(user.getUserName())
 				.scheduleType(schedule.getScheduleType())
-				.startDate(schedule.getStartDate())
-				.endDate(schedule.getEndDate())
+				.startDate(schedule.getStartDate().toLocalDate())
+				.endDate(schedule.getEndDate().toLocalDate())
 				.state(schedule.getState())
 				.build();
 		}
@@ -111,14 +111,14 @@ public class ScheduleResponse {
 	@Builder
 	public static class ModifyScheduleDTO {
 		private ScheduleType type;
-		private LocalDateTime startDate;
-		private LocalDateTime endDate;
+		private LocalDate startDate;
+		private LocalDate endDate;
 		private State state;
 		public static ModifyScheduleDTO from(Schedule schedule) {
 			return ModifyScheduleDTO.builder()
 				.type(schedule.getScheduleType())
-				.startDate(schedule.getStartDate())
-				.endDate(schedule.getEndDate())
+				.startDate(schedule.getStartDate().toLocalDate())
+				.endDate(schedule.getEndDate().toLocalDate())
 				.state(schedule.getState())
 				.build();
 		}
