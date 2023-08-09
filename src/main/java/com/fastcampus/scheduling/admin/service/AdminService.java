@@ -94,7 +94,7 @@ public class AdminService {
     }
 
     @Transactional
-    public void updateSchedulePending(PendingDTO pendingDTO) {
+    public String updateSchedulePending(PendingDTO pendingDTO) {
         if(pendingDTO == null)
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE);
 
@@ -106,10 +106,12 @@ public class AdminService {
         }catch (IllegalArgumentException e){
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE);
         }
+
+        return Constants.SCHEDULE_CANCEL;
     }
 
     @Transactional
-    public void updatePosition(AdminRequest.UpdatePositionDTO updatePositionDTO) {
+    public String updatePosition(AdminRequest.UpdatePositionDTO updatePositionDTO) {
         if(updatePositionDTO == null)
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_CHECK_POSITION);
 
@@ -121,5 +123,7 @@ public class AdminService {
         }catch (IllegalArgumentException e){
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE);
         }
+
+        return Constants.POSITION_UPDATE;
     }
 }
