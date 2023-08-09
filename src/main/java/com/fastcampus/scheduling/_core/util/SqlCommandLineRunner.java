@@ -1,14 +1,17 @@
 package com.fastcampus.scheduling._core.util;
 
-import com.fastcampus.scheduling.schedule.repository.ScheduleRepository;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +22,7 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final UserRepository userRepository;
-	private final ScheduleRepository scheduleRepository;
+	private final JdbcTemplate jdbcTemplate;
 
 	@Value("${default-user.password}")
 	private String password;
@@ -120,6 +123,11 @@ public class SqlCommandLineRunner implements CommandLineRunner {
 			userRepository.save(manager);
 			userRepository.save(managerJW);
 			userRepository.save(managerGH);
+
+			Resource resource = new ClassPathResource("db/data.sql");
+			String sql = new String(Files.readAllBytes(resource.getFile().toPath()));
+			jdbcTemplate.execute(sql);
+
 
 		}catch (Exception e){
 			log.warn("EXCEPTION OCCURRED IN SQL COMMAND RUNNER");

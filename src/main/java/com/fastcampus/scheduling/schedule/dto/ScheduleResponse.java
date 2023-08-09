@@ -2,9 +2,7 @@ package com.fastcampus.scheduling.schedule.dto;
 
 import com.fastcampus.scheduling.schedule.common.ScheduleType;
 import com.fastcampus.scheduling.schedule.common.State;
-import com.fastcampus.scheduling.schedule.model.DummySchedule;
 import com.fastcampus.scheduling.schedule.model.Schedule;
-import com.fastcampus.scheduling.user.model.DummyUser;
 import com.fastcampus.scheduling.user.model.User;
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
@@ -106,34 +104,6 @@ public class ScheduleResponse {
 				.endDate(schedule.getEndDate())
 				.state(schedule.getState())
 				.build();
-		}
-	}
-
-	@Getter
-	@Builder
-	public static class GetScheduleDTO {
-
-		private String userName;
-
-		private String userEmail;
-
-		private ScheduleType scheduleType;
-
-		private LocalDateTime startDate;
-
-		private LocalDateTime endDate;
-
-		private State state;
-
-		public static GetScheduleDTO from(DummySchedule schedule, DummyUser user) {
-			return GetScheduleDTO.builder()
-					.userName(user.getUserName())
-					.userEmail(user.getUserEmail())
-					.scheduleType(schedule.getScheduleType())
-					.startDate(schedule.getStartDate())
-					.endDate(schedule.getEndDate())
-					.state(schedule.getState())
-					.build();
 		}
 	}
 
