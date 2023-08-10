@@ -61,4 +61,12 @@ public class AdminResponse {
                 .build();
         }
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ResetPasswordDTO{
+        private String message;
+    }
 }

@@ -4,6 +4,7 @@ import com.fastcampus.scheduling._core.common.Constants;
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
 import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
+import com.fastcampus.scheduling.admin.dto.AdminRequest;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.dto.UserRequest;
 import com.fastcampus.scheduling.user.dto.UserRequest.UpdateDTO;
@@ -28,75 +29,86 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-	private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-	@Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    User user =  userRepository.findByUserEmail(username)
-        .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.MISMATCH_SIGN_IN_INFO));
-    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(new SimpleGrantedAuthority(user.getPosition().name()));
-    //set name as userId(table pk)
-    return new org.springframework.security.core.userdetails.User(user.getId().toString(), user.getUserPassword(), authorities);
-  }
+		@Override
+		public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+				User user =  userRepository.findByUserEmail(username)
+						.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.MISMATCH_SIGN_IN_INFO));
+				Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+				authorities.add(new SimpleGrantedAuthority(user.getPosition().name()));
+				//set name as userId(table pk)
+				return new org.springframework.security.core.userdetails.User(user.getId().toString(), user.getUserPassword(), authorities);
+		}
 
-	@Transactional(readOnly = true)
-	public User findByUserId(Long userId) {
-			return userRepository.findById(userId)
-					.orElseThrow(() -> new Exception401(
-							ErrorMessage.USER_NOT_FOUND));
-	}
+		@Transactional(readOnly = true)
+		public User findByUserId(Long userId) {
+				return userRepository.findById(userId)
+						.orElseThrow(() -> new Exception401(
+								ErrorMessage.USER_NOT_FOUND));
+		}
 
-	@Transactional
-	public User updateUser(Long id, UpdateDTO updateDTO) throws IllegalArgumentException, OptimisticLockingFailureException{
-			User user = userRepository.findById(id)
-					.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
+		@Transactional
+		public User updateUser(Long id, UpdateDTO updateDTO) throws IllegalArgumentException, OptimisticLockingFailureException{
+				User user = userRepository.findById(id)
+						.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
 
-			String userPassword = updateDTO.getUserPassword();
-			if (userPassword != null) {
-				user.setUserPassword(userPassword);
-			}
+				String userPassword = updateDTO.getUserPassword();
+				if (userPassword != null) {
+					user.setUserPassword(passwordEncoder.encode((userPassword)));
+				}
 
-			String phoneNumber = updateDTO.getPhoneNumber();
-			if (phoneNumber != null) {
-				user.setPhoneNumber(phoneNumber);
-			}
+				String phoneNumber = updateDTO.getPhoneNumber();
+				if (phoneNumber != null) {
+					user.setPhoneNumber(phoneNumber);
+				}
 
-			String profileThumbUrl = updateDTO.getProfileThumbUrl();
-			if (profileThumbUrl != null) {
-				user.setProfileThumbUrl(profileThumbUrl);
-			}
+				String profileThumbUrl = updateDTO.getProfileThumbUrl();
+				if (profileThumbUrl != null) {
+					user.setProfileThumbUrl(profileThumbUrl);
+				}
 
-			return userRepository.save(user);
-    }
+				return userRepository.save(user);
+		}
 
-    @Transactional
-    public User save(UserRequest.SignUpDTO signUpDTO) throws IllegalArgumentException, OptimisticLockingFailureException {
-        validateSignUp(signUpDTO);
+		@Transactional
+		public void resetUserPassword(AdminRequest.ResetPasswordDTO resetPasswordDTO) {
+				Long userId = resetPasswordDTO.getUserId();
 
-        User user = signUpDTO.toEntityWithHashPassword(passwordEncoder);
-		user.setUsedVacation(Constants.USED_VACATION);
+				User user = userRepository.findById(userId)
+						.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
 
-        return userRepository.save(user);
-    }
+				String newPassword = resetPasswordDTO.getResetPassword();
+				user.setUserPassword(passwordEncoder.encode((newPassword)));
+		}
 
-    @Transactional(readOnly = true)
-    public void validateSignUp(UserRequest.SignUpDTO signUpDTO) {
-        if(signUpDTO == null)
-            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_SIGNUP);
+		@Transactional
+		public User save(UserRequest.SignUpDTO signUpDTO) throws IllegalArgumentException, OptimisticLockingFailureException {
+				validateSignUp(signUpDTO);
 
-        if(signUpDTO.getPosition().equals(Position.MANAGER))
-            throw new Exception400(ErrorMessage.INVALID_POSITION);
+				User user = signUpDTO.toEntityWithHashPassword(passwordEncoder);
+				user.setUsedVacation(Constants.USED_VACATION);
 
-        String phoneNumber = signUpDTO.getPhoneNumber();
+				return userRepository.save(user);
+		}
 
-        User duplicatedPhoneNumber = userRepository.findByPhoneNumber(phoneNumber)
-            .orElse(null);
+		@Transactional(readOnly = true)
+		public void validateSignUp(UserRequest.SignUpDTO signUpDTO) {
+				if(signUpDTO == null)
+						throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_SIGNUP);
 
-        if(duplicatedPhoneNumber != null)
-            throw new Exception400(ErrorMessage.DUPLICATE_PHONENUMBER);
+				if(signUpDTO.getPosition().equals(Position.MANAGER))
+						throw new Exception400(ErrorMessage.INVALID_POSITION);
 
-        if(phoneNumber.isBlank())
-            throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PHONENUMBER);
-    }
+				String phoneNumber = signUpDTO.getPhoneNumber();
+
+				User duplicatedPhoneNumber = userRepository.findByPhoneNumber(phoneNumber)
+						.orElse(null);
+
+				if(duplicatedPhoneNumber != null)
+						throw new Exception400(ErrorMessage.DUPLICATE_PHONENUMBER);
+
+				if(phoneNumber.isBlank())
+						throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_PHONENUMBER);
+		}
 }

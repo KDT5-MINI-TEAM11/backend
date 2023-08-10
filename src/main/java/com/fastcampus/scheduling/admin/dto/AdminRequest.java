@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 public class AdminRequest {
 
@@ -28,5 +27,16 @@ public class AdminRequest {
         private Long id;
         @NotBlank
         private Position position;
+    }
+
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    public static class ResetPasswordDTO{
+        @NotBlank
+        private Long userId;
+        @NotBlank
+        private String resetPassword;
     }
 }

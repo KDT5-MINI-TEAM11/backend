@@ -6,6 +6,7 @@ import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling.admin.dto.AdminRequest;
 import com.fastcampus.scheduling.admin.dto.AdminResponse;
 import com.fastcampus.scheduling.admin.dto.AdminResponse.GetAllUserDTO;
+import com.fastcampus.scheduling.admin.dto.AdminResponse.ResetPasswordDTO;
 import com.fastcampus.scheduling.admin.service.AdminService;
 import com.fastcampus.scheduling.user.service.UserService;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 public class AdminController {
+
     private final AdminService adminService;
     private final UserService userService;
 
@@ -82,6 +84,15 @@ public class AdminController {
         String result = adminService.updateSchedulePending(scheduleDTO);
 
         return ResponseEntity.ok(ApiResponse.success(result));
+    }
+
+    @PostMapping("/api/v1/admin/reset-password")
+    public ResponseEntity<ApiResponse.Result<Object>> cancelSchedule(@RequestBody AdminRequest.ResetPasswordDTO resetPasswordDTO){
+        log.info("/api/v1/admin/reset-password POST");
+
+        userService.resetUserPassword(resetPasswordDTO);
+
+        return ResponseEntity.ok(ApiResponse.success(ResetPasswordDTO.builder().message("비밀번호가 초기화 되었습니다.").build()));
     }
 
 }
