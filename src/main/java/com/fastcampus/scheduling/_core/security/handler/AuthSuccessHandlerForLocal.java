@@ -1,13 +1,13 @@
 
 package com.fastcampus.scheduling._core.security.handler;
 
+import com.fastcampus.scheduling._core.security.dto.SigninResponse;
+import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.CookieProvider;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
 import com.fastcampus.scheduling.jwt.service.RefreshTokenServiceImpl;
 import com.fastcampus.scheduling.user.service.UserLogService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fastcampus.scheduling._core.security.dto.SigninResponse;
-import com.fastcampus.scheduling._core.util.ApiResponse;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 @Configuration
 @RequiredArgsConstructor
-public class AuthSuccessHandler implements AuthenticationSuccessHandler {
+public class AuthSuccessHandlerForLocal implements AuthenticationSuccessHandler {
 
     private final UserLogService userLogService;
     private final RefreshTokenServiceImpl refreshTokenService;
@@ -45,7 +45,7 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
         response = cookieProvider.addCookie(response, refreshToken);
 
 
-        SigninResponse signinResponse = SigninResponse.builder().accessToken(accessToken).build();
+        SigninResponse signinResponse = SigninResponse.builder().accessToken(accessToken).refreshToken(refreshToken).build();
 
         // save signIn log
         userLogService.saveSigninLog(userId);

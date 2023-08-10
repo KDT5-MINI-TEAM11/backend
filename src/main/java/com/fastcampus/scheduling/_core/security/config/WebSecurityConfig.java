@@ -1,10 +1,12 @@
 package com.fastcampus.scheduling._core.security.config;
 
 import com.fastcampus.scheduling._core.security.filter.AuthenticationFilter;
+import com.fastcampus.scheduling._core.security.filter.AuthenticationFilterForLocal;
 import com.fastcampus.scheduling._core.security.filter.AuthorizationFilter;
 import com.fastcampus.scheduling._core.security.filter.CustomAuthenticationProvider;
 import com.fastcampus.scheduling._core.security.handler.AuthFailureHandler;
 import com.fastcampus.scheduling._core.security.handler.AuthSuccessHandler;
+import com.fastcampus.scheduling._core.security.handler.AuthSuccessHandlerForLocal;
 import com.fastcampus.scheduling._core.security.handler.CustomExceptionHandler;
 import com.fastcampus.scheduling._core.security.handler.CustomLogoutHandler;
 import com.fastcampus.scheduling._core.security.handler.CustomLogoutSuccessHandler;
@@ -31,6 +33,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 	private final AuthSuccessHandler loginSuccessHandler;
+	private final AuthSuccessHandlerForLocal loginSuccessHandlerForLocal;
 	private final AuthFailureHandler loginFailureHandler;
 	private final CustomLogoutHandler customLogoutHandler;
 	private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
@@ -86,8 +89,18 @@ public class WebSecurityConfig {
 	@Bean
 	public AuthenticationFilter authenticationFilter() {
 		AuthenticationFilter customAuthenticationFilter = new AuthenticationFilter(authenticationManager());
-		customAuthenticationFilter.setFilterProcessesUrl("/api/v1/auth/signin");     // 접근 URL
+		customAuthenticationFilter.setFilterProcessesUrl("/api/v2/auth/signin");     // 접근 URL
 		customAuthenticationFilter.setAuthenticationSuccessHandler(loginSuccessHandler);    // '인증' 성공 시 해당 핸들러로 처리를 전가한다.
+		customAuthenticationFilter.setAuthenticationFailureHandler(loginFailureHandler);    // '인증' 실패 시 해당 핸들러로 처리를 전가한다.
+		customAuthenticationFilter.afterPropertiesSet();
+		return customAuthenticationFilter;
+	}
+
+	@Bean
+	public AuthenticationFilterForLocal authenticationFilterForLocal() {
+		AuthenticationFilterForLocal customAuthenticationFilter = new AuthenticationFilterForLocal(authenticationManager());
+		customAuthenticationFilter.setFilterProcessesUrl("/api/v1/auth/signin");     // 접근 URL
+		customAuthenticationFilter.setAuthenticationSuccessHandler(loginSuccessHandlerForLocal);    // '인증' 성공 시 해당 핸들러로 처리를 전가한다.
 		customAuthenticationFilter.setAuthenticationFailureHandler(loginFailureHandler);    // '인증' 실패 시 해당 핸들러로 처리를 전가한다.
 		customAuthenticationFilter.afterPropertiesSet();
 		return customAuthenticationFilter;
