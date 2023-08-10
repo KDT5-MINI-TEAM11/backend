@@ -96,7 +96,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (schedule != null && schedule.getState() == State.PENDING || schedule.getState() == State.APPROVE) {
             LocalDateTime now = LocalDateTime.now();
 
-            if (schedule.getStartDate().isBefore(now)) {
+            if (schedule.getStartDate().isBefore(now) && !schedule.getStartDate().toLocalDate().equals(now.toLocalDate())) {
                 throw new Exception400(ErrorMessage.CANNOT_CANCEL_SCHEDULE);
             }
 
@@ -167,7 +167,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             LocalDateTime newStartDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MIN.withNano(0));
             LocalDateTime newEndDate = LocalDateTime.of(modifyScheduleDTO.getStartDate(), LocalTime.MAX.withNano(0));
 
-            if (isDutyScheduleOverlap(modifyScheduleDTO.getId(), newStartDate)) {
+            if (isDutyScheduleOverlap(userId, newStartDate)) {
                 throw new Exception400(ErrorMessage.OVERLAPPING_SCHEDULE);
             }
 

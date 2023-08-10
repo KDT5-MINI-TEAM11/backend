@@ -15,7 +15,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findAllByOrderByIdDesc();
 
-    @Query("SELECT s FROM Schedule s WHERE s.user.id = :userId AND s.endDate > :startDate AND s.startDate < :endDate")
+    @Query("SELECT s FROM Schedule s WHERE s.user.id = :userId AND s.state <> 'REJECT' AND s.endDate > :startDate AND s.startDate < :endDate")
     List<Schedule> findByUserAndDatesOverlap(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query("SELECT s FROM Schedule s WHERE s.id <> :id AND s.startDate < :endDate AND s.endDate > :startDate")
