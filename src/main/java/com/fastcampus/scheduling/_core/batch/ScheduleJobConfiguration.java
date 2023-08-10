@@ -2,7 +2,6 @@ package com.fastcampus.scheduling._core.batch;
 
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -12,23 +11,20 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.JpaItemWriter;
-import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
-public class ScheduleCursorJobConfiguration {
+public class ScheduleJobConfiguration {
 	public static final String JOB_NAME = "ScheduleCursorJob";
 
 	private final EntityManagerFactory entityManagerFactory;
 	private final StepBuilderFactory stepBuilderFactory;
 	private final JobBuilderFactory jobBuilderFactory;
-	private final DataSource dataSource;
-
 	private final int CHUNK_SIZE = 100;
 
 	@Bean
@@ -51,14 +47,20 @@ public class ScheduleCursorJobConfiguration {
 
 	@Bean
 	@StepScope
-	public JdbcCursorItemReader<Schedule> schedulePagingReader() {
-		return new JdbcCursorItemReaderBuilder<Schedule>()
-				.sql("SELECT * FROM schedule_tb s WHERE s.state = 'PENDING'")
-				.rowMapper(new BeanPropertyRowMapper<>(Schedule.class))
-				.fetchSize(CHUNK_SIZE)
-				.dataSource(dataSource)
-				.name("SchedulePagingReader")
-				.build();
+	public JpaPagingItemReader<Schedule> schedulePagingReader() {
+		JpaPagingItemReader<Schedule> reader = new JpaPagingItemReader<Schedule>() {
+			@Override
+			public int getPage() {
+				return 0;
+			}
+		};
+
+		reader.setQueryString("SELECT s FROM Schedule s WHERE s.state = 'PENDING'");
+		reader.setPageSize(CHUNK_SIZE);
+		reader.setEntityManagerFactory(entityManagerFactory);
+		reader.setName("SchedulePagingReader");
+
+		return reader;
 	}
 
 	@Bean
@@ -77,4 +79,5 @@ public class ScheduleCursorJobConfiguration {
 		writer.setEntityManagerFactory(entityManagerFactory);
 		return writer;
 	}
+
 }
