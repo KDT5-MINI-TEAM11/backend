@@ -14,28 +14,10 @@ public class AdminRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
-    public static class ApproveDTO {
+    public static class ScheduleDTO {
         @NotBlank
         private Long id;
     }
-
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    public static class RejectDTO {
-        @NotBlank
-        private Long id;
-    }
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    public static class PendingDTO {
-        @NotBlank
-        private Long id;
-    }
-
 
     @Builder
     @NoArgsConstructor

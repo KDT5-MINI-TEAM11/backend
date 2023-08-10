@@ -5,9 +5,6 @@ import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.errors.exception.Exception403;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling.admin.dto.AdminRequest;
-import com.fastcampus.scheduling.admin.dto.AdminRequest.ApproveDTO;
-import com.fastcampus.scheduling.admin.dto.AdminRequest.PendingDTO;
-import com.fastcampus.scheduling.admin.dto.AdminRequest.RejectDTO;
 import com.fastcampus.scheduling.admin.dto.AdminResponse;
 import com.fastcampus.scheduling.admin.dto.AdminResponse.GetAllUserDTO;
 import com.fastcampus.scheduling.admin.service.AdminService;
@@ -15,7 +12,6 @@ import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.service.UserService;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -54,27 +50,27 @@ public class AdminController {
     }
 
     @PostMapping("/api/v1/admin/reject")
-    public ResponseEntity<ApiResponse.Result<Object>> reject(HttpServletRequest request, @RequestBody RejectDTO rejectDTO){
-        log.info("/api/v1/admin/reject POST" + rejectDTO);
+    public ResponseEntity<ApiResponse.Result<Object>> rejectSchedule(@RequestBody AdminRequest.ScheduleDTO scheduleDTO){
+        log.info("/api/v1/admin/reject POST" + scheduleDTO);
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         validatePosition(userId);
-        String result = adminService.updateScheduleReject(rejectDTO);
+        String result = adminService.updateScheduleReject(scheduleDTO);
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping("/api/v1/admin/approve")
-    public ResponseEntity<ApiResponse.Result<Object>> approve(HttpServletRequest request, @RequestBody ApproveDTO approveDTO){
-        log.info("/api/v1/admin/approve POST" + approveDTO);
+    public ResponseEntity<ApiResponse.Result<Object>> approveSchedule(@RequestBody AdminRequest.ScheduleDTO scheduleDTO){
+        log.info("/api/v1/admin/approve POST" + scheduleDTO);
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         validatePosition(userId);
-        String result = adminService.updateScheduleApprove(approveDTO);
+        String result = adminService.updateScheduleApprove(scheduleDTO);
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping("/api/v1/admin/change-position")
-    public ResponseEntity<ApiResponse.Result<Object>> position(HttpServletRequest request, @RequestBody AdminRequest.UpdatePositionDTO updatePositionDTO){
+    public ResponseEntity<ApiResponse.Result<Object>> changePosition(@RequestBody AdminRequest.UpdatePositionDTO updatePositionDTO){
         log.info("/api/v1/admin/change-position POST" + updatePositionDTO);
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         validatePosition(userId);
@@ -87,11 +83,11 @@ public class AdminController {
     }
 
     @PostMapping("/api/v1/admin/pending")
-    public ResponseEntity<ApiResponse.Result<Object>> cancel(HttpServletRequest request, @RequestBody PendingDTO pendingDTO){
-        log.info("/api/v1/admin/pending POST" + pendingDTO);
+    public ResponseEntity<ApiResponse.Result<Object>> cancelSchedule(@RequestBody AdminRequest.ScheduleDTO scheduleDTO){
+        log.info("/api/v1/admin/pending POST" + scheduleDTO);
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
         validatePosition(userId);
-        String result = adminService.updateSchedulePending(pendingDTO);
+        String result = adminService.updateSchedulePending(scheduleDTO);
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
