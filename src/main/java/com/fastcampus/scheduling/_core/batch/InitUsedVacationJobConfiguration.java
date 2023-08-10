@@ -1,6 +1,6 @@
 package com.fastcampus.scheduling._core.batch;
 
-import com.fastcampus.scheduling.schedule.model.Schedule;
+import com.fastcampus.scheduling.user.model.User;
 import javax.persistence.EntityManagerFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
-public class ScheduleJobConfiguration {
-	public static final String JOB_NAME = "ScheduleCursorJob";
+public class InitUsedVacationJobConfiguration {
+	public static final String JOB_NAME = "InitUsedVacation";
 
 	private final EntityManagerFactory entityManagerFactory;
 	private final StepBuilderFactory stepBuilderFactory;
@@ -28,54 +28,54 @@ public class ScheduleJobConfiguration {
 	private final int CHUNK_SIZE = 100;
 
 	@Bean
-	public Job schedulePagingJob() {
+	public Job initUsedVacationPagingJob() {
 		return jobBuilderFactory.get(JOB_NAME)
-				.start(schedulePagingStep())
+				.start(initUsedVacationPagingStep())
 				.build();
 	}
 
 	@Bean
 	@JobScope
-	public Step schedulePagingStep() {
-		return stepBuilderFactory.get("SchedulePagingStep")
-				.<Schedule, Schedule>chunk(CHUNK_SIZE)
-				.reader(schedulePagingReader())
-				.processor(schedulePagingProcessor())
-				.writer(scheduleWriter())
+	public Step initUsedVacationPagingStep() {
+		return stepBuilderFactory.get("InitUsedVacationStep")
+				.<User, User>chunk(CHUNK_SIZE)
+				.reader(initUsedVacationPagingReader())
+				.processor(initUsedVacationPagingProcessor())
+				.writer(initUsedVacationWriter())
 				.build();
 	}
 
 	@Bean
 	@StepScope
-	public JpaPagingItemReader<Schedule> schedulePagingReader() {
-		JpaPagingItemReader<Schedule> reader = new JpaPagingItemReader<Schedule>() {
+	public JpaPagingItemReader<User> initUsedVacationPagingReader() {
+		JpaPagingItemReader<User> reader = new JpaPagingItemReader<User>() {
 			@Override
 			public int getPage() {
 				return 0;
 			}
 		};
 
-		reader.setQueryString("SELECT s FROM Schedule s WHERE s.state = 'PENDING'");
+		reader.setQueryString("SELECT u FROM User u");
 		reader.setPageSize(CHUNK_SIZE);
 		reader.setEntityManagerFactory(entityManagerFactory);
-		reader.setName("SchedulePagingReader");
+		reader.setName("InitUsedVacationPagingReader");
 
 		return reader;
 	}
 
 	@Bean
 	@StepScope
-	public ItemProcessor<Schedule, Schedule> schedulePagingProcessor() {
+	public ItemProcessor<User, User> initUsedVacationPagingProcessor() {
 		return item -> {
-			item.rejectScheduleOverDate();
+			item.initUsedVacation();
 			return item;
 		};
 	}
 
 	@Bean
 	@StepScope
-	public JpaItemWriter<Schedule> scheduleWriter() {
-		JpaItemWriter<Schedule> writer = new JpaItemWriter<>();
+	public JpaItemWriter<User> initUsedVacationWriter() {
+		JpaItemWriter<User> writer = new JpaItemWriter<>();
 		writer.setEntityManagerFactory(entityManagerFactory);
 		return writer;
 	}

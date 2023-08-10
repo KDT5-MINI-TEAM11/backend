@@ -61,4 +61,8 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    public void initUsedVacation() {
+        this.usedVacation = 0;
+    }
+
 }
