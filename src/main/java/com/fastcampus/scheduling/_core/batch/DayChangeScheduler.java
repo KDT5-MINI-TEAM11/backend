@@ -18,10 +18,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DayChangeScheduler {
 
-	private final ScheduleCursorJobConfiguration scheduleCursorJobConfiguration;
+	private final ScheduleJobConfiguration scheduleJobConfiguration;
 	private final JobLauncher jobLauncher;
 
-	@Scheduled(cron = "0 0 0 * * *")
+	@Scheduled(cron = "0 * * * * *")
 	public void run() {
 		// job parameter 설정
 		Map<String, JobParameter> confMap = new HashMap<>();
@@ -29,7 +29,7 @@ public class DayChangeScheduler {
 		JobParameters jobParameters = new JobParameters(confMap);
 
 		try {
-			jobLauncher.run(scheduleCursorJobConfiguration.schedulePagingJob(), jobParameters);
+			jobLauncher.run(scheduleJobConfiguration.schedulePagingJob(), jobParameters);
 		} catch (JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException
 						 | JobParametersInvalidException | org.springframework.batch.core.repository.JobRestartException e) {
 
