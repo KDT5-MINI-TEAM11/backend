@@ -77,6 +77,7 @@ public class WebSecurityConfig {
 				.addFilterBefore(authorizationFilter, BasicAuthenticationFilter.class)
 				.addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(customExceptionHandler, AuthorizationFilter.class)
+				.addFilterBefore(customExceptionHandler, AuthenticationFilter.class)
 				.headers()
 				.frameOptions()
 				.sameOrigin();

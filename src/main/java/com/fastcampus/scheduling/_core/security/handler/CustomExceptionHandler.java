@@ -3,10 +3,11 @@ package com.fastcampus.scheduling._core.security.handler;
 import static com.fastcampus.scheduling._core.errors.ErrorMessage.INNER_SERVER_ERROR;
 import static com.fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_NOT_VALID;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling._core.exception.CustomException;
 import com.fastcampus.scheduling._core.util.ApiResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -38,6 +39,12 @@ public class CustomExceptionHandler extends OncePerRequestFilter {
 			if (exception instanceof Exception401) {
 				responseBody =  ((Exception401) exception).body();
 			}
+
+			if (exception instanceof Exception400) {
+				status = HttpStatus.BAD_REQUEST;
+				responseBody =  ((Exception400) exception).body();
+			}
+
 			if (exception instanceof JwtException) {
 				status = HttpStatus.UNAUTHORIZED;
 				message = TOKEN_NOT_VALID;
