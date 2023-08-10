@@ -6,11 +6,13 @@ import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling.user.common.Position;
 import com.fastcampus.scheduling.user.dto.UserRequest;
+import com.fastcampus.scheduling.user.dto.UserRequest.UpdateDTO;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
@@ -37,23 +40,34 @@ public class UserService implements UserDetailsService {
     return new org.springframework.security.core.userdetails.User(user.getId().toString(), user.getUserPassword(), authorities);
   }
 
-    @Transactional(readOnly = true)
+	@Transactional(readOnly = true)
 	public User findByUserId(Long userId) {
 			return userRepository.findById(userId)
 					.orElseThrow(() -> new Exception401(
 							ErrorMessage.USER_NOT_FOUND));
 	}
 
-    @Transactional
-	public User updateUser(Long id, String userPassword, String phoneNumber, String profileThumbUrl) throws IllegalArgumentException, OptimisticLockingFailureException{
+	@Transactional
+	public User updateUser(Long id, UpdateDTO updateDTO) throws IllegalArgumentException, OptimisticLockingFailureException{
 			User user = userRepository.findById(id)
 					.orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
 
-			user.setUserPassword(passwordEncoder.encode(userPassword));
-			user.setPhoneNumber(phoneNumber);
-			user.setProfileThumbUrl(profileThumbUrl);
+			String userPassword = updateDTO.getUserPassword();
+			if (userPassword != null) {
+				user.setUserPassword(userPassword);
+			}
 
-        return userRepository.save(user);
+			String phoneNumber = updateDTO.getPhoneNumber();
+			if (phoneNumber != null) {
+				user.setPhoneNumber(phoneNumber);
+			}
+
+			String profileThumbUrl = updateDTO.getProfileThumbUrl();
+			if (profileThumbUrl != null) {
+				user.setProfileThumbUrl(profileThumbUrl);
+			}
+
+			return userRepository.save(user);
     }
 
     @Transactional

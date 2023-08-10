@@ -3,16 +3,16 @@ package com.fastcampus.scheduling.jwt.service;
 import static com.fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_NOT_VALID;
 import static com.fastcampus.scheduling._core.errors.ErrorMessage.USER_NOT_FOUND;
 
-import com.fastcampus.scheduling.jwt.dto.RefreshAccessTokenRequestDto;
-import com.fastcampus.scheduling.jwt.model.RefreshToken;
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
+import com.fastcampus.scheduling.jwt.dto.RefreshAccessTokenRequestDto;
 import com.fastcampus.scheduling.jwt.dto.RefreshAccessTokenResponseDto;
+import com.fastcampus.scheduling.jwt.model.RefreshToken;
 import com.fastcampus.scheduling.jwt.repository.RefreshTokenRepository;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserRepository;
 import com.fastcampus.scheduling.user.service.UserService;
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,8 +61,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 							"User Id : " + userId + " " + USER_NOT_FOUND));
 
 			Authentication authentication = getAuthentication(findUser.getUserEmail());
-			List<String> roles = authentication.getAuthorities()
-					.stream().map(GrantedAuthority::getAuthority).toList();
+			Collection<GrantedAuthority> roles = (Collection<GrantedAuthority>) authentication.getAuthorities();
 
 			String newAccessToken = jwtTokenProvider.generateJwtAccessToken(userId, "/refresh-token",
 					roles);

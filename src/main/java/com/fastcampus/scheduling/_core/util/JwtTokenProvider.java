@@ -7,6 +7,7 @@ import static com.fastcampus.scheduling._core.errors.ErrorMessage.UN_AUTHORIZED;
 
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling._core.errors.exception.Exception500;
+import com.fastcampus.scheduling.user.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -16,19 +17,24 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-@Component
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
 	@Value("${jwt.access-token.expiration}")
 	private long ACCESS_EXPIRED_TIME;
@@ -39,11 +45,18 @@ public class JwtTokenProvider {
 	@Value("${jwt.secret-key}")
 	private String SECRET;
 
-	public String generateJwtAccessToken(String userId, String uri, List<String> roles) {
+	private final UserService userService;
+
+	public String generateJwtAccessToken(String userId, String uri, Collection<GrantedAuthority> roles) {
 		Claims claims = Jwts.claims().setSubject(userId);
 		claims.put("roles", roles);
 
 		return buildToken(claims, uri, ACCESS_EXPIRED_TIME);
+	}
+
+	public org.springframework.security.core.userdetails.User getUserDetail(com.fastcampus.scheduling.user.model.User user) {
+		String userEmail = user.getUserEmail();
+		return (org.springframework.security.core.userdetails.User) userService.loadUserByUsername(userEmail);
 	}
 
 	public String generateJwtRefreshToken(String userId) {
@@ -69,8 +82,8 @@ public class JwtTokenProvider {
 		return getClaimsFromJwtToken(token).get("value").toString();
 	}
 
-	public List<String> getRoles(String token) {
-		return (List<String>) getClaimsFromJwtToken(token).get("roles");
+	public List<LinkedHashMap> getRoles(String token) {
+		return (List<LinkedHashMap>) getClaimsFromJwtToken(token).get("roles");
 	}
 	public void validateJwtToken(String token) {
 		try {
@@ -116,12 +129,16 @@ public class JwtTokenProvider {
 		if (userId == null || accessToken.isEmpty()) {
 			throw new Exception401(UN_AUTHORIZED);
 		}
-		List<String> roles = getRoles(accessToken);
-
+		List<LinkedHashMap> roles = getRoles(accessToken);
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+		/*List<SimpleGrantedAuthority> authorities = roles.stream()
+				.map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+				.collect(Collectors.toList());*/
 
-		for (String role : roles) {
-			authorities.add(new SimpleGrantedAuthority(role));
+		log.info("ROLE.GETAUTHORITY");
+		for (LinkedHashMap role : roles) {
+			log.info(role.get("authority").toString());
+			authorities.add(new SimpleGrantedAuthority(role.get("authority").toString()));
 		}
 
 		Authentication authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
