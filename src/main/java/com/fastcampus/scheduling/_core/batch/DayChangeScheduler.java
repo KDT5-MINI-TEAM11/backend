@@ -21,7 +21,7 @@ public class DayChangeScheduler {
 	private final ScheduleJobConfiguration scheduleJobConfiguration;
 	private final JobLauncher jobLauncher;
 
-	@Scheduled(cron = "0 * * * * *")
+	@Scheduled(cron = "0 0 0 * * *")
 	public void run() {
 		// job parameter 설정
 		Map<String, JobParameter> confMap = new HashMap<>();
