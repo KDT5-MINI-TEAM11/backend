@@ -85,6 +85,8 @@ public class ScheduleResponse {
 
 		private String userName;
 
+		private String userEmail;
+
 		private ScheduleType scheduleType;
 
 		private LocalDate startDate;
@@ -99,6 +101,7 @@ public class ScheduleResponse {
 			return GetAllScheduleDTO.builder()
 				.id(schedule.getId())
 				.userName(user.getUserName())
+				.userEmail(user.getUserEmail())
 				.scheduleType(schedule.getScheduleType())
 				.startDate(schedule.getStartDate().toLocalDate())
 				.endDate(schedule.getEndDate().toLocalDate())
