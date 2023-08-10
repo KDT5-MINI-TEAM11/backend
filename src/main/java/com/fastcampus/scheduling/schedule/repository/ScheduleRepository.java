@@ -1,5 +1,6 @@
 package com.fastcampus.scheduling.schedule.repository;
 
+import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +24,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findSchedulesByUserIdAndStartDateBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 
-    List<Schedule> findSchedulesByStartDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Schedule> findSchedulesByStartDateBetweenAndStateNot(LocalDateTime startDate, LocalDateTime endDate, State state);
+
+    List<Schedule> findSchedulesByUserIdAndStartDateBetweenAndState(Long userId, LocalDateTime startDate, LocalDateTime endDate, State state);
 
 }

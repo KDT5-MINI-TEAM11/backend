@@ -35,6 +35,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Transactional
+    public List<Schedule> findMyPendingSchedule(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Schedule> schdules = scheduleRepository.findSchedulesByUserIdAndStartDateBetweenAndState(userId, startDate, endDate, State.PENDING);
+
+        return schdules;
+    }
+
+    @Transactional
     public Schedule addSchedule(ScheduleRequest.AddScheduleDTO addScheduleDTO) {
         User user = userRepository.findById(addScheduleDTO.getUserId())
             .orElseThrow(() -> new UsernameNotFoundException(ErrorMessage.NOT_FOUND_USER_FOR_UPDATE));
@@ -186,7 +193,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Transactional
     public List<Schedule> findAllByYear(LocalDateTime startDate, LocalDateTime endDate) {
 
-        return scheduleRepository.findSchedulesByStartDateBetween(startDate, endDate);
+        return scheduleRepository.findSchedulesByStartDateBetweenAndStateNot(startDate, endDate, State.PENDING);
     }
 
     public int calculateDuration(LocalDateTime startDate, LocalDateTime endDate) {

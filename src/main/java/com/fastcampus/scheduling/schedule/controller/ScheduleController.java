@@ -72,6 +72,24 @@ public class ScheduleController {
         return ResponseEntity.ok(ApiResponse.success(message));
     }
 
+    @GetMapping("/user/schedule/pending-list")
+    public ResponseEntity<Result> getPendingSchedule(@RequestParam(name = "year", required = true) Integer year) {
+        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+
+        List<Schedule> schedules;
+
+        LocalDateTime startDate = LocalDateTime.of(year, 1, 1,0,0);
+        LocalDateTime endDate = LocalDateTime.of(year, 12, 31,23,59);
+
+        schedules = scheduleServiceImpl.findMyPendingSchedule(userId, startDate, endDate);
+
+        List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
+            .map(schedule -> GetUserScheduleDTO.from(schedule))
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(ApiResponse.success(userSchedulesDTO));
+    }
+
     @PatchMapping("/user/schedule/modify")
     public ResponseEntity<Result<ModifyScheduleDTO>> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO) {
         Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
