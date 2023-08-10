@@ -89,7 +89,7 @@ public class WebSecurityConfig {
 	@Bean
 	public AuthenticationFilter authenticationFilter() {
 		AuthenticationFilter customAuthenticationFilter = new AuthenticationFilter(authenticationManager());
-		customAuthenticationFilter.setFilterProcessesUrl("/api/v2/auth/signin");     // 접근 URL
+		customAuthenticationFilter.setFilterProcessesUrl("/api/v1/auth/signin");     // 접근 URL
 		customAuthenticationFilter.setAuthenticationSuccessHandler(loginSuccessHandler);    // '인증' 성공 시 해당 핸들러로 처리를 전가한다.
 		customAuthenticationFilter.setAuthenticationFailureHandler(loginFailureHandler);    // '인증' 실패 시 해당 핸들러로 처리를 전가한다.
 		customAuthenticationFilter.afterPropertiesSet();
@@ -99,7 +99,7 @@ public class WebSecurityConfig {
 	@Bean
 	public AuthenticationFilterForLocal authenticationFilterForLocal() {
 		AuthenticationFilterForLocal customAuthenticationFilter = new AuthenticationFilterForLocal(authenticationManager());
-		customAuthenticationFilter.setFilterProcessesUrl("/api/v1/auth/signin");     // 접근 URL
+		customAuthenticationFilter.setFilterProcessesUrl("/api/v2/auth/signin");     // 접근 URL
 		customAuthenticationFilter.setAuthenticationSuccessHandler(loginSuccessHandlerForLocal);    // '인증' 성공 시 해당 핸들러로 처리를 전가한다.
 		customAuthenticationFilter.setAuthenticationFailureHandler(loginFailureHandler);    // '인증' 실패 시 해당 핸들러로 처리를 전가한다.
 		customAuthenticationFilter.afterPropertiesSet();
