@@ -42,5 +42,5 @@ public interface ErrorMessage {
     String CANNOT_CANCEL_SCHEDULE = "취소할 수 없는 상태의 일정입니다.";
     String APPROVED_SCHEDULE = "승인 or 거부된 일정입니다.";
     String OVERLAPPING_SCHEDULE = "중복된 일정입니다.";
-    String INSUFFICIENT_VACATION_DAYS = "남은 연차 수가 부족합니다..";
+    String INSUFFICIENT_VACATION_DAYS = "남은 연차 수가 부족합니다.";
 }
