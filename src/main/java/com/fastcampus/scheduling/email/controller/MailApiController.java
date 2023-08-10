@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MailApiController {
 
     private final MailService mailService;
-    @PostMapping("/api/v1/auth/checkEmail")
+    @PostMapping("/api/v1/auth/check-email")
     public ResponseEntity<ApiResponse.Result<Object>> checkEmail(@RequestBody @Valid EmailRequest.CheckEmailDTO checkEmailDTO, Errors errors) {
         log.info("/api/v1/auth/checkEmail POST " + checkEmailDTO);
         boolean checkEmail = mailService.checkEmail(checkEmailDTO);
@@ -26,7 +26,7 @@ public class MailApiController {
         return ResponseEntity.ok(ApiResponse.success(checkEmail));
     }
 
-    @PostMapping("/api/v1/auth/sendEmail")
+    @PostMapping("/api/v1/auth/send-email")
     public ResponseEntity<ApiResponse.Result<Object>> sendEmail(@RequestBody @Valid EmailRequest.SendEmailDTO sendEmailDTO, Errors errors) {
         log.info("/api/v1/auth/sendEmail POST " + sendEmailDTO);
         boolean sendEmail = mailService.sendEmail(sendEmailDTO);
@@ -42,7 +42,7 @@ public class MailApiController {
 //        return ResponseEntity.ok(ApiResponse.success(authEmail));
 //    }
 
-    @PostMapping("/api/v1/auth/checkEmailAuth")
+    @PostMapping("/api/v1/auth/check-email-auth")
     public ResponseEntity<ApiResponse.Result<Object>> checkEmailAuth(@RequestBody @Valid EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO, Errors errors) {
         log.info("/api/v1/auth/checkEmailAuth POST " + checkEmailAuthDTO);
         boolean checkEmailAuth = mailService.checkEmailAuth(checkEmailAuthDTO);
