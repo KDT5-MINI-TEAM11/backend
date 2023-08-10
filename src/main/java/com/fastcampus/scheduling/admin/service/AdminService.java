@@ -4,9 +4,6 @@ import com.fastcampus.scheduling._core.common.Constants;
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
 import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling.admin.dto.AdminRequest;
-import com.fastcampus.scheduling.admin.dto.AdminRequest.ApproveDTO;
-import com.fastcampus.scheduling.admin.dto.AdminRequest.PendingDTO;
-import com.fastcampus.scheduling.admin.dto.AdminRequest.RejectDTO;
 import com.fastcampus.scheduling.admin.dto.AdminResponse;
 import com.fastcampus.scheduling.schedule.common.State;
 import com.fastcampus.scheduling.schedule.model.Schedule;
@@ -52,12 +49,12 @@ public class AdminService {
     }
 
     @Transactional
-    public String updateScheduleReject(RejectDTO rejectDTO) {
-        if(rejectDTO == null)
+    public String updateScheduleReject(AdminRequest.ScheduleDTO scheduleDTO) {
+        if(scheduleDTO == null)
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE);
 
         try {
-            Optional<Schedule> scheduleOptional = scheduleRepository.findById(rejectDTO.getId());
+            Optional<Schedule> scheduleOptional = scheduleRepository.findById(scheduleDTO.getId());
             Schedule schedule = scheduleOptional.orElseThrow(() -> new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE));
 
             if (schedule.getState() == State.APPROVE || schedule.getState() == State.PENDING) {
@@ -77,12 +74,12 @@ public class AdminService {
     }
 
     @Transactional
-    public String updateScheduleApprove(ApproveDTO approveDTO) {
-        if(approveDTO == null)
+    public String updateScheduleApprove(AdminRequest.ScheduleDTO scheduleDTO) {
+        if(scheduleDTO == null)
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE);
 
         try {
-            Optional<Schedule> scheduleOptional = scheduleRepository.findById(approveDTO.getId());
+            Optional<Schedule> scheduleOptional = scheduleRepository.findById(scheduleDTO.getId());
 
             scheduleOptional.orElseThrow(() -> new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE))
                 .setState(State.APPROVE);
@@ -94,12 +91,12 @@ public class AdminService {
     }
 
     @Transactional
-    public String updateSchedulePending(PendingDTO pendingDTO) {
-        if(pendingDTO == null)
+    public String updateSchedulePending(AdminRequest.ScheduleDTO scheduleDTO) {
+        if(scheduleDTO == null)
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE);
 
         try {
-            Optional<Schedule> scheduleOptional = scheduleRepository.findById(pendingDTO.getId());
+            Optional<Schedule> scheduleOptional = scheduleRepository.findById(scheduleDTO.getId());
 
             scheduleOptional.orElseThrow(() -> new Exception400(ErrorMessage.EMPTY_DATA_FOR_SCHEDULE))
                 .setState(State.PENDING);
