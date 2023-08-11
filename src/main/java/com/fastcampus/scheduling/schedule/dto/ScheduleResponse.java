@@ -49,7 +49,7 @@ public class ScheduleResponse {
 	public static class AddScheduleDTO {
 
 		@NotBlank
-		private Long userId;
+		private Long id;
 
 		@NotBlank
 		private ScheduleType scheduleType;
@@ -65,7 +65,7 @@ public class ScheduleResponse {
 
 		public static ScheduleResponse.AddScheduleDTO from(Schedule schedule) {
 			return AddScheduleDTO.builder()
-				.userId(schedule.getUser().getId())
+				.id(schedule.getId())
 				.scheduleType(schedule.getScheduleType())
 				.startDate(schedule.getStartDate().toLocalDate())
 				.endDate(schedule.getEndDate().toLocalDate())
