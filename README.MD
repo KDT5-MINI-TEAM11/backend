@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="screentshot" height="300px">
+  <img src="https://user-images.githubusercontent.com/61049995/259952824-1c88c6a0-96b3-434b-8cb5-f2045db199b5.png" height="300px">
 </p>
 
 &nbsp;
@@ -109,7 +109,7 @@
   </tr>
 </table>
 
-<img alt="toy 협업.png" height="500" src="toy%20%ED%98%91%EC%97%85.png" width="600"/>
+<img alt="협업" height="500" src="https://user-images.githubusercontent.com/61049995/259952415-1c3b4ea7-1678-431d-bf66-c281ac0eff9f.png" width="600"/>
 
 
 ## Documentation
@@ -126,13 +126,13 @@
 
 ### Flow Chart
 
-<img alt="img.png" src="img.png" width="800"/>
+<img alt="Flow Chart" src="https://user-images.githubusercontent.com/61049995/259952487-2e24e009-6daa-480f-8ab0-a5b72cf18450.png" width="800"/>
 
 ### Sequence Diagram
 #### Sign In & Request
 
-<img alt="img_1.png" src="img_1.png" width="800"/>
+<img alt="seqence01" src="https://user-images.githubusercontent.com/61049995/259952491-7b4ed8b7-8551-4764-a302-ae89408a5c1c.png" width="800"/>
 
 #### Token Expired
 
-<img alt="img_2.png" src="img_2.png" width="800"/>
+<img alt="sequence02" src="https://user-images.githubusercontent.com/61049995/259952493-341a2b7f-8b79-4fcb-a5e3-e85ef2dcb143.png" width="800"/>
