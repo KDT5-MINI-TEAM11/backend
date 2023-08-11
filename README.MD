@@ -68,10 +68,8 @@
             Spring Batch를 이용한 Batch Scheduling 구현
           </ul>
           <ul>
-            매일 자정 전일 기준 PENDING 상태인 요청을 자동으로 REJECT
-          </ul>
-          <ul>
-            매년 1.1일 00시 유저의 사용한 연차 초기화
+            <li>매일 자정 전일 기준 PENDING 상태인 요청을 자동으로 REJECT</li>
+            <li>매년 1.1일 00시 유저의 사용한 연차 초기화</li>
           </ul>
           배포
           <ul>
