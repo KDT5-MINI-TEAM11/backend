@@ -1,8 +1,9 @@
+# 연차 당직 관리 프로그램
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/61049995/259952824-1c88c6a0-96b3-434b-8cb5-f2045db199b5.png" height="800px">
+  <img src="https://user-images.githubusercontent.com/61049995/259952824-1c88c6a0-96b3-434b-8cb5-f2045db199b5.png" height="600px">
 </p>
 
-&nbsp;
+## Stacks
 
 ![Java Spring](https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
 ![Spring Security](https://img.shields.io/static/v1?style=for-the-badge&message=Spring+Security&color=6DB33F&logo=Spring+Security&logoColor=FFFFFF&label=)
@@ -16,7 +17,7 @@
 ![GitHub](https://img.shields.io/static/v1?style=for-the-badge&message=GitHub&color=181717&logo=GitHub&logoColor=FFFFFF&label=)
 ![Slack](https://img.shields.io/static/v1?style=for-the-badge&message=Slack&color=4A154B&logo=Slack&logoColor=FFFFFF&label=)
 
-## 팀원 
+## 팀원
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
