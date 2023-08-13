@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MailService {
@@ -35,33 +37,33 @@ public class MailService {
     private final TemplateEngine templateEngine;
 
     private final Map<String, String> authMap = new ConcurrentHashMap<>();
+    private String authCode;
 
     public boolean sendEmail(SendEmailDTO sendEmailDTO) {
         if(sendEmailDTO == null)
             throw new Exception500(ErrorMessage.INVALID_SEND_EMAILAUTH);
 
-        String authNumber = createCode();
+        authCode = createCode();
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
         Context context = new Context();
 
         try {
-            context.setVariable("authNumber", authNumber);
+            context.setVariable("authNumber", authCode);
             String emailContent = templateEngine.process("Email", context);
             helper.setFrom(Constants.MAIL_FROM);
             helper.setTo(sendEmailDTO.getTo());
             helper.setSubject(Constants.MAIL_SUBJECT);
             helper.setText(emailContent, true);
             javaMailSender.send(message);
-            authMap.put(authNumber, getDateTime());
         }catch (MailException | MessagingException e){
             System.out.println(e);
             throw new Exception500(ErrorMessage.FAILED_TO_SEND_EMAIL);
         }
 
+        setAuthCode();
         return true;
     }
-
     @Transactional(readOnly = true)
     public boolean checkEmail(EmailRequest.CheckEmailDTO checkEmailDTO) {
         if(checkEmailDTO == null)
@@ -76,7 +78,7 @@ public class MailService {
         return true;
     }
 
-    public boolean checkEmailAuth(EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO) {
+    public String checkEmailAuth(EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO) {
         if(checkEmailAuthDTO == null)
             throw new Exception400(ErrorMessage.EMPTY_DATA_FOR_USER_CHECK_USEREMAILAUTH);
 
@@ -86,7 +88,7 @@ public class MailService {
         return checkExpiredNumber(checkEmailAuthDTO);
     }
 
-    public boolean checkExpiredNumber(CheckEmailAuthDTO checkEmailAuthDTO) {
+    public String checkExpiredNumber(CheckEmailAuthDTO checkEmailAuthDTO) {
         String startDateTime = authMap.get(checkEmailAuthDTO.getUserEmailAuth());
 
         if (startDateTime == null)
@@ -97,7 +99,12 @@ public class MailService {
 
         Duration timeDifference = Duration.between(startTime, currentTime);
 
-        return timeDifference.toMinutes() <= Constants.MAIL_AUTH_TIME;
+        if(timeDifference.toMinutes() > Constants.MAIL_AUTH_TIME){
+            removeAuthCode();
+            return Constants.EXPIRED_CODE;
+        }
+
+        return Constants.CODE_SUCCESS;
     }
 
     public String createCode() {
@@ -122,4 +129,22 @@ public class MailService {
 
         return currentDateTime.format(formatter);
     }
+
+    private void setAuthCode() {
+        try {
+            authMap.put(authCode, getDateTime());
+        }catch (UnsupportedOperationException | NullPointerException | IllegalArgumentException e){
+            throw new Exception400(ErrorMessage.FAILED_TO_SAVE_CODE);
+        }
+    }
+
+    private void removeAuthCode(){
+        try {
+            authMap.remove(authCode);
+        }catch (UnsupportedOperationException | NullPointerException e){
+            log.info(ErrorMessage.FAILED_TO_REMOVE_CODE);
+        }
+
+    }
+
 }

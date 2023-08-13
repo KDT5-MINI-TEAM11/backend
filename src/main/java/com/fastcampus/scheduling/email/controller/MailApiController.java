@@ -21,17 +21,17 @@ public class MailApiController {
     @PostMapping("/api/v1/auth/check-email")
     public ResponseEntity<ApiResponse.Result<Object>> checkEmail(@RequestBody @Valid EmailRequest.CheckEmailDTO checkEmailDTO, Errors errors) {
         log.info("/api/v1/auth/checkEmail POST " + checkEmailDTO);
-        boolean checkEmail = mailService.checkEmail(checkEmailDTO);
+        boolean isChecked = mailService.checkEmail(checkEmailDTO);
 
-        return ResponseEntity.ok(ApiResponse.success(checkEmail));
+        return ResponseEntity.ok(ApiResponse.success(isChecked));
     }
 
     @PostMapping("/api/v1/auth/send-email")
     public ResponseEntity<ApiResponse.Result<Object>> sendEmail(@RequestBody @Valid EmailRequest.SendEmailDTO sendEmailDTO, Errors errors) {
         log.info("/api/v1/auth/sendEmail POST " + sendEmailDTO);
-        boolean sendEmail = mailService.sendEmail(sendEmailDTO);
+        boolean isSent = mailService.sendEmail(sendEmailDTO);
 
-        return ResponseEntity.ok(ApiResponse.success(sendEmail));
+        return ResponseEntity.ok(ApiResponse.success(isSent));
     }
 
 //    @PostMapping("/api/v2/auth/sendEmail")
@@ -45,9 +45,9 @@ public class MailApiController {
     @PostMapping("/api/v1/auth/check-email-auth")
     public ResponseEntity<ApiResponse.Result<Object>> checkEmailAuth(@RequestBody @Valid EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO, Errors errors) {
         log.info("/api/v1/auth/checkEmailAuth POST " + checkEmailAuthDTO);
-        boolean checkEmailAuth = mailService.checkEmailAuth(checkEmailAuthDTO);
+        String result = mailService.checkEmailAuth(checkEmailAuthDTO);
 
-        return ResponseEntity.ok(ApiResponse.success(checkEmailAuth));
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
 }
