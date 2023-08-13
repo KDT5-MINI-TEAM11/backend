@@ -101,7 +101,7 @@ public class MailService {
 
         if(timeDifference.toMinutes() > Constants.MAIL_AUTH_TIME){
             removeAuthCode();
-            return Constants.EXPIRED_CODE;
+            throw new Exception400(Constants.EXPIRED_CODE);
         }
 
         return Constants.CODE_SUCCESS;
