@@ -10,4 +10,6 @@ public interface Constants {
     String MAIL_SUBJECT = "인증메일";
     String MAIL_FROM = "ahdzlq12@naver.com";
     String POSITION_UPDATE = "직책이 변경되었습니다.";
+    String EXPIRED_CODE = "인증시간이 만료되었습니다.";
+    String CODE_SUCCESS = "인증되었습니다.";
 }

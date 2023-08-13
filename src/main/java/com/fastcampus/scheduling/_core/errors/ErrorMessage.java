@@ -5,6 +5,8 @@ public interface ErrorMessage {
     String UN_AUTHORIZED = "인증되지 않았습니다.";
     String FORBIDDEN = "권한이 없습니다.";
 
+    String FAILED_TO_SAVE_CODE = "이메일 인증번호 저장이 실패 하였습니다.";
+    String FAILED_TO_REMOVE_CODE = "이메일 인증번호 삭제가 실패 하였습니다.";
     String FAILED_TO_SEND_EMAIL = "이메일 전송이 실패 하였습니다.";
     String EMPTY_DATA_FOR_USER_SIGNUP = "회원 가입을 위한 데이터가 존재하지 않습니다.";
     String EMPTY_DATA_FOR_USER_UPDATE = "회원 정보 수정을 위한 데이터가 존재하지 않습니다.";
