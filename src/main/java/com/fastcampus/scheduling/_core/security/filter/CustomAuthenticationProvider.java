@@ -30,9 +30,6 @@ public class CustomAuthenticationProvider implements org.springframework.securit
         String userPassword = (String) authenticationToken.getCredentials();
 
         org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) userService.loadUserByUsername(userEmail);
-        log.info("Before Compare Password");
-        log.info("authenticate UserID : " + user.getUsername());
-        log.info("authenticate UserPassword : " + user.getPassword());
 
         byte[] passworDb = userPassword.getBytes(StandardCharsets.UTF_8);
         CustomBCrypt.checkpw(passworDb, user.getPassword());
