@@ -131,13 +131,8 @@ public class JwtTokenProvider {
 		}
 		List<LinkedHashMap> roles = getRoles(accessToken);
 		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-		/*List<SimpleGrantedAuthority> authorities = roles.stream()
-				.map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
-				.collect(Collectors.toList());*/
 
-		log.info("ROLE.GETAUTHORITY");
 		for (LinkedHashMap role : roles) {
-			log.info(role.get("authority").toString());
 			authorities.add(new SimpleGrantedAuthority(role.get("authority").toString()));
 		}
 

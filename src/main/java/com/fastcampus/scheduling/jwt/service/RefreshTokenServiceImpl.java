@@ -84,7 +84,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
 	public Authentication getAuthentication(String email) {
 		UserDetails userDetails = userService.loadUserByUsername(email);
-		return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
+		return new UsernamePasswordAuthenticationToken(userDetails, null,
 				userDetails.getAuthorities());
 	}
 
