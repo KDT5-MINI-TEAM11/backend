@@ -2,18 +2,19 @@ package com.fastcampus.scheduling.admin.controller;
 
 import com.fastcampus.scheduling._core.errors.ErrorMessage;
 import com.fastcampus.scheduling._core.errors.exception.Exception400;
+import com.fastcampus.scheduling._core.security.annotation.CurrentUser;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling.admin.dto.AdminRequest;
 import com.fastcampus.scheduling.admin.dto.AdminResponse;
 import com.fastcampus.scheduling.admin.dto.AdminResponse.GetAllUserDTO;
 import com.fastcampus.scheduling.admin.dto.AdminResponse.ResetPasswordDTO;
 import com.fastcampus.scheduling.admin.service.AdminService;
+import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,19 +58,17 @@ public class AdminController {
     @PostMapping("/api/v1/admin/approve")
     public ResponseEntity<ApiResponse.Result<Object>> approveSchedule(@RequestBody AdminRequest.ScheduleDTO scheduleDTO){
         log.info("/api/v1/admin/approve POST" + scheduleDTO);
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        //validatePosition(userId);
+
         String result = adminService.updateScheduleApprove(scheduleDTO);
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping("/api/v1/admin/change-position")
-    public ResponseEntity<ApiResponse.Result<Object>> changePosition(@RequestBody AdminRequest.UpdatePositionDTO updatePositionDTO){
+    public ResponseEntity<ApiResponse.Result<Object>> changePosition(@RequestBody AdminRequest.UpdatePositionDTO updatePositionDTO, @CurrentUser User user){
         log.info("/api/v1/admin/change-position POST" + updatePositionDTO);
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
-        if(userId.equals(updatePositionDTO.getId()))
+        if(user.getId().equals(updatePositionDTO.getId()))
             throw new Exception400(ErrorMessage.INVALID_CHANGE_POSITION);
 
         String result = adminService.updatePosition(updatePositionDTO);

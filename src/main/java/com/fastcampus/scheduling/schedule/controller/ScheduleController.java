@@ -1,6 +1,7 @@
 package com.fastcampus.scheduling.schedule.controller;
 
 import com.fastcampus.scheduling._core.exception.CustomException;
+import com.fastcampus.scheduling._core.security.annotation.CurrentUser;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.ApiResponse.Result;
 import com.fastcampus.scheduling.schedule.dto.ScheduleRequest;
@@ -11,13 +12,13 @@ import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.GetAllScheduleDTO
 import com.fastcampus.scheduling.schedule.dto.ScheduleResponse.GetUserScheduleDTO;
 import com.fastcampus.scheduling.schedule.model.Schedule;
 import com.fastcampus.scheduling.schedule.service.ScheduleServiceImpl;
+import com.fastcampus.scheduling.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,14 +35,13 @@ public class ScheduleController {
     private final ScheduleServiceImpl scheduleServiceImpl;
 
     @GetMapping("/user/schedule")
-    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getUserSchedule(@RequestParam(name = "year", required = true) Integer year) {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    public ResponseEntity<Result<List<GetUserScheduleDTO>>> getUserSchedule(@RequestParam(name = "year", required = true) Integer year, @CurrentUser User user) {
 
         List<Schedule> schedules;
 
         LocalDateTime startDate = LocalDateTime.of(year, 1, 1,0,0);
         LocalDateTime endDate = LocalDateTime.of(year, 12, 31,23,59);
-        schedules = scheduleServiceImpl.findByYear(userId, startDate, endDate);
+        schedules = scheduleServiceImpl.findByYear(user.getId(), startDate, endDate);
 
         List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
             .map(schedule -> GetUserScheduleDTO.from(schedule))
@@ -51,9 +51,9 @@ public class ScheduleController {
     }
 
     @PostMapping("/user/schedule/add")
-    public ResponseEntity<Result<ScheduleResponse.AddScheduleDTO>> addSchedule(@RequestBody ScheduleRequest.AddScheduleDTO addScheduleDTO) {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-        addScheduleDTO.setUserId(userId);
+    public ResponseEntity<Result<ScheduleResponse.AddScheduleDTO>> addSchedule(@RequestBody ScheduleRequest.AddScheduleDTO addScheduleDTO, @CurrentUser User user) {
+
+        addScheduleDTO.setUserId(user.getId());
 
         Schedule savedSchedule = scheduleServiceImpl.addSchedule(addScheduleDTO);
         ScheduleResponse.AddScheduleDTO addSchedule = AddScheduleDTO.from(savedSchedule);
@@ -62,26 +62,24 @@ public class ScheduleController {
     }
 
     @PostMapping("/user/schedule/cancel")
-    public ResponseEntity<Result> cancelSchedule(@RequestBody Map<String, String> request) throws CustomException {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    public ResponseEntity<Result> cancelSchedule(@RequestBody Map<String, String> request, @CurrentUser User user) throws CustomException {
 
         Long id = Long.valueOf(request.get("id"));
-        scheduleServiceImpl.cancelSchedule(id, userId);
+        scheduleServiceImpl.cancelSchedule(id, user.getId());
 
         String message = "정상적으로 취소 되었습니다";
         return ResponseEntity.ok(ApiResponse.success(message));
     }
 
     @GetMapping("/user/schedule/pending-list")
-    public ResponseEntity<Result> getPendingSchedule(@RequestParam(name = "year", required = true) Integer year) {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    public ResponseEntity<Result> getPendingSchedule(@RequestParam(name = "year", required = true) Integer year, @CurrentUser User user) {
 
         List<Schedule> schedules;
 
         LocalDateTime startDate = LocalDateTime.of(year, 1, 1,0,0);
         LocalDateTime endDate = LocalDateTime.of(year, 12, 31,23,59);
 
-        schedules = scheduleServiceImpl.findMyPendingSchedule(userId, startDate, endDate);
+        schedules = scheduleServiceImpl.findMyPendingSchedule(user.getId(), startDate, endDate);
 
         List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
             .map(schedule -> GetUserScheduleDTO.from(schedule))
@@ -91,10 +89,9 @@ public class ScheduleController {
     }
 
     @PatchMapping("/user/schedule/modify")
-    public ResponseEntity<Result<ModifyScheduleDTO>> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO) {
-        Long userId = Long.valueOf(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+    public ResponseEntity<Result<ModifyScheduleDTO>> modifySchedule(@RequestBody ModifyScheduleDTO modifyScheduleDTO, @CurrentUser User user) {
 
-        Schedule modifiedSchedule = scheduleServiceImpl.modifySchedule(modifyScheduleDTO, userId);
+        Schedule modifiedSchedule = scheduleServiceImpl.modifySchedule(modifyScheduleDTO, user.getId());
 
         ModifyScheduleDTO modifyScheduleResponseDTO = ModifyScheduleDTO.from(modifiedSchedule);
 
