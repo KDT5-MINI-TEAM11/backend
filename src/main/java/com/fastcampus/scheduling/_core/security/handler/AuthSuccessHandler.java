@@ -1,7 +1,7 @@
 
 package com.fastcampus.scheduling._core.security.handler;
 
-import com.fastcampus.scheduling._core.security.dto.SigninResponse;
+import com.fastcampus.scheduling._core.security.dto.SignInResponse;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.CookieProvider;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
@@ -40,7 +40,7 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
         response = cookieProvider.addCookie(response, refreshToken);
 
 
-        SigninResponse signinResponse = SigninResponse.builder().accessToken(accessToken).build();
+        SignInResponse signinResponse = SignInResponse.builder().accessToken(accessToken).build();
 
         // save signIn log
         userLogService.saveSigninLog(userId);

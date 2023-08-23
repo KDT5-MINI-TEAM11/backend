@@ -1,6 +1,6 @@
 package com.fastcampus.scheduling.jwt.controller;
 
-import com.fastcampus.scheduling._core.security.dto.SigninResponse;
+import com.fastcampus.scheduling._core.security.dto.SignInResponse;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.CookieProvider;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
@@ -48,7 +48,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/v2/auth/refresh-token")
-	public ResponseEntity<ApiResponse.Result<SigninResponse>> refreshTokenTemp(@RequestBody
+	public ResponseEntity<ApiResponse.Result<SignInResponse>> refreshTokenTemp(@RequestBody
 		RefreshAccessTokenRequestDto refreshAccessTokenRequestDto, HttpServletResponse response) {
 
 		String refreshToken = refreshTokenService.getRefreshToken(refreshAccessTokenRequestDto);
@@ -64,7 +64,7 @@ public class AuthController {
 
 		//generate new access token
 		String newAccessToken = refreshTokenService.refreshAccessToken(userId).getAccessToken();
-		SigninResponse signinResponse = SigninResponse.builder()
+		SignInResponse signinResponse = SignInResponse.builder()
 				.accessToken(newAccessToken)
 				.refreshToken(newRefreshToken)
 				.build();

@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class SigninResponse {
+public class SignInResponse {
 
 	private String accessToken;
 	//temp var for cross domain

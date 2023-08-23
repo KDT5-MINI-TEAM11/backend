@@ -3,7 +3,7 @@ package com.fastcampus.scheduling._core.security.filter;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fastcampus.scheduling._core.errors.exception.FieldMissExceptionException;
-import com.fastcampus.scheduling._core.security.dto.SigninRequest;
+import com.fastcampus.scheduling._core.security.dto.SignInRequest;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +36,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
-            SigninRequest signinRequest = objectMapper.readValue(request.getInputStream(), SigninRequest.class);
+            SignInRequest signinRequest = objectMapper.readValue(request.getInputStream(), SignInRequest.class);
             String userEmail = signinRequest.getUserEmail();
             String userPassword = signinRequest.getUserPassword();
             if (userEmail == null || userPassword == null) {
