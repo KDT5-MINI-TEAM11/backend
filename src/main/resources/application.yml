@@ -5,33 +5,197 @@ server:
       charset: UTF-8
       force: true
 
+logging:
+  level:
+    '[fastcampus.scheduling]': DEBUG
+    '[org.hibernate.type]': TRACE
+
 spring:
+  batch:
+    job:
+      enabled: false
+  mail:
+    host: smtp.naver.com
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+        ssl:
+          enable: true
+          trust: smtp.naver.com
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    encoding: UTF-8
+    mode: HTML
+
+default-user:
+  password: ${DEFAULT_USER_PASS}
+
+---
+# for local
+spring:
+  config:
+    activate:
+      on-profile: local
+
   datasource:
-    url: jdbc:h2:mem:test;MODE=MySQL
+    url: jdbc:h2:mem:test;MODE=MySQL;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: fc11
     password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        #open-in-view: true
+
   h2:
     console:
       enabled: true
   output:
     ansi:
       enabled: always
+  sql:
+    init:
+      schema-locations: classpath:db/schema.sql
+      mode: always
 
-#    datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url:
-#    username:
-#    password:
+jwt:
+  secret-key: secretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkeysecretkey
+  access-token:
+    expiration: 3600000 #60 min
+  refresh-token:
+    expiration: 86400000 #24 hour
+
+---
+# for dev
+server:
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store-password: ${CERT_PASS}
+    protocol: TLS
+    enabled-protocols: TLSv1.2
+    key-store: ${CERT_PATH}
+    key-alias: team11
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  mail:
+    host: smtp.naver.com
+    port: 587
+    username: ${mail_username}
+    password: ${mail_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+        ssl:
+          enable: true
+          trust: smtp.naver.com
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL}
+    username: ${MYSQL_ID}
+    password: ${MYSQL_PASSWORD}
+  #    hikari:
+  #      connection-timeout: 10000
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     properties:
       hibernate:
         format_sql: true
         show_sql: true
-#    open-in-view: true
+        #open-in-view: true
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token:
+    expiration: ${JWT_ACCESS_EXPIRATION_MIN}
+  refresh-token:
+    expiration: ${JWT_REFRESH_EXPIRATION_MIN}
+
+logging:
+  file:
+    path: ./logs
+    name: app-dev
+---
+#for prod
+server:
+  ssl:
+    enabled: true
+    key-store-type: PKCS12
+    key-store-password: ${CERT_PASS}
+    protocol: TLS
+    enabled-protocols: TLSv1.2
+    key-store: ${CERT_PATH}
+    key-alias: team11
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  mail:
+    host: smtp.naver.com
+    port: 587
+    username: ${mail_username}
+    password: ${mail_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+        ssl:
+          enable: true
+          trust: smtp.naver.com
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL}
+    username: ${MYSQL_ID}
+    password: ${MYSQL_PASSWORD}
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        #open-in-view: true
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access-token:
+    expiration: ${JWT_ACCESS_EXPIRATION_MIN}
+  refresh-token:
+    expiration: ${JWT_REFRESH_EXPIRATION_MIN}
+
+logging:
+  file:
+    path: ./logs
+    name: app-prod
