@@ -114,7 +114,7 @@ public class WebSecurityConfig {
 	@Bean
 	protected CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://kdt-5-mini-team-11-eifz.vercel.app/"));
+		configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://kdt-5-mini-team-11-eifz.vercel.app/","https://team-project-vacation-management.vercel.app/"));
 		configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "X-Forwarded-For")); // Add other allowed headers as needed
 		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH")); // Add other allowed methods as needed
 		configuration.setAllowCredentials(true);

@@ -39,8 +39,8 @@ public class ScheduleController {
 
         List<Schedule> schedules;
 
-        LocalDateTime startDate = LocalDateTime.of(year, 1, 1,0,0);
-        LocalDateTime endDate = LocalDateTime.of(year, 12, 31,23,59);
+        LocalDateTime startDate = calculateStartDateTime(year);
+        LocalDateTime endDate = calculateEndDateTime(year);
         schedules = scheduleServiceImpl.findByYear(userId, startDate, endDate);
 
         List<GetUserScheduleDTO> userSchedulesDTO = schedules.stream()
@@ -78,8 +78,8 @@ public class ScheduleController {
 
         List<Schedule> schedules;
 
-        LocalDateTime startDate = LocalDateTime.of(year, 1, 1,0,0);
-        LocalDateTime endDate = LocalDateTime.of(year, 12, 31,23,59);
+        LocalDateTime startDate = calculateStartDateTime(year);
+        LocalDateTime endDate = calculateEndDateTime(year);
 
         schedules = scheduleServiceImpl.findMyPendingSchedule(userId, startDate, endDate);
 
@@ -105,8 +105,8 @@ public class ScheduleController {
     public ResponseEntity<Result<List<GetAllScheduleDTO>>> getAllSchedules(@RequestParam(name = "year", required = true) Integer year) {
         List<Schedule> allSchedules;
 
-        LocalDateTime startDate = LocalDateTime.of(year, 1, 1,0,0);
-        LocalDateTime endDate = LocalDateTime.of(year, 12, 31,23,59);
+        LocalDateTime startDate = calculateStartDateTime(year);
+        LocalDateTime endDate = calculateEndDateTime(year);
         allSchedules = scheduleServiceImpl.findAllByYear(startDate, endDate);
 
         List<GetAllScheduleDTO> allSchedulesDTO = allSchedules.stream()
@@ -114,6 +114,14 @@ public class ScheduleController {
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(ApiResponse.success(allSchedulesDTO));
+    }
+
+    private LocalDateTime calculateStartDateTime(Integer year){
+        return LocalDateTime.of((year - 1), 12, 26, 0, 0);
+    }
+
+    private LocalDateTime calculateEndDateTime(Integer year){
+        return LocalDateTime.of((year + 1), 1, 11, 23, 59);
     }
 
 }
