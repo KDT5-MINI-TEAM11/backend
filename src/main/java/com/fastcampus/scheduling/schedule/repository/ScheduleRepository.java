@@ -20,7 +20,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByUserAndDatesOverlap(@Param("userId") Long userId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     @Query("SELECT s FROM Schedule s WHERE s.id <> :id AND s.startDate < :endDate AND s.endDate > :startDate")
-    List<Schedule> findByScheduleAndDatesOverlap(Long id, LocalDateTime startDate, LocalDateTime endDate);
+    List<Schedule> findByScheduleAndDatesOverlap(@Param("id") Long id, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     List<Schedule> findSchedulesByUserIdAndStartDateBetween(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 
