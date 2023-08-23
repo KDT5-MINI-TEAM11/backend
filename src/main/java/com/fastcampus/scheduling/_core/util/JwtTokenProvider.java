@@ -16,11 +16,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -47,16 +44,11 @@ public class JwtTokenProvider {
 
 	private final UserService userService;
 
-	public String generateJwtAccessToken(String userId, String uri, Collection<GrantedAuthority> roles) {
-		Claims claims = Jwts.claims().setSubject(userId);
+	public String generateJwtAccessToken(String userEmail, String uri, Collection<GrantedAuthority> roles) {
+		Claims claims = Jwts.claims().setSubject(userEmail);
 		claims.put("roles", roles);
 
 		return buildToken(claims, uri, ACCESS_EXPIRED_TIME);
-	}
-
-	public org.springframework.security.core.userdetails.User getUserDetail(com.fastcampus.scheduling.user.model.User user) {
-		String userEmail = user.getUserEmail();
-		return (org.springframework.security.core.userdetails.User) userService.loadUserByUsername(userEmail);
 	}
 
 	public String generateJwtRefreshToken(String userId) {
@@ -66,7 +58,7 @@ public class JwtTokenProvider {
 		return buildToken(claims, "", REFRESH_EXPIRED_TIME);
 	}
 
-	public String getUserId(String token) {
+	public String getSubject(String token) {
 		return getClaimsFromJwtToken(token).getSubject();
 	}
 
@@ -81,14 +73,9 @@ public class JwtTokenProvider {
 	public String getRefreshTokenId(String token) {
 		return getClaimsFromJwtToken(token).get("value").toString();
 	}
-
-	public List<LinkedHashMap> getRoles(String token) {
-		return (List<LinkedHashMap>) getClaimsFromJwtToken(token).get("roles");
-	}
 	public void validateJwtToken(String token) {
 		try {
 			Jwts.parserBuilder().setSigningKey(getSignInKey()).build().parseClaimsJws(token);
-			return;
 		} catch (ExpiredJwtException exception) {
 			log.error("JWT token is expired: {}", exception.getMessage());
 			throw new Exception401(TOKEN_EXPIRED);
@@ -103,7 +90,7 @@ public class JwtTokenProvider {
 		}
 	}
 
-	public boolean equalRefreshTokenId(String refreshTokenId, String refreshToken) {
+	public boolean isEqualRefreshTokenId(String refreshTokenId, String refreshToken) {
 		String compareToken = this.getRefreshTokenId(refreshToken);
 		return refreshTokenId.equals(compareToken);
 	}
@@ -125,18 +112,16 @@ public class JwtTokenProvider {
 				.compact();
 	}
 
-	public void setSecurityAuthentication(String userId, String accessToken) {
-		if (userId == null || accessToken.isEmpty()) {
+	public void setSecurityAuthentication(String userEmail, String accessToken) {
+
+		Claims claims = getClaimsFromJwtToken(accessToken);
+		if (userEmail == null || claims.isEmpty()) {
 			throw new Exception401(UN_AUTHORIZED);
 		}
-		List<LinkedHashMap> roles = getRoles(accessToken);
-		List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
-		for (LinkedHashMap role : roles) {
-			authorities.add(new SimpleGrantedAuthority(role.get("authority").toString()));
-		}
+		UserDetails userDetails = userService.loadUserByUsername(userEmail);
 
-		Authentication authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 		//Set Authentication to SecurityContextHolder
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}

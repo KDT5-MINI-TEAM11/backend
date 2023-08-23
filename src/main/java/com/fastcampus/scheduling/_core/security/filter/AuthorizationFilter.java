@@ -5,10 +5,11 @@ import static com.fastcampus.scheduling._core.errors.ErrorMessage.TOKEN_NOT_VALI
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-import com.fastcampus.scheduling.jwt.service.AccessTokenServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
+import com.fastcampus.scheduling.jwt.service.AccessTokenServiceImpl;
+import com.fastcampus.scheduling.user.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class AuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserService userService;
     private final AccessTokenServiceImpl accessTokenService;
 
     @Override
@@ -48,7 +50,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
         final String accessToken;
-        final String userId;
+        final String userEmail;
 
         accessToken = accessTokenService.getAccessToken(authHeader);
 
@@ -62,8 +64,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         }
 
         //Token이 존재 할 경우
-        userId = jwtTokenProvider.getUserId(accessToken);
-        if (userId == null) {
+        userEmail = jwtTokenProvider.getSubject(accessToken);
+        if (userEmail == null) {
             response.setStatus(SC_UNAUTHORIZED);
             response.setContentType(APPLICATION_JSON_VALUE);
             response.setCharacterEncoding("utf-8");
@@ -71,7 +73,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             return;
 
         }
-        jwtTokenProvider.setSecurityAuthentication(userId, accessToken);
+
+        jwtTokenProvider.setSecurityAuthentication(userEmail, accessToken);
 
         filterChain.doFilter(request, response);
     }
