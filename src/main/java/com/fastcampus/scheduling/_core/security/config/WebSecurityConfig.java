@@ -10,7 +10,6 @@ import com.fastcampus.scheduling._core.security.handler.AuthSuccessHandlerForLoc
 import com.fastcampus.scheduling._core.security.handler.CustomExceptionHandler;
 import com.fastcampus.scheduling._core.security.handler.CustomLogoutHandler;
 import com.fastcampus.scheduling._core.security.handler.CustomLogoutSuccessHandler;
-import com.fastcampus.scheduling.user.common.Position;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -64,7 +63,7 @@ public class WebSecurityConfig {
 				.permitAll()
 				.antMatchers(
 						"/api/v1/admin/**"
-				).hasAuthority(Position.MANAGER.name())
+				).hasAuthority("ROLE_MANAGER")
 				.anyRequest().authenticated()
 				.and()
 				.formLogin().disable()
