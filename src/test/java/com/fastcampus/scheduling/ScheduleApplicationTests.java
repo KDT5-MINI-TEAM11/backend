@@ -1,6 +1,5 @@
 package com.fastcampus.scheduling;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest

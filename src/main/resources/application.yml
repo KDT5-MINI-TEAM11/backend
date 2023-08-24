@@ -11,6 +11,9 @@ logging:
     '[org.hibernate.type]': TRACE
 
 spring:
+  batch:
+    job:
+      enabled: false
   mail:
     host: smtp.naver.com
     port: 587

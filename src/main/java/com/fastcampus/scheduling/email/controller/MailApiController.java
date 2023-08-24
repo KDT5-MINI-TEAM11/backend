@@ -34,14 +34,6 @@ public class MailApiController {
         return ResponseEntity.ok(ApiResponse.success(isSent));
     }
 
-//    @PostMapping("/api/v2/auth/sendEmail")
-//    public ResponseEntity<ApiResponse.Result<Object>> sendEmail(@RequestBody @Valid EmailRequest.SendEmailDTO sendEmailDTO, Errors errors) {
-//        log.info("/api/v1/auth/sendEmail POST " + sendEmailDTO);
-//        boolean authEmail = mailService.sendEmail(sendEmailDTO);
-//
-//        return ResponseEntity.ok(ApiResponse.success(authEmail));
-//    }
-
     @PostMapping("/api/v1/auth/check-email-auth")
     public ResponseEntity<ApiResponse.Result<Object>> checkEmailAuth(@RequestBody @Valid EmailRequest.CheckEmailAuthDTO checkEmailAuthDTO, Errors errors) {
         log.info("/api/v1/auth/checkEmailAuth POST " + checkEmailAuthDTO);

@@ -1,7 +1,7 @@
 package com.fastcampus.scheduling._core.security.filter;
 
 import com.fastcampus.scheduling._core.errors.exception.FieldMissExceptionException;
-import com.fastcampus.scheduling._core.security.dto.SigninRequest;
+import com.fastcampus.scheduling._core.security.dto.SignInRequest;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -36,11 +36,10 @@ public class AuthenticationFilterForLocal extends UsernamePasswordAuthentication
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, true);
-            SigninRequest signinRequest = objectMapper.readValue(request.getInputStream(), SigninRequest.class);
+            SignInRequest signinRequest = objectMapper.readValue(request.getInputStream(), SignInRequest.class);
             String userEmail = signinRequest.getUserEmail();
             String userPassword = signinRequest.getUserPassword();
-            log.info("Request Email: " + userEmail);
-            log.info("Request Password: " + userPassword);
+
             if (userEmail == null || userPassword == null) {
                 throw new FieldMissExceptionException();
             }

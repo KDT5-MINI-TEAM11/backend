@@ -96,7 +96,7 @@
           </ul>
           배포
           <ul>
-            <li>Ec2 Instance 설정</li></li>
+            <li>Ec2 Instance 설정</li>
           </ul>
         </td>
     </td>

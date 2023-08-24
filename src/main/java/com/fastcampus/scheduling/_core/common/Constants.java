@@ -2,7 +2,7 @@ package com.fastcampus.scheduling._core.common;
 
 public interface Constants {
     int USED_VACATION = 0;
-    long MAIL_AUTH_TIME = 3l;
+    long MAIL_AUTH_TIME = 3L;
 
     String SCHEDULE_CANCEL = "정상적으로 취소 되었습니다.";
     String SCHEDULE_APPROVE = "요청이 승인 되었습니다.";

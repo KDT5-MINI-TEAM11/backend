@@ -29,16 +29,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Transactional
     public List<Schedule> findByYear(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Schedule> allSchedules = scheduleRepository.findSchedulesByUserIdAndStartDateBetween(userId, startDate, endDate);
-
-        return allSchedules;
+        return scheduleRepository.findSchedulesByUserIdAndStartDateBetween(userId, startDate, endDate);
     }
 
     @Transactional
     public List<Schedule> findMyPendingSchedule(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Schedule> schdules = scheduleRepository.findSchedulesByUserIdAndStartDateBetweenAndState(userId, startDate, endDate, State.PENDING);
-
-        return schdules;
+        return scheduleRepository.findSchedulesByUserIdAndStartDateBetweenAndState(userId, startDate, endDate, State.PENDING);
     }
 
     @Transactional

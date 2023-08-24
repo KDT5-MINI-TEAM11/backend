@@ -57,7 +57,7 @@ public class MailService {
             helper.setText(emailContent, true);
             javaMailSender.send(message);
         }catch (MailException | MessagingException e){
-            System.out.println(e);
+            log.error(e.toString());
             throw new Exception500(ErrorMessage.FAILED_TO_SEND_EMAIL);
         }
 
@@ -114,11 +114,11 @@ public class MailService {
         for (int i = 0; i < 6; i++) {
             int index = random.nextInt(4);
 
-            switch (index) {
-                case 0: key.append((char) ((int) random.nextInt(26) + 97)); break;
-                case 1: key.append((char) ((int) random.nextInt(26) + 65)); break;
-                default: key.append(random.nextInt(9));
-            }
+					switch (index) {
+						case 0 -> key.append((char) random.nextInt(26) + 97);
+						case 1 -> key.append((char) random.nextInt(26) + 65);
+						default -> key.append(random.nextInt(9));
+					}
         }
         return key.toString();
     }

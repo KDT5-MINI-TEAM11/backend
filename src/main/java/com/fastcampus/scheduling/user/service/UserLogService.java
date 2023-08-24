@@ -1,10 +1,7 @@
 package com.fastcampus.scheduling.user.service;
 
-import static com.fastcampus.scheduling._core.errors.ErrorMessage.USER_NOT_FOUND;
-
 import com.fastcampus.scheduling._core.util.HttpRequestUtil;
 import com.fastcampus.scheduling.user.model.SigninLog;
-import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.repository.UserLogRepository;
 import com.fastcampus.scheduling.user.repository.UserRepository;
@@ -22,10 +19,9 @@ public class UserLogService {
 
 
 	@Transactional
-	public void saveSigninLog(String userId) {
+	public void saveSignInLog(User user) {
 		Map<String, String> accessInfo = HttpRequestUtil.getAccessInfo();
-		User user = userRepository.findById(Long.valueOf(userId))
-				.orElseThrow(() -> new Exception400(USER_NOT_FOUND));
+
 		SigninLog signinLog = SigninLog.builder()
 				.ipAddress(accessInfo.get("ip"))
 				.userAgent(accessInfo.get("browser"))
