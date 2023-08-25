@@ -15,14 +15,12 @@ import com.fastcampus.scheduling.user.dto.UserResponse.SignUpDTO;
 import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.service.UserLogService;
 import com.fastcampus.scheduling.user.service.UserService;
-import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -77,10 +75,9 @@ public class UserController {
 
         String userEmail = user.getUserEmail();
         Long userId = user.getId();
-        Collection<GrantedAuthority> authorities = userService.getAuthorities(user);
 
-        String accessToken = jwtTokenProvider.generateJwtAccessToken(userEmail, request.getRequestURI(), authorities);
-        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId.toString());
+        String accessToken = jwtTokenProvider.generateJwtAccessToken(user, request.getRequestURI());
+        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userEmail);
         refreshTokenService.saveRefreshToken(userId, jwtTokenProvider.getRefreshTokenId(refreshToken));
         cookieProvider.addCookie(response, refreshToken);
 
@@ -98,10 +95,9 @@ public class UserController {
 
         String userEmail = user.getUserEmail();
         Long userId = user.getId();
-        Collection<GrantedAuthority> authorities = userService.getAuthorities(user);
 
-        String accessToken = jwtTokenProvider.generateJwtAccessToken(userEmail, request.getRequestURI(), authorities);
-        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId.toString());
+        String accessToken = jwtTokenProvider.generateJwtAccessToken(user, request.getRequestURI());
+        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userEmail);
         refreshTokenService.saveRefreshToken(userId, jwtTokenProvider.getRefreshTokenId(refreshToken));
         cookieProvider.addCookie(response, refreshToken);
 

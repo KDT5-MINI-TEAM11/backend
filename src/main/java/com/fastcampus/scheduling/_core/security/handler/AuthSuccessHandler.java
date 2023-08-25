@@ -7,16 +7,15 @@ import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.CookieProvider;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
 import com.fastcampus.scheduling.jwt.service.RefreshTokenServiceImpl;
+import com.fastcampus.scheduling.user.model.User;
 import com.fastcampus.scheduling.user.service.UserLogService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
@@ -33,13 +32,11 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
                                         Authentication authentication) throws IOException {
         UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
 
-        String userEmail = userDetails.getUsername();
-        Long userId = userDetails.getUser().getId();
-        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) userDetails.getAuthorities();
+        User user = userDetails.getUser();
 
-        String accessToken = jwtTokenProvider.generateJwtAccessToken(userEmail, request.getRequestURI(), authorities);
-        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId.toString());
-        refreshTokenService.saveRefreshToken(userId, jwtTokenProvider.getRefreshTokenId(refreshToken));
+        String accessToken = jwtTokenProvider.generateJwtAccessToken(user, request.getRequestURI());
+        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(user.getUserEmail());
+        refreshTokenService.saveRefreshToken(user.getId(), jwtTokenProvider.getRefreshTokenId(refreshToken));
 
         response = cookieProvider.addCookie(response, refreshToken);
 

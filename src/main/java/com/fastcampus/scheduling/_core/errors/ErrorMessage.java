@@ -39,6 +39,7 @@ public interface ErrorMessage {
     String TOKEN_NOT_EXISTS = "토큰을 확인 할 수 없습니다.";
     String TOKEN_NOT_VALID = "비정상적인 토큰입니다.";
     String TOKEN_EXPIRED = "토큰이 만료 되었습니다.";
+    String INVALID_TOKEN_REFRESH_REQUEST = "비 정상 적인 토큰 재 발급이 감지 되었습니다.";
     String INNER_SERVER_ERROR = "서버 내부 오류가 발생 했습니다.";
 
     String CANNOT_CANCEL_SCHEDULE = "취소할 수 없는 상태의 일정입니다.";
