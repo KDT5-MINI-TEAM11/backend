@@ -11,6 +11,7 @@ import com.fastcampus.scheduling._core.security.handler.CustomExceptionHandler;
 import com.fastcampus.scheduling._core.security.handler.CustomLogoutHandler;
 import com.fastcampus.scheduling._core.security.handler.CustomLogoutSuccessHandler;
 import com.fastcampus.scheduling.user.common.Position;
+import com.fastcampus.scheduling.user.service.CustomDetailService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -24,6 +25,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -41,6 +43,7 @@ public class WebSecurityConfig {
 	private final CustomAuthenticationProvider customAuthenticationProvider;
 	private final AuthorizationFilter authorizationFilter;
 	private final CustomExceptionHandler customExceptionHandler;
+	private final CustomDetailService customDetailService;
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
@@ -74,6 +77,7 @@ public class WebSecurityConfig {
 				.deleteCookies()
 				.logoutSuccessHandler(customLogoutSuccessHandler)
 				.and()
+				.addFilterBefore(authorizationFilter, LogoutFilter.class)
 				.addFilterBefore(authorizationFilter, BasicAuthenticationFilter.class)
 				.addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(customExceptionHandler, AuthorizationFilter.class)

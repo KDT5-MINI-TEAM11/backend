@@ -8,7 +8,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
 import com.fastcampus.scheduling.jwt.service.AccessTokenServiceImpl;
-import com.fastcampus.scheduling.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,7 +28,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class AuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserService userService;
     private final AccessTokenServiceImpl accessTokenService;
 
     @Override
@@ -43,7 +41,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             "/api/v1/auth/**",
             "/api/v2/auth/**"
         );
-        if (ignored.stream().anyMatch(pattern -> antPathMatcher.match(pattern, request.getRequestURI()))) {
+        if (!request.getRequestURI().contains("signout") && ignored.stream().anyMatch(pattern -> antPathMatcher.match(pattern, request.getRequestURI()))) {
             filterChain.doFilter(request, response);
             return;
         }
