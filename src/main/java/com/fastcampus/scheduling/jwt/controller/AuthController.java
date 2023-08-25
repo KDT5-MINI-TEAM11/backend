@@ -1,6 +1,7 @@
 package com.fastcampus.scheduling.jwt.controller;
 
 import com.fastcampus.scheduling._core.security.dto.SignInResponse;
+import com.fastcampus.scheduling._core.security.dto.UserPrincipal;
 import com.fastcampus.scheduling._core.util.ApiResponse;
 import com.fastcampus.scheduling._core.util.CookieProvider;
 import com.fastcampus.scheduling._core.util.JwtTokenProvider;
@@ -35,16 +36,18 @@ public class AuthController {
 
 		jwtTokenProvider.validateJwtToken(refreshToken);
 
-		String userId = jwtTokenProvider.getSubject(refreshToken);
+		String userEmail = jwtTokenProvider.getSubject(refreshToken);
 
 		//generate new refresh token and update to db
-		String newRefreshToken = jwtTokenProvider.generateJwtRefreshToken(userId);
-		refreshTokenService.updateRefreshToken(userId, refreshToken, newRefreshToken);
+		String newRefreshToken = jwtTokenProvider.generateJwtRefreshToken(userEmail);
+
+		UserPrincipal userDetails = (UserPrincipal) userService.loadUserByUsername(userEmail);
+		User user = userDetails.getUser();
+
+		refreshTokenService.updateRefreshToken(user, refreshToken, newRefreshToken);
 
 		//set new refresh token to cookie
 		cookieProvider.addCookie(response, newRefreshToken);
-
-		User user = userService.findByUserId(Long.valueOf(userId));
 
 		//generate new access token
 		String newAccessToken = jwtTokenProvider.generateJwtAccessToken(user.getUserEmail(), request.getRequestURI(), userService.getAuthorities(user));
@@ -60,17 +63,18 @@ public class AuthController {
 
 		String refreshToken = refreshTokenService.getRefreshToken(refreshAccessTokenRequestDto);
 
-		String userId = jwtTokenProvider.getSubject(refreshToken);
+		String userEmail = jwtTokenProvider.getSubject(refreshToken);
 
 		//generate new refresh token and update to db
-		String newRefreshToken = jwtTokenProvider.generateJwtRefreshToken(userId);
-		refreshTokenService.updateRefreshToken(userId, refreshToken, newRefreshToken);
+		String newRefreshToken = jwtTokenProvider.generateJwtRefreshToken(userEmail);
+
+		UserPrincipal userDetails = (UserPrincipal) userService.loadUserByUsername(userEmail);
+		User user = userDetails.getUser();
+
+		refreshTokenService.updateRefreshToken(user, refreshToken, newRefreshToken);
 
 		//set new refresh token to cookie
 		cookieProvider.addCookie(response, newRefreshToken);
-
-		//generate new access token
-		User user = userService.findByUserId(Long.valueOf(userId));
 
 		//generate new access token
 		String newAccessToken = jwtTokenProvider.generateJwtAccessToken(user.getUserEmail(), request.getRequestURI(), userService.getAuthorities(user));

@@ -38,7 +38,7 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
         Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>) userDetails.getAuthorities();
 
         String accessToken = jwtTokenProvider.generateJwtAccessToken(userEmail, request.getRequestURI(), authorities);
-        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId.toString());
+        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userEmail);
         refreshTokenService.saveRefreshToken(userId, jwtTokenProvider.getRefreshTokenId(refreshToken));
 
         response = cookieProvider.addCookie(response, refreshToken);

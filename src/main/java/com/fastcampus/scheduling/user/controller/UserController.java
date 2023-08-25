@@ -80,7 +80,7 @@ public class UserController {
         Collection<GrantedAuthority> authorities = userService.getAuthorities(user);
 
         String accessToken = jwtTokenProvider.generateJwtAccessToken(userEmail, request.getRequestURI(), authorities);
-        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId.toString());
+        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userEmail);
         refreshTokenService.saveRefreshToken(userId, jwtTokenProvider.getRefreshTokenId(refreshToken));
         cookieProvider.addCookie(response, refreshToken);
 
@@ -101,7 +101,7 @@ public class UserController {
         Collection<GrantedAuthority> authorities = userService.getAuthorities(user);
 
         String accessToken = jwtTokenProvider.generateJwtAccessToken(userEmail, request.getRequestURI(), authorities);
-        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userId.toString());
+        String refreshToken = jwtTokenProvider.generateJwtRefreshToken(userEmail);
         refreshTokenService.saveRefreshToken(userId, jwtTokenProvider.getRefreshTokenId(refreshToken));
         cookieProvider.addCookie(response, refreshToken);
 

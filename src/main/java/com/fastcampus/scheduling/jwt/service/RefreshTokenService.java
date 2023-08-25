@@ -2,10 +2,11 @@ package com.fastcampus.scheduling.jwt.service;
 
 import com.fastcampus.scheduling.jwt.dto.RefreshAccessTokenRequestDto;
 import com.fastcampus.scheduling.jwt.dto.RefreshAccessTokenResponseDto;
+import com.fastcampus.scheduling.user.model.User;
 
 public interface RefreshTokenService {
 
-	void updateRefreshToken(String userId, String refreshToken, String newRefreshToken);
+	void updateRefreshToken(User user, String refreshToken, String newRefreshToken);
 
 	RefreshAccessTokenResponseDto refreshAccessToken(String refreshToken);
 

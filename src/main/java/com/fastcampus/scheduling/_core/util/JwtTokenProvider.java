@@ -51,8 +51,8 @@ public class JwtTokenProvider {
 		return buildToken(claims, uri, ACCESS_EXPIRED_TIME);
 	}
 
-	public String generateJwtRefreshToken(String userId) {
-		Claims claims = Jwts.claims().setSubject(userId);
+	public String generateJwtRefreshToken(String userEmail) {
+		Claims claims = Jwts.claims().setSubject(userEmail);
 		claims.put("value", UUID.randomUUID());
 
 		return buildToken(claims, "", REFRESH_EXPIRED_TIME);
@@ -90,9 +90,9 @@ public class JwtTokenProvider {
 		}
 	}
 
-	public boolean isEqualRefreshTokenId(String refreshTokenId, String refreshToken) {
+	public boolean isNotEqualRefreshTokenId(String refreshTokenId, String refreshToken) {
 		String compareToken = this.getRefreshTokenId(refreshToken);
-		return refreshTokenId.equals(compareToken);
+		return !refreshTokenId.equals(compareToken);
 	}
 
 	private Key getSignInKey() {
