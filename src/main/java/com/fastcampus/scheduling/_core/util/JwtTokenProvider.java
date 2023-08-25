@@ -7,7 +7,8 @@ import static com.fastcampus.scheduling._core.errors.ErrorMessage.UN_AUTHORIZED;
 
 import com.fastcampus.scheduling._core.errors.exception.Exception401;
 import com.fastcampus.scheduling._core.errors.exception.Exception500;
-import com.fastcampus.scheduling.user.service.UserService;
+import com.fastcampus.scheduling.user.model.User;
+import com.fastcampus.scheduling.user.service.CustomDetailService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -42,9 +43,12 @@ public class JwtTokenProvider {
 	@Value("${jwt.secret-key}")
 	private String SECRET;
 
-	private final UserService userService;
+	private final CustomDetailService customDetailService;
 
-	public String generateJwtAccessToken(String userEmail, String uri, Collection<GrantedAuthority> roles) {
+	public String generateJwtAccessToken(User user, String uri) {
+		String userEmail = user.getUserEmail();
+		Collection<GrantedAuthority> roles = customDetailService.getAuthorities(user);
+
 		Claims claims = Jwts.claims().setSubject(userEmail);
 		claims.put("roles", roles);
 
@@ -119,7 +123,7 @@ public class JwtTokenProvider {
 			throw new Exception401(UN_AUTHORIZED);
 		}
 
-		UserDetails userDetails = userService.loadUserByUsername(userEmail);
+		UserDetails userDetails = customDetailService.loadUserByUsername(userEmail);
 
 		Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 		//Set Authentication to SecurityContextHolder
