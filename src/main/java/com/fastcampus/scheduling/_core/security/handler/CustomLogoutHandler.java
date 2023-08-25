@@ -11,7 +11,7 @@ import org.springframework.security.core.Authentication;
 @Configuration
 @RequiredArgsConstructor
 public class CustomLogoutHandler implements
-		org.springframework.security.web.authentication.logout.LogoutHandler {
+		org.springframework.security.web.authentication.logout.LogoutHandler{
 
 	private final CookieProvider cookieProvider;
 	private final RefreshTokenService refreshTokenService;
@@ -19,15 +19,8 @@ public class CustomLogoutHandler implements
 	@Override
 	public void logout(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) {
-
-		try {
-			String refreshToken = cookieProvider.getRefreshToken(request);
-			refreshTokenService.revokeToken(refreshToken);
-		} catch (Exception exception) {
-			// keep processing if revokeToken failed(Token validation fail -> passed token is not stored in db)
-			// logout process always success
-		}
-
+		String refreshToken = cookieProvider.getRefreshToken(request);
+		refreshTokenService.revokeToken(refreshToken);
 
 	}
 }
