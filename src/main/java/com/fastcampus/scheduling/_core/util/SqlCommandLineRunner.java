@@ -12,7 +12,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SqlCommandLineRunner implements CommandLineRunner {
 
-	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+	private final PasswordEncoder bCryptPasswordEncoder;
 	private final UserRepository userRepository;
 	private final JdbcTemplate jdbcTemplate;
 
