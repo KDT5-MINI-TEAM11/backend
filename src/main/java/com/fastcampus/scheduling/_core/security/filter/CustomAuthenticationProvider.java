@@ -6,6 +6,7 @@ import com.fastcampus.scheduling._core.errors.exception.Exception400;
 import com.fastcampus.scheduling.user.service.CustomDetailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -19,13 +20,13 @@ import org.springframework.stereotype.Component;
 public class CustomAuthenticationProvider implements org.springframework.security.authentication.AuthenticationProvider {
 
     private final CustomDetailService customDetailService;
-    private final PasswordEncoder passwordEncoder;
+    private final ObjectProvider<PasswordEncoder> passwordEncoderObjectProvider;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String userEmail = authentication.getPrincipal().toString();
         String userPassword = authentication.getCredentials().toString();
-
+        PasswordEncoder passwordEncoder = passwordEncoderObjectProvider.getObject();
         UserDetails userDetails = customDetailService.loadUserByUsername(userEmail);
 
         if (!passwordEncoder.matches(userPassword, userDetails.getPassword())) {
