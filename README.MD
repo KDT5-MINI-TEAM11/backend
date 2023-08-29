@@ -1,6 +1,6 @@
 # 연차 당직 관리 프로그램
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/61049995/259952824-1c88c6a0-96b3-434b-8cb5-f2045db199b5.png" height="600px">
+  <img src="https://github.com/KDT5-MINI-TEAM11/backend/assets/61049995/3a20f80d-2714-401d-9302-3912c4624f4c">
 </p>
 
 ## Stacks
@@ -128,6 +128,48 @@
 [Client GitHub](https://github.com/KDT5-MINI-TEAM11/client)
 
 ## How to Work
+
+### 기능
+##### 회원가입
+<img src="https://github.com/KDT5-MINI-TEAM11/backend/assets/61049995/56a2420a-f7a9-4634-b72f-bb91ae7bba78">
+
+###### - 입력 항목 유효성 검사<br>
+###### - 이메일 중복 체크 및 이메일 인증
+
+##### 로그인
+<img src ="https://user-images.githubusercontent.com/61049995/264175439-a126b84d-bdcf-4948-80b8-ac7d85448a14.png">
+
+###### - 로그인 성공 시 Access Token 및 Refresh Token 발급<br>
+
+##### 연차 / 당직 신청
+<img src="https://user-images.githubusercontent.com/61049995/264175431-d4a1f564-2f9d-4cfe-97aa-5c195e7fbed3.png">
+
+###### - 사이드바에서 본인의 연차/당직 신청 및 신청 목록 확인 가능
+###### - 달력 좌측 상단의 버튼으로 전체 / 내 일정 스위칭 가능
+
+##### 내 정보
+<img src="https://user-images.githubusercontent.com/61049995/264175453-6394bdad-8297-46ef-9893-f92e471cf71f.png">
+
+###### - 본인 정보 수정 기능<br>
+
+##### 내 연차 / 당직 페이지
+<img src="https://user-images.githubusercontent.com/61049995/264175451-ee496512-fc65-4d64-8da2-6f183e67ac45.png">
+
+###### - 본인의 연차 / 당직 목록 확인 및 취소
+
+##### 관리자 - 연차 / 당직 승인, 반려
+<img src="https://user-images.githubusercontent.com/61049995/264175445-d29c9247-60a2-4e29-947e-3966d03a022f.png">
+
+###### - 관리자 직책만 노출 및 접근 가능
+
+###### - 유저별 연차 / 당직 신청 승인 및 반려
+
+##### 관리자 - 유저 직책 변경
+<img src="https://github.com/KDT5-MINI-TEAM11/backend/assets/61049995/c796d7db-73cf-4b29-8fc5-41dcca064fde">
+
+###### - 관리자 직책만 노출 및 접근 가능
+
+###### - 유저의 직책 변경
 
 ### Flow Chart
 
