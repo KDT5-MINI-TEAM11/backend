@@ -55,8 +55,8 @@
         <td align="left">
           Spring Security
           <ul>
-            <li>Spring Security 인가 구현</li>
-            <li>JWT를 이용한 인증 구현</li>
+            <li>Spring Security 인증 구현</li>
+            <li>JWT를 이용한 인가 구현</li>
           </ul>
           JWT
           <ul>
